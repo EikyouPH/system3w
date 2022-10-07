@@ -1,5 +1,6 @@
 #include <SPI.h>
 #include <SD.h>
+#include <fonctions.cpp>
 
 const int delaiMesure = 10000;
 const int pinCS = 10;
