@@ -1,6 +1,6 @@
 #include <SPI.h>
 #include <SD.h>
-const int delaiMesure = 1000;
+const int delaiMesure = 20000;
 const int pinCS = 10;
 
 void setup() {
@@ -9,8 +9,6 @@ void setup() {
     SD.begin(pinCS);
     pinMode(14, OUTPUT);
     digitalWrite(14, HIGH);
-    delay(10000);
-    digitalWrite(14, LOW);
 }
 
 void loop() {
