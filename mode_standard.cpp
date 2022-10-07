@@ -3,6 +3,6 @@ void setup() {
   
 }
 
-void looop() {
+void loop() {
   
 }
