@@ -31,8 +31,5 @@ void loop() {
         modeStandard();
       }
   }
-  
-  
-  
 
 }
