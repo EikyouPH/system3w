@@ -14,6 +14,25 @@ void setup() {
 
 void loop() {
   Serial.println("Mode standard");
-  delay(1000);
-  mesureCapteurs();
+    delay(1000);
+    void modeStandard(){
+      mesureCapteurs();
+      delay(1000);
+      saveMesure();
+      delay(delaiMesure);
+      checkErreur();
+      if (BoutonVert == HIGH){
+        modeEco();
+      }
+      else if (BoutonRouge == HIGH){
+        modeMaintenance();
+      }
+      else {
+        modeStandard();
+      }
+  }
+  
+  
+  
+
 }
