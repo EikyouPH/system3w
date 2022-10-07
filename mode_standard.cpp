@@ -2,7 +2,8 @@
 #include <SD.h>
 
 const int delaiMesure = 10000;
-  const int pinCS = 10;
+const int pinCS = 10;
+
 void setup() {
   Serial.begin(9600);
   Serial.println("Demarrage Standard");
