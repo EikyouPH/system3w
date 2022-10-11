@@ -13,23 +13,3 @@ void setup() {
     digitalWrite(14, HIGH);
 }
 
-void loop() {
-    Serial.println("Mode Eco");
-    delay(1000);
-    void modeEco(){
-        mesureCapteurs();
-        delay(1000);
-        saveMesure();
-        delay(delaiMesure);
-        checkErreur();
-        if (BoutonVert == HIGH){
-            modeStandard();
-        }
-        else if (BoutonRouge == HIGH){
-            modeMaintenance();
-        }
-        else {
-            modeEco();
-        }
-    }
-}

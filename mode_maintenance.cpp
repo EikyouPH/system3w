@@ -13,7 +13,7 @@ void setup() {
   digitalWrite(15, HIGH);
 }
 
-void loop() {
+void modeMaintenance() {
   Serial.println("Mode Maintenance");
   delay(1000);
   void modeMaintenance(){
