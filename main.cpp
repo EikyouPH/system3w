@@ -3,6 +3,7 @@
 #include <fonctions.cpp>
 
 const int delaiMesure = 10000;
+const int delaiMesureEco = 20000;
 const int pinCS = 10;
 
 void setup() {
@@ -41,7 +42,7 @@ void Eco() {
         mesureCapteurs();
         delay(1000);
         saveMesure();
-        delay(delaiMesure);
+        delay(delaiMesureEco);
         checkErreur();
         if (BoutonVert == HIGH){
             modeStandard();
@@ -59,10 +60,6 @@ void Maintenance() {
   Serial.println("Mode Maintenance");
   delay(1000);
   void Maintenance(){
-    mesureCapteurs();
-    delay(1000);
-    saveMesure();
-    delay(delaiMesure);
     checkErreur();
     if (BoutonVert == HIGH){
       Eco();
