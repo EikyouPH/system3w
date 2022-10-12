@@ -1,7 +1,7 @@
 // Programme principal
 // Il est le premier lancé et contient toutes les fonctions principales
-#include <SPI.h>
-#include <SD.h>
+#include <Arduino/SPI.h>
+#include <Arduino/SD.h>
 #include <fonctions.cpp>
 
 const int delaiMesure = 10000;
