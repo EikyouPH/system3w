@@ -4,7 +4,6 @@
 #include <Arduino/SD.h>
 #include <fonctions.cpp>
 
-SoftwareSerial ss(4, 3);
 const int delaiMesure = 10000;
 const int delaiMesureEco = 20000;
 const int pinCS = 11;
@@ -17,7 +16,7 @@ const int ledJaune = 10;
 
 void setup() {
   Serial.begin(9600);
-  ss.begin(9600);
+  ss.begin(GPSBaud);
   Serial.println("Demarrage du programme");
   SD.begin(pinCS);
   pinMode(ledVert, OUTPUT);
