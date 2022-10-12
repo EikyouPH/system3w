@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 const int pinLux = A0;
 
 //Round a float to 2 decimals
