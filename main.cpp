@@ -14,6 +14,7 @@ const int ledOrange = 7;
 const int ledVert = 8;
 const int ledBleue = 9;
 const int ledJaune = 10;
+const int pinLux = A1;
 
 void setup() {
   Serial.begin(9600);
