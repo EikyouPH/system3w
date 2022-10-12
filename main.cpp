@@ -1,5 +1,5 @@
-#include <SPI.h>
-#include <SD.h>
+#include <Arduino\libSPI.h>
+#include <Arduino\SD.h>
 #include <fonctions.cpp>
 
 const int delaiMesure = 10000;
