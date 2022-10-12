@@ -22,7 +22,7 @@ void loop() {
     void Standard(){
       mesureCapteurs();
       delay(1000);
-      saveMesure();
+      sauvMesure();
       delay(delaiMesure);
       checkErreur();
       if (BoutonVert == HIGH){
@@ -43,7 +43,7 @@ void Eco() {
     void modeEco(){
         mesureCapteurs();
         delay(1000);
-        saveMesure();
+        sauvMesure();
         delay(delaiMesureEco);
         checkErreur();
         if (BoutonVert == HIGH){
