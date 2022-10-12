@@ -4,7 +4,7 @@
       "name": "windows-gcc-x64",
       "includePath": [
         "${workspaceFolder}/**",
-        "D:\\Documents\\mingw64\\x86_64-w64-mingw32\\include/**"
+        "D:\\Documents\\mingw64\\x86_64-w64-mingw32\\include"
       ],
       "compilerPath": "D:/Documents/mingw64/bin/gcc.exe",
       "cStandard": "${default}",

@@ -16,7 +16,7 @@
   "C_Cpp_Runner.compilerArgs": [],
   "C_Cpp_Runner.linkerArgs": [],
   "C_Cpp_Runner.includePaths": [
-    "D:\\Documents\\mingw64\\x86_64-w64-mingw32\\include/**"
+    "D:\\Documents\\mingw64\\x86_64-w64-mingw32\\include"
   ],
   "C_Cpp_Runner.includeSearch": [
     "*",
