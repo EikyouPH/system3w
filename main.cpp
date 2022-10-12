@@ -1,3 +1,5 @@
+// Programme principal
+// Il est le premier lancé et contient toutes les fonctions principales
 #include <SPI.h>
 #include <SD.h>
 #include <fonctions.cpp>
