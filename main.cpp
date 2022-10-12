@@ -4,18 +4,20 @@
 #include <Arduino/SD.h>
 #include <fonctions.cpp>
 
+SoftwareSerial ss(4, 3);
 const int delaiMesure = 10000;
 const int delaiMesureEco = 20000;
-const int pinCS = 10;
-const int BoutonRouge = 2;
-const int BoutonVert = 3;
-const int ledOrange = 4;
-const int ledVert = 5;
-const int ledBleue = 6;
-const int ledJaune = 7;
+const int pinCS = 11;
+const int BoutonRouge = 5;
+const int BoutonVert = 6;
+const int ledOrange = 7;
+const int ledVert = 8;
+const int ledBleue = 9;
+const int ledJaune = 10;
 
 void setup() {
   Serial.begin(9600);
+  ss.begin(9600);
   Serial.println("Demarrage du programme");
   SD.begin(pinCS);
   pinMode(ledVert, OUTPUT);
