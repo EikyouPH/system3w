@@ -3,7 +3,9 @@
 
 #include <stdlib.h>
 #include <SoftwareSerial.h>
+#include <iarduino_RTC.h>
 
+iarduino_RTC watch (RTC_DS1307);
 
 // Renvoie un flottant envoyé en entrée arrondi au centieme
 float arrondi(float var)
@@ -33,7 +35,7 @@ byte GPS(pinGPS)
 
 float Heure()
 {
-    float heure = arrondi(analogRead(pinHeure));
+    heure = time.gettime("d-m-Y, H:i:s, D");
     return heure;
 }
 

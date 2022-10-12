@@ -26,6 +26,7 @@ void setup() {
   pinMode(ledOrange, OUTPUT);
   pinMode(BoutonRouge, INPUT);
   pinMode(BoutonVert, INPUT);
+  time.begin();
 }
 
 void loop() {
