@@ -20,10 +20,15 @@ Elles renvoient ensuite la valeur captee de type float (a l'exception de la fonc
 */
 byte GPS(pinGPS)
 {
-  while (ss.available() > 0){
-    byte gpsData = ss.read();
+   while (ss.available() > 0){
+    gps.encode(ss.read());
+    if (gps.location.isUpdated()){
+      Serial.print("Latitude= "); 
+      Serial.print(gps.location.lat(), 6);
+      Serial.print(" Longitude= "); 
+      Serial.println(gps.location.lng(), 6);
+    }
   }
-  return gpsData;
 }
 
 float Heure()
