@@ -12,6 +12,7 @@ float arrondi(float var)
   return (float)value / 100;
 }
 
+
 /*
 Toutes les fonctions suivantes permettent de récupérer les données des cpateurs
 Chaque fonction attend en paramètre le numero de pin des capteurs
