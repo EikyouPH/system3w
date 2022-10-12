@@ -24,7 +24,7 @@ byte GPS(pinGPS)
       Serial.print(" Longitude= "); 
       Serial.println(gps.location.lng(), 6);
     }
-  }
+  } 
 }
 
 float Heure()
