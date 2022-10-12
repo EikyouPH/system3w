@@ -14,7 +14,7 @@ float arround2(float var)
   return (float)value / 100;
 }
 
-byte GPS(pinGPS)
+float GPS(pinGPS)
 {
   while (ss.available() > 0){
     gps.encode(ss.read());
