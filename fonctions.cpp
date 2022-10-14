@@ -57,31 +57,31 @@ byte GPS(pinGPS)
 void couleurLed(Couleur)
 {
   // Rouge
-  if(couleur == Rouge){
+  if(Couleur == Rouge){
   analogWrite(pinRouge, 255);
   analogWrite(pinVert, 0);
   analogWrite(pinBleu, 0);
   }
   // Vert
-  else if (couleur == Vert){
+  else if (Couleur == Vert){
   analogWrite(pinRouge, 0);
   analogWrite(pinVert, 255);
   analogWrite(pinBleu, 0);
   }
   // Jaune
-  else if (couleur == Jaune){
+  else if (Couleur == Jaune){
   analogWrite(pinRouge, 127);
   analogWrite(pinVert, 127);
   analogWrite(PIN_BLUE, 0);
   }
   // Bleu
-  else if (couleur == Bleu){
+  else if (Couleur == Bleu){
   analogWrite(pinRouge, 0);
   analogWrite(pinVert, 255);
   analogWrite(pinBleu, 0);
   }
   // Orange
-  else if (couleur == Orange){
+  else if (Couleur == Orange){
   analogWrite(pinRouge, 255);
   analogWrite(pinVert, 127);
   analogWrite(pinBleu,  127);
