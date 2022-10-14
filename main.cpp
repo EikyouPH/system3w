@@ -49,10 +49,12 @@ void setup() {
   time.begin();
   attachinterrupt(digitalPinToInterrupt(boutonRouge), appuiBoutonRouge, FALLING);
 }
+
 void appuiBoutonRouge(){
   Couleur = Rouge;
   Mode = Maintenance;
 }
+
 // Fonction permettant de basculer d'un mode à l'autre
 void Modes(Mode) {
   // Mode Standard
@@ -131,6 +133,7 @@ void modeMaintenance() {
   }
   return Mode;
 }
+
 void loop() {
   Modes();
 }
