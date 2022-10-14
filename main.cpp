@@ -32,6 +32,10 @@ void setup() {
 }
 
 void modeStandard(){
+  digitalWrite(ledBleue, LOW);
+  digitalWrite(ledOrange, HIGH);
+  digitalWrite(ledVert, lOW);
+  digitalWrite(ledJaune, LOW);    
   mesureCapteurs();
   delay(1000);
   sauvMesure();
