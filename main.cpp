@@ -42,16 +42,16 @@ void setup() {
   time.begin();
 }
 void Modes(Mode) {
-  if(Mode = Standard){
+  if(Mode == Standard){
     modeStandard();
   }
-  else if(Mode = Eco){
+  else if(Mode == Eco){
     modeEco();
   }
-  else if(Mode = Maintenance){
+  else if(Mode == Maintenance){
     modeMaintenance();
   }
-  else if(Mode = Config){
+  else if(Mode == Config){
     modeConfig();
   }
   return 0;
