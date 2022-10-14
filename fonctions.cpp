@@ -54,7 +54,7 @@ byte GPS(pinGPS)
 }
 
 // Gestion de la couleur de la LED
-void couleurLed(couleur)
+void couleurLed(Couleur)
 {
   // Rouge
   if(couleur == Rouge){

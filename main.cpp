@@ -33,7 +33,7 @@ const int pinBleu = 11;
 // Pins pour les capteurs
 const int pinLux = A1;
 enum Mode {Standard = 0, Eco, Maintenance, Config};
-enum couleur {Rouge = 0, Vert, Jaune, Bleu, Orange, Blanc};
+enum Couleur {Rouge = 0, Vert, Jaune, Bleu, Orange, Blanc};
 
 //
 void setup() {
@@ -47,8 +47,12 @@ void setup() {
   pinMode(pinVert, OUTPUT);
   pinMode(pinBleu, OUTPUT);
   time.begin();
+  attachinterrupt(digitalPinToInterrupt(boutonRouge), appuiBoutonRouge, FALLING);
 }
-
+void appuiBoutonRouge(){
+  Couleur = Rouge;
+  Mode = Maintenance;
+}
 // Fonction permettant de basculer d'un mode à l'autre
 void Modes(Mode) {
   // Mode Standard
