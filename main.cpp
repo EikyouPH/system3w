@@ -47,6 +47,7 @@ void setup() {
   pinMode(pinVert, OUTPUT);
   pinMode(pinBleu, OUTPUT);
   time.begin();
+  
 }
 // Fonction appelée lors de l'appui sur le bouton rouge en mode standard
 void appuiBoutonRougeS(){ 
@@ -55,7 +56,7 @@ void appuiBoutonRougeS(){
   return Couleur, Mode; // On renvoie la couleur et le mode
 }
 // Fonction appelée lors de l'appui sur le bouton vert en mode standard
-void appuiBoutonVertS(){ 
+int appuiBoutonVertS(){ 
   Couleur = Vert;
   Mode = Eco;
   return Couleur, Mode;
@@ -67,7 +68,7 @@ void appuiBoutonRougeE(){
   return Couleur, Mode;
 }
 // Fonction appelée lors de l'appui sur le bouton vert en mode éco
-void appuiBoutonVertE(){
+int appuiBoutonVertE(){
   if(Mode == Eco){ // Si on était en mode éco
     Couleur = Bleu;
     Mode = Eco;
@@ -79,7 +80,7 @@ void appuiBoutonVertE(){
   return Couleur, Mode; // On renvoie la couleur et le mode
 }
 
-void appuiBoutonRougeM(){ // Fonction appelée lors de l'appui sur le bouton rouge en mode maintenance
+int appuiBoutonRougeM(){ // Fonction appelée lors de l'appui sur le bouton rouge en mode maintenance
   Couleur = Bleu;
   Mode = Maintenance;
   return Couleur, Mode;
