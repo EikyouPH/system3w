@@ -11,7 +11,7 @@ const int pinCS = 11;
 const int boutonRouge = 5;
 const int boutonVert = 6;
 const int pinLux = A1;
-enum Mode {Standard = 0, Eco, Maintenance};
+enum Mode {Standard = 0, Eco, Maintenance, Config};
 
 void setup() {
   Serial.begin(9600);
@@ -22,7 +22,21 @@ void setup() {
   pinMode(boutonVert, INPUT);
   time.begin();
 }
-
+void Modes(Mode) {
+  if(Mode = Standard){
+    modeStandard();
+  }
+  else if(Mode = Eco){
+    modeEco();
+  }
+  else if(Mode = Maintenance){
+    modeMaintenance();
+  }
+  else if(Mode = Config){
+    modeConfig();
+  }
+  return 0;
+}
 void modeStandard(){   
   mesureCapteurs();
   delay(1000);
@@ -74,5 +88,5 @@ void modeMaintenance() {
   return Mode;
 }
 void loop() {
-  
+  Modes();
 }
