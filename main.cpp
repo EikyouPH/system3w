@@ -35,7 +35,7 @@ const int pinLux = A1;
 enum Mode {Standard = 0, Eco, Maintenance, Config};
 enum Couleur {Rouge = 0, Vert, Jaune, Bleu, Orange, Blanc};
 
-//
+// Intitialisation du programme
 void setup() {
   Serial.begin(9600);
   ss.begin(9600);
