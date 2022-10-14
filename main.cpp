@@ -27,13 +27,9 @@ const int pinCS = 11;
 const int boutonRouge = 5;
 const int boutonVert = 6;
 // Pins pour les LEDs
-const int ledOrange = 7;
-const int ledVert = 8;
-const int ledBleue = 9;
-const int ledJaune = 10;
 // Pins pour les capteurs
 const int pinLux = A1;
-enum Mode {Standard = 0, Eco, Maintenance};
+enum Mode {Standard = 0, Eco, Maintenance, Config};
 enum couleur {Rouge = 0, Vert, Jaune, Bleu, Orange, Blanc};
 
 void setup() {
@@ -41,17 +37,26 @@ void setup() {
   ss.begin(9600);
   Serial.println("Demarrage du programme");
   SD.begin(pinCS);
-  pinMode(ledVert, OUTPUT);
-  pinMode(ledBleue, OUTPUT);
-  pinMode(ledJaune, OUTPUT);
-  pinMode(ledOrange, OUTPUT);
   pinMode(boutonRouge, INPUT);
   pinMode(boutonVert, INPUT);
   time.begin();
 }
-
-void modeStandard(){
-  couleurLed(Orange)
+void Modes(Mode) {
+  if(Mode = Standard){
+    modeStandard();
+  }
+  else if(Mode = Eco){
+    modeEco();
+  }
+  else if(Mode = Maintenance){
+    modeMaintenance();
+  }
+  else if(Mode = Config){
+    modeConfig();
+  }
+  return 0;
+}
+void modeStandard(){   
   mesureCapteurs();
   delay(1000);
   sauvMesure();
@@ -69,11 +74,7 @@ void modeStandard(){
   return mode;
 }
 
-void modeEco(){
-  digitalWrite(ledBleue, LOW);
-  digitalWrite(ledOrange, HIGH);
-  digitalWrite(ledVert, lOW);
-  digitalWrite(ledJaune, LOW);  
+void modeEco(){ 
   mesureCapteurs();
   delay(1000);
   sauvMesure();
@@ -109,5 +110,5 @@ void modeMaintenance() {
   return Mode;
 }
 void loop() {
-  
+  Modes();
 }
