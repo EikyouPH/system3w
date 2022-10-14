@@ -66,8 +66,8 @@ void Eco() {
         mesureCapteurs();
         delay(1000);
         sauvMesure();
-        delay(delaiMesureEco);
         checkErreur();
+        delay(delaiMesureEco);
         if (BoutonVert == HIGH){
             modeStandard();
         }
