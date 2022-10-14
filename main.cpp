@@ -47,12 +47,43 @@ void setup() {
   pinMode(pinVert, OUTPUT);
   pinMode(pinBleu, OUTPUT);
   time.begin();
-  attachinterrupt(digitalPinToInterrupt(boutonRouge), appuiBoutonRouge, FALLING);
+}
+// Fonction appelée lors de l'appui sur le bouton rouge en mode standard
+void appuiBoutonRougeS(){ 
+  Couleur = Rouge; // On change la couleur de la LED
+  Mode = Maintenance; // On passe en mode maintenance
+  return Couleur, Mode; // On renvoie la couleur et le mode
+}
+// Fonction appelée lors de l'appui sur le bouton vert en mode standard
+void appuiBoutonVertS(){ 
+  Couleur = Vert;
+  Mode = Eco;
+  return Couleur, Mode;
+}
+// Fonction appelée lors de l'appui sur le bouton rouge en mode éco
+void appuiBoutonRougeE(){
+  Couleur = Orange;
+  Mode = Maintenance;
+  return Couleur, Mode;
+}
+// Fonction appelée lors de l'appui sur le bouton vert en mode éco
+void appuiBoutonVertE(){
+  if(Mode == Eco){ // Si on était en mode éco
+    Couleur = Bleu;
+    Mode = Eco;
+  }
+  else{ // Sinon on passe en mode standard
+    Couleur = Vert;
+    Mode = Standard;
+  }
+  return Couleur, Mode; // On renvoie la couleur et le mode
 }
 
-void appuiBoutonRouge(){
-  Couleur = Rouge;
+
+void appuiBoutonRougeM(){ // Fonction appelée lors de l'appui sur le bouton rouge en mode maintenance
+  Couleur = Bleu;
   Mode = Maintenance;
+  return Couleur, Mode;
 }
 
 // Fonction permettant de basculer d'un mode à l'autre
@@ -79,6 +110,8 @@ void Modes(Mode) {
 
 // Fonction du mode Standard
 void modeStandard(){  
+  attachinterrupt(digitalPinToInterrupt(boutonRouge), appuiBoutonRougeS, FALLING);
+  attachinterrupt(digitalPinToInterrupt(boutonVert), appuiBoutonVertS, FALLING);
   // Mesure et sauvegarde des capteurs avec vérification des erreurs 
   mesureCapteurs();
   sauvMesure();
@@ -93,11 +126,13 @@ void modeStandard(){
   else {
     Mode = Standard;
   }
-  return mode;
+  return Mode;
 }
 
 // Fonction mode Eco
 void modeEco(){ 
+  attachinterrupt(digitalPinToInterrupt(boutonRouge), appuiBoutonRougeE, FALLING);
+  attachinterrupt(digitalPinToInterrupt(boutonVert), appuiBoutonVertE, FALLING);
   // Mesure et sauvegarde des capteurs avec vérification des erreurs 
   mesureCapteurs();
   sauvMesure();
