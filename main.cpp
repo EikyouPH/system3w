@@ -27,6 +27,9 @@ const int pinCS = 11;
 const int boutonRouge = 5;
 const int boutonVert = 6;
 // Pins pour les LEDs
+const int pinRouge = 9;
+const int pinVert = 10;
+const int pinBleu = 11;
 // Pins pour les capteurs
 const int pinLux = A1;
 enum Mode {Standard = 0, Eco, Maintenance, Config};
@@ -39,6 +42,9 @@ void setup() {
   SD.begin(pinCS);
   pinMode(boutonRouge, INPUT);
   pinMode(boutonVert, INPUT);
+  pinMode(pinRouge, OUTPUT);
+  pinMode(pinVert, OUTPUT);
+  pinMode(pinBleu, OUTPUT);
   time.begin();
 }
 void Modes(Mode) {
