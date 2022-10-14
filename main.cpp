@@ -33,6 +33,7 @@ const int ledBleue = 9;
 const int ledJaune = 10;
 // Pins pour les capteurs
 const int pinLux = A1;
+enum Mode {Standard = 0, Eco, Maintenance};
 
 void setup() {
   Serial.begin(9600);
@@ -48,55 +49,51 @@ void setup() {
   time.begin();
 }
 
-void Standard(){
+void modeStandard(){
+  digitalWrite(ledBleue, LOW);
+  digitalWrite(ledOrange, HIGH);
+  digitalWrite(ledVert, lOW);
+  digitalWrite(ledJaune, LOW);    
   mesureCapteurs();
+  delay(1000);
   sauvMesure();
-  checkErreur();
   delay(delaiMesure);
+  checkErreur();
   if (boutonVert == HIGH){
-    Eco();
+    Mode = Eco;
   }
-  else if (BoutonRouge == HIGH){
-    Maintenance();
+  else if (boutonRouge == HIGH){
+    Mode = Maintenance;
   }
   else {
-    Standard();
+    Mode = Standard;
   }
+  return mode;
 }
 
-void loop() {
-  Serial.println("Mode standard");
+void modeEco(){
   digitalWrite(ledBleue, LOW);
-  digitalWrite(ledOrange, LOW);
-  digitalWrite(ledVert, HIGH);
-  digitalWrite(ledJaune, LOW);
+  digitalWrite(ledOrange, HIGH);
+  digitalWrite(ledVert, lOW);
+  digitalWrite(ledJaune, LOW);  
+  mesureCapteurs();
   delay(1000);
+  sauvMesure();
+  checkErreur();
+  delay(delaiMesureEco);
+  if (boutonVert == HIGH){
+      Mode = Standard;
+  }
+  else if (boutonRouge == HIGH){
+      Mode = Maintenance;
+  }
+  else {
+      Mode = Eco;
+  }
+  return Mode;
 }
 
-void Eco() {
-digitalWrite(ledBleue, HIGH);
-digitalWrite(ledOrange, LOW);
-digitalWrite(ledVert, lOW);
-digitalWrite(ledJaune, LOW);
-Serial.println("Mode Eco");
-delay(1000);
-mesureCapteurs();
-delay(1000);
-sauvMesure();
-delay(delaiMesure * 2);
-checkErreur();
-if (boutonVert == HIGH){
-  modeStandard();
-}
-else if (boutonRouge == HIGH){
-  modeMaintenance();
-}
-else {
-  modeEco();
-}
-    
-
-void Maintenance() {
+void modeMaintenance() {
   // Mise à jour du clignottement des LEDs
   digitalWrite(ledBleue, LOW);
   digitalWrite(ledOrange, HIGH);
@@ -104,17 +101,18 @@ void Maintenance() {
   digitalWrite(ledJaune, LOW);
   // Affichage du mode
   Serial.println("Mode Maintenance");
-  // 
+  delay(1000);
+  stopMesure();
   accesSD();
-  // 
   affSerie();
   if (boutonRouge == HIGH){
-     Eco();
-  }
-  else if (boutonVert == HIGH){
-    Standard();
+    Mode = Standard;
   }
   else {
-    Maintenance();
+    Mode = Maintenance;
   }
+  return Mode;
+}
+void loop() {
+  
 }
