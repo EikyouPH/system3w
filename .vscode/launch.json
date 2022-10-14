@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/alani/OneDrive - Association Cesi Viacesi mail/Documents/GitHub/system3w",
-      "program": "c:/Users/alani/OneDrive - Association Cesi Viacesi mail/Documents/GitHub/system3w/build/Debug/outDebug",
+      "cwd": "c:/Users/basti/OneDrive - Association Cesi Viacesi mail/A2_Projets/Livrable 2/Code/system3w",
+      "program": "c:/Users/basti/OneDrive - Association Cesi Viacesi mail/A2_Projets/Livrable 2/Code/system3w/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
