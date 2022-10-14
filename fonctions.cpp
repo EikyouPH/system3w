@@ -35,20 +35,20 @@ float mesureCapteurs()
 // Renvoie l'heure de captation des mesures et le renvoie sous forme de float
 float Heure()
 {
-    heure = time.gettime("d-m-Y, H:i:s, D");
-    return heure;
+    heure = time.gettime("d-m-Y, H:i:s, D"); // Récupération de l'heure
+    return heure; // Renvoi de l'heure
 }
 
-//
+// Fonction GPS, renvoie la latitude et la longitude sous forme de float en récupéranr les données du GPS par le canal ss
 byte GPS(pinGPS)
 {
-   while (ss.available() > 0){
-    gps.encode(ss.read());
-    if (gps.location.isUpdated()){
-      Serial.print("Latitude= "); 
-      Serial.print(gps.location.lat(), 6);
-      Serial.print(" Longitude= "); 
-      Serial.println(gps.location.lng(), 6);
+   while (ss.available() > 0){ // Si le canal ss est disponible
+    gps.encode(ss.read()); // On récupère les données du GPS
+    if (gps.location.isUpdated()){ // Si les données sont mises à jour
+      Serial.print("Latitude= ");  // On affiche la latitude
+      Serial.print(gps.location.lat(), 6); // On affiche la latitude avec 6 chiffres après la virgule
+      Serial.print(" Longitude= "); // On affiche la longitude
+      Serial.println(gps.location.lng(), 6); // On affiche la longitude avec 6 chiffres après la virgule
     }
   }
 }
