@@ -25,8 +25,8 @@ void setup() {
   pinMode(ledBleue, OUTPUT);
   pinMode(ledJaune, OUTPUT);
   pinMode(ledOrange, OUTPUT);
-  pinMode(BoutonRouge, INPUT);
-  pinMode(BoutonVert, INPUT);
+  pinMode(boutonRouge, INPUT);
+  pinMode(boutonVert, INPUT);
   time.begin();
 }
 
@@ -43,10 +43,10 @@ void loop() {
       sauvMesure();
       delay(delaiMesure);
       checkErreur();
-      if (BoutonVert == HIGH){
+      if (boutonVert == HIGH){
         Eco();
       }
-      else if (BoutonRouge == HIGH){
+      else if (boutonRouge == HIGH){
         Maintenance();
       }
       else {
@@ -68,10 +68,10 @@ void Eco() {
         sauvMesure();
         checkErreur();
         delay(delaiMesureEco);
-        if (BoutonVert == HIGH){
+        if (boutonVert == HIGH){
             modeStandard();
         }
-        else if (BoutonRouge == HIGH){
+        else if (boutonRouge == HIGH){
             modeMaintenance();
         }
         else {
@@ -91,10 +91,10 @@ void Maintenance() {
     stopMesure();
     accesSD();
     affSerie();
-    if (BoutonRouge == HIGH){
+    if (boutonRouge == HIGH){
       Eco();
     }
-    else if (BoutonVert == HIGH){
+    else if (boutonVert == HIGH){
       Standard();
     }
     else {
