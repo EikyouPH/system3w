@@ -14,12 +14,36 @@ float arrondi(float var)
   return (float)value / 100;
 }
 
+// Mesure les différentes museures des capteurs et les renvoie sur forme de float
+float mesureCapteurs() 
+{
+  // Capteur de luminosité
+  float lux = arrondi(analogRead(pinLux));
 
-/*
-Toutes les fonctions suivantes permettent de récupérer les données des cpateurs
-Chaque fonction attend en paramètre le numero de pin des capteurs
-Elles renvoient ensuite la valeur captee de type float (a l'exception de la fonction GPS)
-*/
+  // Capteur de pression atmophérique
+  float pression = arrondi(analogRead(pinPression))
+
+  // Capteur de température de l'air extérieur
+  float tempAir = arrondi(analogRead(pinTempAir))
+
+  // Capteur de température de l'eau
+  float tempEau = arrondi(analogRead(pinTempEau))
+
+  // Capteur d'humidité de l'air
+  float hygro = arrondi(analogRead(pinHygro));
+
+  // Renvoi de toutes les valeurs captées
+  return lux, pression, tempAir, tempEau, hygro;
+}
+
+// Renvoie l'heure de captation des mesures et le renvoie sous forme de float
+float Heure()
+{
+    heure = time.gettime("d-m-Y, H:i:s, D");
+    return heure;
+}
+
+//
 byte GPS(pinGPS)
 {
    while (ss.available() > 0){
@@ -31,40 +55,4 @@ byte GPS(pinGPS)
       Serial.println(gps.location.lng(), 6);
     }
   }
-}
-
-float Heure()
-{
-    heure = time.gettime("d-m-Y, H:i:s, D");
-    return heure;
-}
-
-float mesureLumière(pinLux)
-{
-    float lux = arrondi(analogRead(pinLux));
-    return lux;
-}
-
-float mesureAir(pinAir)
-{
-    float air = arrondi(analogRead(pinAir));
-    return air;
-}
-
-float mesureTempAir(pinTempAir)
-{
-    float tempAir = arrondi(analogRead(pinTempAir));
-    return tempAir;
-}
-
-float mesureTempEau(pinTempEau)
-{
-    float tempEau = arrondi(analogRead(pinTempEau));
-    return tempEau;
-}
-
-float mesureHygro(pinHygro)
-{
-    float hygro = arrondi(analogRead(pinHygro));
-    return hygro;
 }
