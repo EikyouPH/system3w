@@ -80,11 +80,13 @@ int appuiBoutonVertE(){
   return Couleur, Mode; // On renvoie la couleur et le mode
 }
 
+
 int appuiBoutonRougeM(){ // Fonction appelée lors de l'appui sur le bouton rouge en mode maintenance
   Couleur = Bleu;
   Mode = Maintenance;
   return Couleur, Mode;
 }
+
 // Fonction permettant de basculer d'un mode à l'autre
 void Modes(Mode) {
   // Mode Standard
@@ -167,6 +169,7 @@ void modeMaintenance() {
   }
   return Mode;
 }
+
 void loop() {
   Modes();
 }
