@@ -1,10 +1,6 @@
 // Programme contenant les differentes focntions annexes
 // Ces fonctions sont utiles à l'exécution du fichier main.cpp qui contient le programe principale
 
-#include <stdlib.h>
-#include <SoftwareSerial.h>
-#include <iarduino_RTC.h>
-
 iarduino_RTC watch (RTC_DS1307);
 
 // Renvoie un flottant envoyé en entrée arrondi au centieme

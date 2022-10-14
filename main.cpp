@@ -7,6 +7,13 @@
 #include <Arduino/SD.h>
 // Importation de l'ensmeble de nos fonctions secondaires dans le fichier fonctions.cpp
 #include <fonctions.cpp>
+//
+#include <stdlib.h>
+//
+#include <SoftwareSerial.h>
+//
+#include <iarduino_RTC.h>
+
 
 // 
 SoftwareSerial ss(4, 3);
@@ -87,28 +94,27 @@ else if (boutonRouge == HIGH){
 else {
   modeEco();
 }
-    }
-}
+    
 
 void Maintenance() {
+  // Mise à jour du clignottement des LEDs
   digitalWrite(ledBleue, LOW);
   digitalWrite(ledOrange, HIGH);
   digitalWrite(ledVert, lOW);
   digitalWrite(ledJaune, LOW);
+  // Affichage du mode
   Serial.println("Mode Maintenance");
-  delay(1000);
-  void Maintenance(){
-    stopMesure();
-    accesSD();
-    affSerie();
-    if (boutonRouge == HIGH){
-      Eco();
-    }
-    else if (boutonVert == HIGH){
-      Standard();
-    }
-    else {
-      Maintenance();
-    }
+  // 
+  accesSD();
+  // 
+  affSerie();
+  if (boutonRouge == HIGH){
+     Eco();
+  }
+  else if (boutonVert == HIGH){
+    Standard();
+  }
+  else {
+    Maintenance();
   }
 }
