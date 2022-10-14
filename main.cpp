@@ -1,19 +1,30 @@
 // Programme principal
 // Il est le premier lancé et contient toutes les fonctions principales
+
+// Importation d'une bibliothèque permettant d'interagir avec des périphriques SPI
 #include <Arduino/SPI.h>
+// Importation d'une bibliothèque permettant l'écriture sur la carte SD
 #include <Arduino/SD.h>
+// Importation de l'ensmeble de nos fonctions secondaires dans le fichier fonctions.cpp
 #include <fonctions.cpp>
 
+// 
 SoftwareSerial ss(4, 3);
+
+// Définition des variables globales
+// Délai entre deux mesures en mode standard (à doubler dans le mode éco)
 const int delaiMesure = 10000;
-const int delaiMesureEco = 20000;
+// Pin pour lier la carte SD
 const int pinCS = 11;
-const int BoutonRouge = 5;
-const int BoutonVert = 6;
+// Pins pour les boutons
+const int boutonRouge = 5;
+const int boutonVert = 6;
+// Pins pour les LEDs
 const int ledOrange = 7;
 const int ledVert = 8;
 const int ledBleue = 9;
 const int ledJaune = 10;
+// Pins pour les capteurs
 const int pinLux = A1;
 
 void setup() {
@@ -25,58 +36,57 @@ void setup() {
   pinMode(ledBleue, OUTPUT);
   pinMode(ledJaune, OUTPUT);
   pinMode(ledOrange, OUTPUT);
-  pinMode(BoutonRouge, INPUT);
-  pinMode(BoutonVert, INPUT);
+  pinMode(boutonRouge, INPUT);
+  pinMode(boutonVert, INPUT);
   time.begin();
+}
+
+void Standard(){
+  mesureCapteurs();
+  sauvMesure();
+  checkErreur();
+  delay(delaiMesure);
+  if (boutonVert == HIGH){
+    Eco();
+  }
+  else if (BoutonRouge == HIGH){
+    Maintenance();
+  }
+  else {
+    Standard();
+  }
 }
 
 void loop() {
   Serial.println("Mode standard");
-    digitalWrite(ledBleue, LOW);
-    digitalWrite(ledOrange, LOW);
-    digitalWrite(ledVert, HIGH);
-    digitalWrite(ledJaune, LOW);
-    delay(1000);
-    void Standard(){
-      mesureCapteurs();
-      delay(1000);
-      sauvMesure();
-      delay(delaiMesure);
-      checkErreur();
-      if (BoutonVert == HIGH){
-        Eco();
-      }
-      else if (BoutonRouge == HIGH){
-        Maintenance();
-      }
-      else {
-        Standard();
-      }
-  }
+  digitalWrite(ledBleue, LOW);
+  digitalWrite(ledOrange, LOW);
+  digitalWrite(ledVert, HIGH);
+  digitalWrite(ledJaune, LOW);
+  delay(1000);
 }
 
 void Eco() {
-    digitalWrite(ledBleue, HIGH);
-    digitalWrite(ledOrange, LOW);
-    digitalWrite(ledVert, lOW);
-    digitalWrite(ledJaune, LOW);
-    Serial.println("Mode Eco");
-    delay(1000);
-    void modeEco(){
-        mesureCapteurs();
-        delay(1000);
-        sauvMesure();
-        delay(delaiMesureEco);
-        checkErreur();
-        if (BoutonVert == HIGH){
-            modeStandard();
-        }
-        else if (BoutonRouge == HIGH){
-            modeMaintenance();
-        }
-        else {
-            modeEco();
-        }
+digitalWrite(ledBleue, HIGH);
+digitalWrite(ledOrange, LOW);
+digitalWrite(ledVert, lOW);
+digitalWrite(ledJaune, LOW);
+Serial.println("Mode Eco");
+delay(1000);
+mesureCapteurs();
+delay(1000);
+sauvMesure();
+delay(delaiMesure * 2);
+checkErreur();
+if (boutonVert == HIGH){
+  modeStandard();
+}
+else if (boutonRouge == HIGH){
+  modeMaintenance();
+}
+else {
+  modeEco();
+}
     }
 }
 
@@ -91,10 +101,10 @@ void Maintenance() {
     stopMesure();
     accesSD();
     affSerie();
-    if (BoutonRouge == HIGH){
+    if (boutonRouge == HIGH){
       Eco();
     }
-    else if (BoutonVert == HIGH){
+    else if (boutonVert == HIGH){
       Standard();
     }
     else {
