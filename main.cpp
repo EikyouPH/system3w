@@ -31,75 +31,64 @@ void setup() {
   time.begin();
 }
 
-void loop() {
-  Serial.println("Mode standard");
-    digitalWrite(ledBleue, LOW);
-    digitalWrite(ledOrange, LOW);
-    digitalWrite(ledVert, HIGH);
-    digitalWrite(ledJaune, LOW);
-    delay(1000);
-    void Standard(){
-      mesureCapteurs();
-      delay(1000);
-      sauvMesure();
-      delay(delaiMesure);
-      checkErreur();
-      if (boutonVert == HIGH){
-        Eco();
-      }
-      else if (boutonRouge == HIGH){
-        Maintenance();
-      }
-      else {
-        Standard();
-      }
+void modeStandard(){
+  mesureCapteurs();
+  delay(1000);
+  sauvMesure();
+  delay(delaiMesure);
+  checkErreur();
+  if (boutonVert == HIGH){
+    Mode = Eco;
   }
+  else if (boutonRouge == HIGH){
+    Mode = Maintenance;
+  }
+  else {
+    Mode = Standard;
+  }
+  return mode;
 }
 
-void Eco() {
-    digitalWrite(ledBleue, HIGH);
-    digitalWrite(ledOrange, LOW);
-    digitalWrite(ledVert, lOW);
-    digitalWrite(ledJaune, LOW);
-    Serial.println("Mode Eco");
-    delay(1000);
-    void modeEco(){
-        mesureCapteurs();
-        delay(1000);
-        sauvMesure();
-        checkErreur();
-        delay(delaiMesureEco);
-        if (boutonVert == HIGH){
-            modeStandard();
-        }
-        else if (boutonRouge == HIGH){
-            modeMaintenance();
-        }
-        else {
-            modeEco();
-        }
-    }
+void modeEco(){
+  digitalWrite(ledBleue, LOW);
+  digitalWrite(ledOrange, HIGH);
+  digitalWrite(ledVert, lOW);
+  digitalWrite(ledJaune, LOW);  
+  mesureCapteurs();
+  delay(1000);
+  sauvMesure();
+  checkErreur();
+  delay(delaiMesureEco);
+  if (boutonVert == HIGH){
+      Mode = Standard;
+  }
+  else if (boutonRouge == HIGH){
+      Mode = Maintenance;
+  }
+  else {
+      Mode = Eco;
+  }
+  return Mode;
 }
 
-void Maintenance() {
+void modeMaintenance() {
   digitalWrite(ledBleue, LOW);
   digitalWrite(ledOrange, HIGH);
   digitalWrite(ledVert, lOW);
   digitalWrite(ledJaune, LOW);
   Serial.println("Mode Maintenance");
   delay(1000);
-  void Maintenance(){
-    stopMesure();
-    accesSD();
-    affSerie();
-    if (boutonRouge == HIGH){
-      Eco();
-    }
-    else if (boutonVert == HIGH){
-      Standard();
-    }
-    else {
-      Maintenance();
-    }
+  stopMesure();
+  accesSD();
+  affSerie();
+  if (boutonRouge == HIGH){
+    Mode = Standard;
   }
+  else {
+    Mode = Maintenance;
+  }
+  return Mode;
+}
+void loop() {
+  
 }
