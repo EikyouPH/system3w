@@ -79,7 +79,7 @@ void modeStandard(){
   sauvMesure();
   delay(delaiMesure);
   checkErreur();
-  // 
+  // Mise à jour de la variable Mode en fonction des boutons
   if (boutonVert == HIGH){
     Mode = Eco;
   }
@@ -92,12 +92,15 @@ void modeStandard(){
   return mode;
 }
 
+// Fonction mode Eco
 void modeEco(){ 
+  // Mesure et sauvegarde des capteurs avec vérification des erreurs 
   mesureCapteurs();
   delay(1000);
   sauvMesure();
   checkErreur();
-  delay(delaiMesureEco);
+  delay(delaiMesure * 2);
+  // Mise à jour de la variable Mode en fonction des boutons
   if (boutonVert == HIGH){
       Mode = Standard;
   }
@@ -110,6 +113,7 @@ void modeEco(){
   return Mode;
 }
 
+// Fonction mode Maintenance
 void modeMaintenance() {
   // Mise à jour du clignottement des LEDs
   couleurLed(Orange)
@@ -119,6 +123,7 @@ void modeMaintenance() {
   stopMesure();
   accesSD();
   affSerie();
+  // Mise à jour de la variable Mode en fonction des boutons
   if (boutonRouge == HIGH){
     Mode = Standard;
   }
