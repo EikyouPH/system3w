@@ -72,7 +72,7 @@ void couleurLed(couleur)
   else if (couleur == Jaune){
   analogWrite(pinRouge, 127);
   analogWrite(pinVert, 127);
-  analogWrite(pinBleu, 0);
+  analogWrite(PIN_BLUE, 0);
   }
   // Bleu
   else if (couleur == Bleu){

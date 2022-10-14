@@ -35,6 +35,7 @@ const int pinLux = A1;
 enum Mode {Standard = 0, Eco, Maintenance, Config};
 enum couleur {Rouge = 0, Vert, Jaune, Bleu, Orange, Blanc};
 
+//
 void setup() {
   Serial.begin(9600);
   ss.begin(9600);
@@ -47,27 +48,38 @@ void setup() {
   pinMode(pinBleu, OUTPUT);
   time.begin();
 }
+
+// Fonction permettant de basculer d'un mode à l'autre
 void Modes(Mode) {
+  // Mode Standard
   if(Mode = Standard){
     modeStandard();
   }
+  // Mode Eco
   else if(Mode = Eco){
     modeEco();
   }
+  // Mode Maintenance
   else if(Mode = Maintenance){
     modeMaintenance();
   }
+  // Mode Config
   else if(Mode = Config){
     modeConfig();
   }
+  // Gestion des erreurs : si pas de mode, renvoie 0
   return 0;
 }
-void modeStandard(){   
+
+// Fonction du mode Standard
+void modeStandard(){  
+  // Mesure et sauvegarde des capteurs avec vérification des erreurs 
   mesureCapteurs();
   delay(1000);
   sauvMesure();
   delay(delaiMesure);
   checkErreur();
+  // 
   if (boutonVert == HIGH){
     Mode = Eco;
   }
