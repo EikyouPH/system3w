@@ -75,9 +75,7 @@ void Modes(Mode) {
 void modeStandard(){  
   // Mesure et sauvegarde des capteurs avec vérification des erreurs 
   mesureCapteurs();
-  delay(1000);
   sauvMesure();
-  delay(delaiMesure);
   checkErreur();
   // Mise à jour de la variable Mode en fonction des boutons
   if (boutonVert == HIGH){
@@ -96,10 +94,8 @@ void modeStandard(){
 void modeEco(){ 
   // Mesure et sauvegarde des capteurs avec vérification des erreurs 
   mesureCapteurs();
-  delay(1000);
   sauvMesure();
   checkErreur();
-  delay(delaiMesure * 2);
   // Mise à jour de la variable Mode en fonction des boutons
   if (boutonVert == HIGH){
       Mode = Standard;
@@ -119,7 +115,6 @@ void modeMaintenance() {
   couleurLed(Orange)
   // Affichage du mode
   Serial.println("Mode Maintenance");
-  delay(1000);
   stopMesure();
   accesSD();
   affSerie();
