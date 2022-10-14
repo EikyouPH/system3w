@@ -111,8 +111,9 @@ void Modes(Mode) {
 
 // Fonction du mode Standard
 void modeStandard(){  
-  attachinterrupt(digitalPinToInterrupt(boutonRouge), appuiBoutonRougeS, FALLING);
-  attachinterrupt(digitalPinToInterrupt(boutonVert), appuiBoutonVertS, FALLING);
+  // Initialisation des interruptions
+  attachinterrupt(digitalPinToInterrupt(boutonRouge), appuiBoutonRougeS, CHANGE);
+  attachinterrupt(digitalPinToInterrupt(boutonVert), appuiBoutonVertS, CHANGE);
   // Mesure et sauvegarde des capteurs avec vérification des erreurs 
   mesureCapteurs();
   sauvMesure();
@@ -132,8 +133,9 @@ void modeStandard(){
 
 // Fonction mode Eco
 void modeEco(){ 
-  attachinterrupt(digitalPinToInterrupt(boutonRouge), appuiBoutonRougeE, FALLING);
-  attachinterrupt(digitalPinToInterrupt(boutonVert), appuiBoutonVertE, FALLING);
+  // Initialisation des interruptions
+  attachinterrupt(digitalPinToInterrupt(boutonRouge), appuiBoutonRougeE, CHANGE);
+  attachinterrupt(digitalPinToInterrupt(boutonVert), appuiBoutonVertE, CHANGE);
   // Mesure et sauvegarde des capteurs avec vérification des erreurs 
   mesureCapteurs();
   sauvMesure();
@@ -153,6 +155,8 @@ void modeEco(){
 
 // Fonction mode Maintenance
 void modeMaintenance() {
+  // Initialisation des interruptions
+  attachinterrupt(digitalPinToInterrupt(boutonRouge), appuiBoutonRougeM, CHANGE);
   // Mise à jour du clignottement des LEDs
   couleurLed(Orange)
   // Affichage du mode
