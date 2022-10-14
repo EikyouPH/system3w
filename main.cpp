@@ -52,19 +52,19 @@ void setup() {
 // Fonction permettant de basculer d'un mode à l'autre
 void Modes(Mode) {
   // Mode Standard
-  if(Mode = Standard){
+  if(Mode == Standard){
     modeStandard();
   }
   // Mode Eco
-  else if(Mode = Eco){
+  else if(Mode == Eco){
     modeEco();
   }
   // Mode Maintenance
-  else if(Mode = Maintenance){
+  else if(Mode == Maintenance){
     modeMaintenance();
   }
   // Mode Config
-  else if(Mode = Config){
+  else if(Mode == Config){
     modeConfig();
   }
   // Gestion des erreurs : si pas de mode, renvoie 0
