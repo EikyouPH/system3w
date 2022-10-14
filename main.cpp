@@ -15,6 +15,7 @@ const int ledVert = 8;
 const int ledBleue = 9;
 const int ledJaune = 10;
 const int pinLux = A1;
+enum Mode {Standard = 0, Eco, Maintenance};
 
 void setup() {
   Serial.begin(9600);
