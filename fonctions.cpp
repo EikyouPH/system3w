@@ -52,3 +52,44 @@ byte GPS(pinGPS)
     }
   }
 }
+
+// Gestion de la couleur de la LED
+void couleurLed(couleur)
+{
+  // Rouge
+  if(couleur == Rouge){
+  analogWrite(PIN_RED, 255);
+  analogWrite(PIN_GREEN, 0);
+  analogWrite(PIN_BLUE, 0);
+  }
+  // Vert
+  else if (couleur == Vert){
+  analogWrite(PIN_RED, 0);
+  analogWrite(PIN_GREEN, 255);
+  analogWrite(PIN_BLUE, 0);
+  }
+  // Jaune
+  else if (couleur == Jaune){
+  analogWrite(PIN_RED, 127);
+  analogWrite(PIN_GREEN, 127);
+  analogWrite(PIN_BLUE, 0);
+  }
+  // Bleu
+  else if (couleur == Bleu){
+  analogWrite(PIN_RED, 0);
+  analogWrite(PIN_GREEN, 255);
+  analogWrite(PIN_BLUE, 0);
+  }
+  // Orange
+  else if (couleur == Orange){
+  analogWrite(PIN_RED, 255);
+  analogWrite(PIN_GREEN, 127);
+  analogWrite(PIN_BLUE,  127);
+  }
+  // Blanc
+  else {
+  analogWrite(PIN_RED, 255);
+  analogWrite(PIN_GREEN, 255);
+  analogWrite(PIN_BLUE, 255);
+  }
+}

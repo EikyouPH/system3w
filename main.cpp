@@ -34,6 +34,7 @@ const int ledJaune = 10;
 // Pins pour les capteurs
 const int pinLux = A1;
 enum Mode {Standard = 0, Eco, Maintenance};
+enum couleur {Rouge = 0, Vert, Jaune, Bleu, Orange, Blanc};
 
 void setup() {
   Serial.begin(9600);
@@ -50,10 +51,7 @@ void setup() {
 }
 
 void modeStandard(){
-  digitalWrite(ledBleue, LOW);
-  digitalWrite(ledOrange, HIGH);
-  digitalWrite(ledVert, lOW);
-  digitalWrite(ledJaune, LOW);    
+  couleurLed(Orange)
   mesureCapteurs();
   delay(1000);
   sauvMesure();
@@ -95,10 +93,7 @@ void modeEco(){
 
 void modeMaintenance() {
   // Mise à jour du clignottement des LEDs
-  digitalWrite(ledBleue, LOW);
-  digitalWrite(ledOrange, HIGH);
-  digitalWrite(ledVert, lOW);
-  digitalWrite(ledJaune, LOW);
+  couleurLed(Orange)
   // Affichage du mode
   Serial.println("Mode Maintenance");
   delay(1000);
