@@ -48,30 +48,36 @@ void setup() {
   
 }
 // Fonction appelée lors de l'appui sur le bouton rouge en mode standard
-void appuiBoutonRougeS(){ 
+void appuiBoutonRougeS()
+{ 
   Couleur = Rouge; // On change la couleur de la LED
   Mode = Maintenance; // On passe en mode maintenance
   return Couleur, Mode; // On renvoie la couleur et le mode
 }
 // Fonction appelée lors de l'appui sur le bouton vert en mode standard
-int appuiBoutonVertS(){ 
+int appuiBoutonVertS()
+{ 
   Couleur = Vert;
   Mode = Eco;
   return Couleur, Mode;
 }
 // Fonction appelée lors de l'appui sur le bouton rouge en mode éco
-void appuiBoutonRougeE(){
+void appuiBoutonRougeE()
+{
   Couleur = Orange;
   Mode = Maintenance;
   return Couleur, Mode;
 }
 // Fonction appelée lors de l'appui sur le bouton vert en mode éco
-int appuiBoutonVertE(){
-  if(Mode == Eco){ // Si on était en mode éco
+int appuiBoutonVertE()
+{
+  if(Mode == Eco)
+  { // Si on était en mode éco
     Couleur = Bleu;
     Mode = Eco;
   }
-  else{ // Sinon on passe en mode standard
+  else
+  { // Sinon on passe en mode standard
     Couleur = Vert;
     Mode = Standard;
   }
@@ -79,28 +85,34 @@ int appuiBoutonVertE(){
 }
 
 
-int appuiBoutonRougeM(){ // Fonction appelée lors de l'appui sur le bouton rouge en mode maintenance
+int appuiBoutonRougeM()
+{ // Fonction appelée lors de l'appui sur le bouton rouge en mode maintenance
   Couleur = Bleu;
   Mode = Maintenance;
   return Couleur, Mode;
 }
 
 // Fonction permettant de basculer d'un mode à l'autre
-void Modes(Mode) {
+void Modes(Mode) 
+{
   // Mode Standard
-  if(Mode == Standard){
+  if(Mode == Standard)
+  {
     modeStandard();
   }
   // Mode Eco
-  else if(Mode == Eco){
+  else if(Mode == Eco)
+  {
     modeEco();
   }
   // Mode Maintenance
-  else if(Mode == Maintenance){
+  else if(Mode == Maintenance)
+  {
     modeMaintenance();
   }
   // Mode Config
-  else if(Mode == Config){
+  else if(Mode == Config)
+  {
     modeConfig();
   }
   // Gestion des erreurs : si pas de mode, renvoie 0
@@ -116,16 +128,6 @@ void modeStandard(){
   mesureCapteurs();
   sauvMesure();
   verifErreurs();
-  // Mise à jour de la variable Mode en fonction des boutons
-  if (boutonVert == HIGH){
-    Mode = Eco;
-  }
-  else if (boutonRouge == HIGH){
-    Mode = Maintenance;
-  }
-  else {
-    Mode = Standard;
-  }
   return Mode;
 }
 
@@ -138,16 +140,6 @@ void modeEco(){
   mesureCapteurs();
   sauvMesure();
   checkErreur();
-  // Mise à jour de la variable Mode en fonction des boutons
-  if (boutonVert == HIGH){
-      Mode = Standard;
-  }
-  else if (boutonRouge == HIGH){
-      Mode = Maintenance;
-  }
-  else {
-      Mode = Eco;
-  }
   return Mode;
 }
 
@@ -162,13 +154,6 @@ void modeMaintenance() {
   stopMesure();
   accesSD();
   affSerie();
-  // Mise à jour de la variable Mode en fonction des boutons
-  if (boutonRouge == HIGH){
-    Mode = Standard;
-  }
-  else {
-    Mode = Maintenance;
-  }
   return Mode;
 }
 

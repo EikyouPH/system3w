@@ -77,16 +77,18 @@ float mesureCapteurs()
 // Renvoie l'heure de captation des mesures et le renvoie sous forme de float
 float Heure()
 {
-    heure = time.gettime("d-m-Y, H:i:s, D"); // Récupération de l'heure
-    return heure; // Renvoi de l'heure
+  heure = time.gettime("d-m-Y, H:i:s, D"); // Récupération de l'heure
+  return heure; // Renvoi de l'heure
 }
 
 // Fonction GPS, renvoie la latitude et la longitude sous forme de float en récupéranr les données du GPS par le canal ss
 byte GPS(pinGPS)
 {
-   while (ss.available() > 0){ // Si le canal ss est disponible
+  while (ss.available() > 0)
+  { // Si le canal ss est disponible
     gps.encode(ss.read()); // On récupère les données du GPS
-    if (gps.location.isUpdated()){ // Si les données sont mises à jour
+    if (gps.location.isUpdated())
+    { // Si les données sont mises à jour
       Serial.print("Latitude= ");  // On affiche la latitude
       Serial.print(gps.location.lat(), 6); // On affiche la latitude avec 6 chiffres après la virgule
       Serial.print(" Longitude= "); // On affiche la longitude
@@ -99,39 +101,44 @@ byte GPS(pinGPS)
 void couleurLed(Couleur)
 {
   // Rouge
-  if(Couleur == Rouge){
-  analogWrite(pinRouge, 255);
-  analogWrite(pinVert, 0);
-  analogWrite(pinBleu, 0);
+  if(Couleur == Rouge)
+  {
+    analogWrite(pinRouge, 255);
+    analogWrite(pinVert, 0);
+    analogWrite(pinBleu, 0);
   }
   // Vert
-  else if (Couleur == Vert){
-  analogWrite(pinRouge, 0);
-  analogWrite(pinVert, 255);
-  analogWrite(pinBleu, 0);
+  else if (Couleur == Vert)
+  {
+    analogWrite(pinRouge, 0);
+    analogWrite(pinVert, 255);
+    analogWrite(pinBleu, 0);
   }
   // Jaune
-  else if (Couleur == Jaune){
-  analogWrite(pinRouge, 127);
-  analogWrite(pinVert, 127);
-  analogWrite(PIN_BLUE, 0);
+  else if (Couleur == Jaune)
+  {
+    analogWrite(pinRouge, 127);
+    analogWrite(pinVert, 127);
+    analogWrite(PIN_BLUE, 0);
   }
   // Bleu
-  else if (Couleur == Bleu){
-  analogWrite(pinRouge, 0);
-  analogWrite(pinVert, 255);
-  analogWrite(pinBleu, 0);
+  else if (Couleur == Bleu)
+  {
+    analogWrite(pinRouge, 0);
+    analogWrite(pinVert, 255);
+    analogWrite(pinBleu, 0);
   }
   // Orange
-  else if (Couleur == Orange){
-  analogWrite(pinRouge, 255);
-  analogWrite(pinVert, 127);
-  analogWrite(pinBleu,  127);
+  else if (Couleur == Orange)
+  {
+    analogWrite(pinRouge, 255);
+    analogWrite(pinVert, 127);
+    analogWrite(pinBleu,  127);
   }
   // Blanc
   else {
-  analogWrite(pinRouge, 255);
-  analogWrite(pinVert, 255);
-  analogWrite(pinBleu, 255);
+    analogWrite(pinRouge, 255);
+    analogWrite(pinVert, 255);
+    analogWrite(pinBleu, 255);
   }
 }
