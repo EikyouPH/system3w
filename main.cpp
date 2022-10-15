@@ -7,8 +7,6 @@
 #include <Arduino/SD.h>
 // Importation de l'ensmeble de nos fonctions secondaires dans le fichier fonctions.cpp
 #include <fonctions.cpp>
-// Importation de la librairie Standardlib
-#include <stdlib.h>
 // Importation de la librairie SoftwareSerial
 #include <SoftwareSerial.h>
 // Importation de la librairie RTC
@@ -117,7 +115,7 @@ void modeStandard(){
   // Mesure et sauvegarde des capteurs avec vérification des erreurs 
   mesureCapteurs();
   sauvMesure();
-  checkErreur();
+  verifErreurs();
   // Mise à jour de la variable Mode en fonction des boutons
   if (boutonVert == HIGH){
     Mode = Eco;
