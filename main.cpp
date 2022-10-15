@@ -34,7 +34,8 @@ enum Mode {Standard = 0, Eco, Maintenance, Config};
 enum Couleur {Rouge = 0, Vert, Jaune, Bleu, Orange, Blanc};
 
 // Intitialisation du programme
-void setup() {
+void setup() 
+{
   Serial.begin(9600);
   ss.begin(9600);
   Serial.println("Demarrage du programme");
@@ -120,7 +121,8 @@ void Modes(Mode)
 }
 
 // Fonction du mode Standard
-void modeStandard(){  
+void modeStandard()
+{  
   // Initialisation des interruptions
   attachinterrupt(digitalPinToInterrupt(boutonRouge), appuiBoutonRougeS, CHANGE);
   attachinterrupt(digitalPinToInterrupt(boutonVert), appuiBoutonVertS, CHANGE);
@@ -132,7 +134,8 @@ void modeStandard(){
 }
 
 // Fonction mode Eco
-void modeEco(){ 
+void modeEco()
+{ 
   // Initialisation des interruptions
   attachinterrupt(digitalPinToInterrupt(boutonRouge), appuiBoutonRougeE, CHANGE);
   attachinterrupt(digitalPinToInterrupt(boutonVert), appuiBoutonVertE, CHANGE);
@@ -144,7 +147,8 @@ void modeEco(){
 }
 
 // Fonction mode Maintenance
-void modeMaintenance() {
+void modeMaintenance() 
+{
   // Initialisation des interruptions
   attachinterrupt(digitalPinToInterrupt(boutonRouge), appuiBoutonRougeM, CHANGE);
   // Mise à jour du clignottement des LEDs
@@ -157,6 +161,7 @@ void modeMaintenance() {
   return Mode;
 }
 
-void loop() {
+void loop() 
+{
   Modes();
 }
