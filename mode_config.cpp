@@ -29,7 +29,7 @@ void loop()
             // Mettre à jour la valeur de la variable LOG_INTERVALL
             break;
         case 'FILE_MAX_SIZE':
-            Serial.println("FILE_MAX_SIZE"); 
+            Serial.println("FILE_MAX_SIZE");
             // Demander la valeur de FILE_MAX_SIZE à l’utilisateur
             // Verifier si la valeur est dans le domaine de définition
             // Mettre à jour la valeur de la variable FILE_MAX_SIZE
