@@ -75,7 +75,7 @@ void Modes(Mode)
 }
 
 // Fonction du mode Standard
-void modeStandard()
+int modeStandard()
 {  
   // Initialisation des interruptions
   // Mesure et sauvegarde des capteurs avec vérification des erreurs 
@@ -86,7 +86,7 @@ void modeStandard()
 }
 
 // Fonction mode Eco
-void modeEco()
+int modeEco()
 { 
   // Initialisation des interruptions
   // Mesure et sauvegarde des capteurs avec vérification des erreurs 
@@ -97,7 +97,7 @@ void modeEco()
 }
 
 // Fonction mode Maintenance
-void modeMaintenance() 
+int modeMaintenance() 
 {
   // Initialisation des interruptions
   // Mise à jour du clignottement des LEDs
@@ -109,7 +109,7 @@ void modeMaintenance()
   return Mode;
 }
 
-void sauvMesure()
+float sauvMesure()
 {
   //Initialiser une variable qui compte le nombre de fichiers dans un dossier
     int NbFichiers = 0;
@@ -213,7 +213,7 @@ void couleurLed(Couleur)
 }
 
 // Définition de la fonction verifErreurs, qui vérifie toutes les erreurs possibles
-int verifErreurs(lux, pression, tempAir, tempEau, hygro, Heure)
+int verifErreurs(lux, pression, tempAir, hygro, Heure)
 {
   
   if (Heure == NULL)
