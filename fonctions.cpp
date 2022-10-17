@@ -53,9 +53,17 @@ float arrondi(float var)
   return (float)value / 100;
 }
 
-// Mesure les différentes museures des capteurs et les renvoie sur forme de float
-float mesureCapteurs()
+struct MesureCapteurs
 {
+  float Heure[1];
+  float GPS[2];
+  float Capteurs[5];
+} mesure;
+
+// Mesure les différentes museures des capteurs et les renvoie sur forme de float
+float mesureCapteurs(lat, lng)
+{
+
   // Capteur de luminosité
   float lux = arrondi(analogRead(pinLux));
 
@@ -71,8 +79,7 @@ float mesureCapteurs()
   // Capteur d'humidité de l'air
   float hygro = arrondi(analogRead(pinHygro));
 
-  // Renvoi de toutes les valeurs captées
-  return lux, pression, tempAir, tempEau, hygro;
+  struct MesureCapteurs mesure = {heure, lat, lng, lux, pression, tempAir, tempEau, hygro};
 }
 
 // Renvoie l'heure de captation des mesures et le renvoie sous forme de float
@@ -89,12 +96,11 @@ byte GPS(pinGPS)
   {                        // Si le canal ss est disponible
     gps.encode(ss.read()); // On récupère les données du GPS
     if (gps.location.isUpdated())
-    {                                        // Si les données sont mises à jour
-      Serial.print("Latitude= ");            // On affiche la latitude
-      Serial.print(gps.location.lat(), 6);   // On affiche la latitude avec 6 chiffres après la virgule
-      Serial.print(" Longitude= ");          // On affiche la longitude
-      Serial.println(gps.location.lng(), 6); // On affiche la longitude avec 6 chiffres après la virgule
+    {                                      // Si les données sont mises à jour
+      float lat = (gps.location.lat(), 6); // On récupère la latitude
+      float lng = (gps.location.lng(), 6); // On récupère la longitude
     }
+    return lat, lng; // On renvoie la latitude et la longitude
   }
 }
 
@@ -143,44 +149,4 @@ void couleurLed(Couleur)
     analogWrite(pinVert, 255);
     analogWrite(pinBleu, 255);
   }
-}
-
-// Fonction appelée lors de l'appui sur le bouton vert en mode standard
-int appuiBoutonVertS()
-{ 
-  Couleur = Vert;
-  Mode = Eco;
-  return Couleur, Mode;
-}
-
-// Fonction appelée lors de l'appui sur le bouton rouge en mode éco
-int appuiBoutonRougeE()
-{
-  Couleur = Orange;
-  Mode = Maintenance;
-  return Couleur, Mode;
-}
-
-// Fonction appelée lors de l'appui sur le bouton vert en mode éco
-int appuiBoutonVertE()
-{
-  if(Mode == Eco)
-  { // Si on était en mode éco
-    Couleur = Bleu;
-    Mode = Eco;
-  }
-  else
-  { // Sinon on passe en mode standard
-    Couleur = Vert;
-    Mode = Standard;
-  }
-  return Couleur, Mode; // On renvoie la couleur et le mode
-}
-
-// Fonction appelée lors de l'appui sur le bouton rouge en mode maintenance
-int appuiBoutonRougeM()
-{ 
-  Couleur = Bleu;
-  Mode = Maintenance;
-  return Couleur, Mode;
 }
