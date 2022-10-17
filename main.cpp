@@ -145,7 +145,6 @@ void sauvMesure()
 
       //si le fichier ne s'ouvre pas correctement
         //afficher un message d'erreur
- 
 }
 
 
