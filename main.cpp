@@ -57,7 +57,7 @@ void Modes(Mode)
   {
     modeStandard();
   }
-  // Mode Eco
+  // Mode Eco   
   else if(Mode == Eco)
   {
     modeEco();
