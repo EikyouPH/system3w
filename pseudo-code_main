@@ -112,6 +112,7 @@ void modeMaintenance()
 void sauvMesure()
 {
   //Initialiser une variable qui compte le nombre de fichiers dans un dossier
+    int NbFichiers = 0;
 
   //Ouvrir un dossier
     //Si le dossier contient 9 fichiers
@@ -178,7 +179,7 @@ void mesureCapteurs(lat, lng)
 // Gestion de la couleur de la LED
 void couleurLed(Couleur)
 {
-  // Détermination des couleurs en variant les paramètres RGB
+  // Détermination des couleurs en variant les paramètres RVB de la DEL
   if (Couleur == Rouge)
   {
     // R = 255
@@ -211,62 +212,73 @@ void couleurLed(Couleur)
   }
 }
 
-// Définition de la fonction verifErreurs, qui retournera le nombre d'erreurs rencontrées à chaque série de mesure.
-int verifErreurs(lux, pression, tempAir, tempEau, hygro)
+// Définition de la fonction verifErreurs, qui vérifie toutes les erreurs possibles
+int verifErreurs(lux, pression, tempAir, tempEau, hygro, Heure)
 {
-  // Initialisation d'erreur à zéro à chaque vérification
-  int erreur = 0;
-  // Vérfication de la présence des mesures
-  if (lux || pression || tempAir || tempEau || hygro == NULL)
+  
+  if (Heure == NULL)
   {
-    erreur++;
+    // Vérification d’accès à l’horloge RTC
+    // si pas d'accès à l'horloge RTC, alors Clignotement de la LED intermittent rouge et bleu
   }
-  // Vérification de la cohérence physique des mesures
-  else if (lux || pression || tempEau || hygro < 0)
+
+  if (GPS == NULL)
   {
-    erreur++;
+    // Vérification d’accès au GPS
+    // si pas d'accès au GPS, alors Clignotement de la LED intermittent rouge et jaune
   }
-  // Vérification de la cohérence de la luminosité
+  
+  else if (lux || pression || tempAir || hygro == NULL)
+  {
+    //Vérification d’accès aux données des capteurs
+    //si pas de données des capteurs, alors clignotement de la DEL intermittent rouge et vert
+  }
+  
   else if (lux > 10000)
   {
-    erreur++;
+    // Vérification de la cohérence de la luminosité
+    //Si luminosité incohérente, alors clignotement de la DEL intermittent rouge et vert (durée 2x plus longue pour le vert)
   }
-  // Vérification de la cohérence de la pression
+  
   else if (pression > 1000000)
   {
-    erreur++;
+    // Vérification de la cohérence de la pression
+    //Si pression incohérente, alors clignotement de la DEL intermittent rouge et vert (durée 2x plus longue pour le vert)
   }
-  // Vérification de la cohérence de la température de l'air
+  
   else if (tempAir > 50)
   {
-    erreur++;
+    // Vérification de la cohérence de la température de l'air
+    //Si température de l'air incohérente, alors clignotement de la DEL intermittent rouge et vert (durée 2x plus longue pour le vert)
   }
-  // Vérification de la cohérence de la température de l'eau
-  else if (temp Eau > 50)
-  {
-    erreur++;
-  }
-  // Vérification de la cohérence de l'hygrométrie
+  
   else if (hygro > 100)
   {
-    erreur++;
+    // Vérification de la cohérence de l'hygrométrie
+    //Si hygronométrie incohérente, alors clignotement de la DEL intermittent rouge et vert (durée 2x plus longue pour le vert)
+  }
+
+  else if(Erreur d'accès ou d'écriture carte SD){
+    //Clignotement de la DEL intermittent rouge et blanc (durée 2x plus longue pour le blanc)
+  }
+
+  else if(Carte SD pleine){
+    //Clignotement de la DEL intermittent rouge et blanc
   }
 }
 
 // Fonction appelée lors de l'appui sur le bouton rouge en mode standard
 void appuiBoutonRougeS()
 {
-  Couleur = Rouge;      // On change la couleur de la LED
-  Mode = Maintenance;   // On passe en mode maintenance
-  return Couleur, Mode; // On renvoie la couleur et le mode
+  // On passe en mode maintenance
+  // On renvoie le mode
 }
 
 // Fonction appelée lors de l'appui sur le bouton rouge en mode standard
 void appuiBoutonVertS()
 {
-  Couleur = Bleu;       // On change la couleur de la LED
-  Mode = Eco;           // On passe en mode maintenance
-  return Couleur, Mode; // On renvoie la couleur et le mode
+  // On passe en mode économique
+  // On renvoie le mode
 }
 
 // Fonction appelée lors de l'appui sur le bouton rouge en mode maintenance
@@ -274,32 +286,28 @@ void appuiBoutonRougeM()
 {
   if (Mode == Eco)
   {
-    Couleur = Bleu;       // On change la couleur de la LED
-    Mode = Eco;           // On passe en mode maintenance
-    return Couleur, Mode; // On renvoie la couleur et le mode
+    // On repasse en mode économique
+    // On renvoie le mode
   }
   else
   {
-    Couleur = Vert;       // On change la couleur de la LED
-    Mode = Standard;      // On passe en mode maintenance
-    return Couleur, Mode; // On renvoie la couleur et le mode
+    //On repasse en mode standard
+    // On renvoie le mode
   }
 }
 
 // Fonction appelée lors de l'appui sur le bouton rouge en mode éco
 void appuiBoutonRougeE()
 {
-  Couleur = Rouge;      // On change la couleur de la LED
-  Mode = Maintenance;   // On passe en mode maintenance
-  return Couleur, Mode; // On renvoie la couleur et le mode
+    // On passe en mode maintenance
+    // On renvoie le mode
 }
 
 // Fonction appelée lors de l'appui sur le bouton rouge en mode éco
 void appuiBoutonVertE()
 {
-  Couleur = Bleu;       // On change la couleur de la LED
-  Mode = Standrad;      // On passe en mode maintenance
-  return Couleur, Mode; // On renvoie la couleur et le mode
+  // On passe en mode standard
+  // On renvoie le mode
 }
 
 // Boucle infinie
