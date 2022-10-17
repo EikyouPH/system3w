@@ -273,7 +273,6 @@ void appuiBoutonVertS()
 void appuiBoutonRougeM()
 {
   if (Mode == Eco)
-  {
     Couleur = Bleu;       // On change la couleur de la LED
     Mode = Eco;           // On passe en mode maintenance
     return Couleur, Mode; // On renvoie la couleur et le mode
@@ -298,7 +297,7 @@ void appuiBoutonRougeE()
 void appuiBoutonVertE()
 {
   Couleur = Bleu;       // On change la couleur de la LED
-  Mode = Standrad;      // On passe en mode maintenance
+  Mode = Standard;      // On passe en  mode maintenance
   return Couleur, Mode; // On renvoie la couleur et le mode
 }
 
