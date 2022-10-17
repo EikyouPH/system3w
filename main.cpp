@@ -117,7 +117,7 @@ void modeMaintenance()
   return Mode;
 }
 
-void sauvMesure()
+void sauvMesure() //en cours de conception...
 {
   //sauvegarder les mesures des capteurs dans un fichier avec le nom de la date et de l'heure
   
