@@ -1,6 +1,7 @@
 // Programme contenant les differentes focntions annexes
 // Ces fonctions sont utiles à l'exécution du fichier main.cpp qui contient le programe principale
 
+//
 iarduino_RTC watch(RTC_DS1307);
 
 // Définition de la fonction verifErreurs, qui retournera le nombre d'erreurs rencontrées à chaque série de mesure.
@@ -142,4 +143,44 @@ void couleurLed(Couleur)
     analogWrite(pinVert, 255);
     analogWrite(pinBleu, 255);
   }
+}
+
+// Fonction appelée lors de l'appui sur le bouton vert en mode standard
+int appuiBoutonVertS()
+{ 
+  Couleur = Vert;
+  Mode = Eco;
+  return Couleur, Mode;
+}
+
+// Fonction appelée lors de l'appui sur le bouton rouge en mode éco
+int appuiBoutonRougeE()
+{
+  Couleur = Orange;
+  Mode = Maintenance;
+  return Couleur, Mode;
+}
+
+// Fonction appelée lors de l'appui sur le bouton vert en mode éco
+int appuiBoutonVertE()
+{
+  if(Mode == Eco)
+  { // Si on était en mode éco
+    Couleur = Bleu;
+    Mode = Eco;
+  }
+  else
+  { // Sinon on passe en mode standard
+    Couleur = Vert;
+    Mode = Standard;
+  }
+  return Couleur, Mode; // On renvoie la couleur et le mode
+}
+
+// Fonction appelée lors de l'appui sur le bouton rouge en mode maintenance
+int appuiBoutonRougeM()
+{ 
+  Couleur = Bleu;
+  Mode = Maintenance;
+  return Couleur, Mode;
 }

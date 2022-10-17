@@ -5,7 +5,7 @@
 #include <Arduino/SPI.h>
 // Importation d'une bibliothèque permettant l'écriture sur la carte SD
 #include <Arduino/SD.h>
-// Importation de l'ensmeble de nos fonctions secondaires dans le fichier fonctions.cpp
+// Importation de l'ensemble de nos fonctions secondaires dans le fichier fonctions.cpp
 #include <fonctions.cpp>
 // Importation de la librairie SoftwareSerial
 #include <SoftwareSerial.h>
@@ -48,49 +48,13 @@ void setup()
   time.begin();
   
 }
+
 // Fonction appelée lors de l'appui sur le bouton rouge en mode standard
 void appuiBoutonRougeS()
 { 
   Couleur = Rouge; // On change la couleur de la LED
   Mode = Maintenance; // On passe en mode maintenance
   return Couleur, Mode; // On renvoie la couleur et le mode
-}
-// Fonction appelée lors de l'appui sur le bouton vert en mode standard
-int appuiBoutonVertS()
-{ 
-  Couleur = Vert;
-  Mode = Eco;
-  return Couleur, Mode;
-}
-// Fonction appelée lors de l'appui sur le bouton rouge en mode éco
-void appuiBoutonRougeE()
-{
-  Couleur = Orange;
-  Mode = Maintenance;
-  return Couleur, Mode;
-}
-// Fonction appelée lors de l'appui sur le bouton vert en mode éco
-int appuiBoutonVertE()
-{
-  if(Mode == Eco)
-  { // Si on était en mode éco
-    Couleur = Bleu;
-    Mode = Eco;
-  }
-  else
-  { // Sinon on passe en mode standard
-    Couleur = Vert;
-    Mode = Standard;
-  }
-  return Couleur, Mode; // On renvoie la couleur et le mode
-}
-
-
-int appuiBoutonRougeM()
-{ // Fonction appelée lors de l'appui sur le bouton rouge en mode maintenance
-  Couleur = Bleu;
-  Mode = Maintenance;
-  return Couleur, Mode;
 }
 
 // Fonction permettant de basculer d'un mode à l'autre
