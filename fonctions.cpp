@@ -61,26 +61,6 @@ struct MesureCapteurs
 } mesure;
 
 // Mesure les différentes museures des capteurs et les renvoie sur forme de float
-float mesureCapteurs(lat, lng)
-{
-
-  // Capteur de luminosité
-  float lux = arrondi(analogRead(pinLux));
-
-  // Capteur de pression atmophérique
-  float pression = captPrTemp.readPressure();
-
-  // Capteur de température de l'air extérieur
-  float tempAir = captPrTemp.readTemperature();
-
-  // Capteur de température de l'eau
-  float tempEau = arrondi(analogRead(pinTempEau));
-
-  // Capteur d'humidité de l'air
-  float hygro = arrondi(analogRead(pinHygro));
-
-  struct MesureCapteurs mesure = {heure, lat, lng, lux, pression, tempAir, tempEau, hygro};
-}
 
 // Renvoie l'heure de captation des mesures et le renvoie sous forme de float
 float Heure()
@@ -102,6 +82,27 @@ byte GPS(pinGPS)
     }
     return lat, lng; // On renvoie la latitude et la longitude
   }
+}
+
+float mesureCapteurs(lat, lng)
+{
+
+  // Capteur de luminosité
+  float lux = arrondi(analogRead(pinLux));
+
+  // Capteur de pression atmophérique
+  float pression = captPrTemp.readPressure();
+
+  // Capteur de température de l'air extérieur
+  float tempAir = captPrTemp.readTemperature();
+
+  // Capteur de température de l'eau
+  float tempEau = arrondi(analogRead(pinTempEau));
+
+  // Capteur d'humidité de l'air
+  float hygro = arrondi(analogRead(pinHygro));
+
+  struct MesureCapteurs mesure = {heure, lat, lng, lux, pression, tempAir, tempEau, hygro};
 }
 
 // Gestion de la couleur de la LED
