@@ -1,7 +1,7 @@
 // Programme principal
 // Il est le premier lancé et contient toutes les fonctions principales
 
-// Importation d'une bibliothèque permettant d'interagir avec des périphriques SPI
+// Importation d'une bibliothèque permettant d'interagir avec des périphériques SPI
 #include <Arduino/SPI.h>
 // Importation d'une bibliothèque permettant l'écriture sur la carte SD
 #include <Arduino/SD.h>
@@ -11,6 +11,7 @@
 #include <SoftwareSerial.h>
 // Importation de la librairie RTC
 #include <iarduino_RTC.h>
+
 
 // Définition des variables globales
 // Délai entre deux mesures en mode standard (à doubler dans le mode éco)
@@ -308,6 +309,125 @@ void appuiBoutonVertE()
 {
   // On passe en mode standard
   // On renvoie le mode
+}
+
+// Ce mode permet de configurer le système grâce à une interaction depuis une console sur l’interface série
+// Boucle de traitement du mode
+
+void ModeConfig()
+{
+    if (Serial.available() > 0) // Si les données sont disponibles sur la liaison série
+    {
+        //Lit l'entrée de la console
+
+        switch (c) 
+        // Dans le cas où :
+        {
+        case 'LOG_INTERVALL':       //L'utilisateur entre 'LOG_INTERVALL' dans l'interface série :
+            // Demander la valeur de LOG_INTERVALL à l’utilisateur
+            // Verifier si la valeur est dans le domaine de définition
+            // Mettre à jour la valeur de la variable LOG_INTERVALL
+            break;              //Sortir de la fonction
+        case 'FILE_MAX_SIZE':       //L'utilisateur entre 'FILE_MAX_SIZE' dans l'interface série :
+            // Demander la valeur de FILE_MAX_SIZE à l’utilisateur
+            // Verifier si la valeur est dans le domaine de définition
+            // Mettre à jour la valeur de la variable FILE_MAX_SIZE
+            break;
+        case 'RESET':       //L'utilisateur entre 'RESET' dans l'interface série :
+            // Demander la confirmation à l’utilisateur
+            // Si la confirmation est positive
+            // Remettre les valeurs par défaut des variables
+            break;
+        case 'VERSION':        //L'utilisateur entre 'VERSION' dans l'interface série :
+            // Afficher la version du système
+            break;
+        case 'TIMEOUT':       //L'utilisateur entre 'TIMEOUT' dans l'interface série :
+            // Demander la valeur de TIMEOUT à l’utilisateur
+            // Verifier si la valeur est dans le domaine de définition
+            // Mettre à jour la valeur de la variable TIMEOUT
+            break;
+        case 'LUMIN':        //L'utilisateur entre 'LUMIN' dans l'interface série :
+            // Demander la valeur de LUMIN à l’utilisateur
+            // Verifier si la valeur est dans le domaine de définition
+            // Mettre à jour la valeur de la variable LUMIN
+            break;
+        case 'LUMIN_MIN':        //L'utilisateur entre 'LUMIN_MIN' dans l'interface série :
+            // Demander la valeur de LUMIN_MIN à l’utilisateur
+            // Verifier si la valeur est dans le domaine de définition
+            // Mettre à jour la valeur de la variable LUMIN_MIN
+            break;
+        case 'LUMIN_MAX':        //L'utilisateur entre 'LUMIN_MAX' dans l'interface série :
+            // Demander la valeur de LUMIN_MAX à l’utilisateur
+            // Verifier si la valeur est dans le domaine de définition
+            // Mettre à jour la valeur de la variable LUMIN_MAX
+            break;
+        case 'TEMP_AIR':        //L'utilisateur entre 'TEMP_AIR' dans l'interface série :
+            // Demander la valeur de TEMP_AIR à l’utilisateur
+            // Verifier si la valeur est dans le domaine de définition
+            // Mettre à jour la valeur de la variable TEMP_AIR
+            break;
+        case 'MIN_TEMP_AIR':        //L'utilisateur entre 'MIN_TEMP_AIR' dans l'interface série :
+            // Demander la valeur de TEMP_AIR_MIN à l’utilisateur
+            // Verifier si la valeur est dans le domaine de définition
+            // Mettre à jour la valeur de la variable TEMP_AIR_MIN
+            break;
+        case 'MAX_TEMP_AIR':        //L'utilisateur entre 'MAX_TEMP_AIR' dans l'interface série :
+            // Demander la valeur de TEMP_AIR_MAX à l’utilisateur
+            // Verifier si la valeur est dans le domaine de définition
+            // Mettre à jour la valeur de la variable TEMP_AIR_MAX
+            break;
+        case 'HYGR':        //L'utilisateur entre 'HYGR' dans l'interface série :
+            // Demander la valeur de HYGR à l’utilisateur
+            // Verifier si la valeur est dans le domaine de définition
+            // Mettre à jour la valeur de la variable HYGR
+            break;
+        case 'HYGR_MINT':        //L'utilisateur entre 'HYGR_MINT' dans l'interface série :
+            // Demander la valeur de HYGR_MINT à l’utilisateur
+            // Verifier si la valeur est dans le domaine de définition
+            // Mettre à jour la valeur de la variable HYGR_MINT
+            break;
+        case 'HYGR_MAXT':        //L'utilisateur entre 'HYGR_MAXT' dans l'interface série :
+            // Demander la valeur de HYGR_MAXT à l’utilisateur
+            // Verifier si la valeur est dans le domaine de définition
+            // Mettre à jour la valeur de la variable HYGR_MAXT
+            break;
+        case 'PRESSURE':        //L'utilisateur entre 'PRESSURE' dans l'interface série :
+            // Demander la valeur de PRESSURE à l’utilisateur
+            // Verifier si la valeur est dans le domaine de définition
+            // Mettre à jour la valeur de la variable PRESSURE
+            break;
+        case 'PRESSURE_MIN':        //L'utilisateur entre 'PRESSURE_MIN' dans l'interface série :
+            // Demander la valeur de PRESSURE_MIN à l’utilisateur
+            // Verifier si la valeur est dans le domaine de définition
+            // Mettre à jour la valeur de la variable PRESSURE_MIN
+            break;
+        case 'PRESSURE_MAX':        //L'utilisateur entre 'PRESSURE_MAX' dans l'interface série :
+            // Demander la valeur de PRESSURE_MAX à l’utilisateur
+            // Verifier si la valeur est dans le domaine de définition
+            // Mettre à jour la valeur de la variable PRESSURE_MAX
+            break;
+        case 'CLOCK':        //L'utilisateur entre 'CLOCK' dans l'interface série :
+            // Demander la valeur de CLOCK à l’utilisateur
+            // Verifier si la valeur est dans le domaine de définition
+            // Mettre à jour la valeur de la variable CLOCK
+        case 'DATE':        //L'utilisateur entre 'DATE' dans l'interface série :
+            // Demander la valeur de DATE à l’utilisateur
+            // Verifier si la valeur est dans le domaine de définition
+            // Mettre à jour la valeur de la variable DATE
+            break;
+        case 'DAY':        //L'utilisateur entre 'DAY' dans l'interface série :
+            // Demander la valeur de DAY à l’utilisateur
+            // Verifier si la valeur est dans le domaine de définition
+            // Mettre à jour la valeur de la variable DAY
+            break;
+        case 'HELP':        //L'utilisateur entre 'HELP' dans l'interface série :
+            // Afficher la liste des commandes
+            break;
+        default:        //L'utilisateur n'entre rien dans l'interface série :
+            Serial.println("Commande inconnue");
+            break;
+        }
+    }
 }
 
 // Boucle infinie
