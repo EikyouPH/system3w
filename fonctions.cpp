@@ -65,10 +65,10 @@ float mesureCapteurs()
   float tempAir = captPrTemp.readTemperature();
 
   // Capteur de température de l'eau
-  float tempEau = arrondi(analogRead(pinTempEau))
+  float tempEau = arrondi(analogRead(pinTempEau));
 
-      // Capteur d'humidité de l'air
-      float hygro = arrondi(analogRead(pinHygro));
+  // Capteur d'humidité de l'air
+  float hygro = arrondi(analogRead(pinHygro));
 
   // Renvoi de toutes les valeurs captées
   return lux, pression, tempAir, tempEau, hygro;
