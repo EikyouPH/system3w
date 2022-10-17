@@ -11,7 +11,9 @@
 #include <SoftwareSerial.h>
 // Importation de la librairie RTC
 #include <iarduino_RTC.h>
-
+// Importation de la bibliothèque poru l'arrondi
+#include <iostream>
+#include <math.h>
 
 // Initialisation du terminal série ss pour le GPS
 SoftwareSerial ss(4, 3);

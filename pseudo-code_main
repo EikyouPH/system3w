@@ -1,1 +1,309 @@
-salut ceci est un test
+// Programme principal
+// Il est le premier lancé et contient toutes les fonctions principales
+
+// Importation d'une bibliothèque permettant d'interagir avec des périphriques SPI
+#include <Arduino/SPI.h>
+// Importation d'une bibliothèque permettant l'écriture sur la carte SD
+#include <Arduino/SD.h>
+// Importation de l'ensemble de nos fonctions secondaires dans le fichier fonctions.cpp
+#include <fonctions.cpp>
+// Importation de la librairie SoftwareSerial
+#include <SoftwareSerial.h>
+// Importation de la librairie RTC
+#include <iarduino_RTC.h>
+
+// Définition des variables globales
+// Délai entre deux mesures en mode standard (à doubler dans le mode éco)
+const int delaiMesure = 10000;
+// Pin pour lier la carte SD
+const int pinCS = 11;
+// Pins pour les boutons
+const int boutonRouge = 5;
+const int boutonVert = 6;
+// Pins pour les LEDs
+const int pinRouge = 9;
+const int pinVert = 10;
+const int pinBleu = 11;
+// Pins pour les capteurs
+const int pinLux = A1;
+// Enum pour faciliter l'emploi des modes et des couleurs
+enum Mode {Standard = 0, Eco, Maintenance, Config};
+enum Couleur {Rouge = 0, Vert, Jaune, Bleu, Orange, Blanc};
+
+// Intitialisation du programme
+void setup() 
+{
+  // Definition du débit de communication
+  Serial.begin(9600);
+  Serial.println("Demarrage du programme");
+  // Definintion du pin SD
+  SD.begin(pinCS);
+  // Definition des peripheriques (entrees, sorties)
+  pinMode(boutonRouge, INPUT);
+  pinMode(boutonVert, INPUT);
+  pinMode(pinRouge, OUTPUT);
+  pinMode(pinVert, OUTPUT);
+  pinMode(pinBleu, OUTPUT);
+  time.begin();
+}
+
+// Fonction permettant de basculer d'un mode à l'autre
+void Modes(Mode) 
+{
+  // Mode Standard
+  if(Mode == Standard)
+  {
+    modeStandard();
+  }
+  // Mode Eco   
+  else if(Mode == Eco)
+  {
+    modeEco();
+  }
+  // Mode Maintenance
+  else if(Mode == Maintenance)
+  {
+    modeMaintenance();
+  }
+  // Mode Config
+  else if(Mode == Config)
+  {
+    modeConfig();
+  }
+  // Gestion des erreurs : si pas de mode, renvoie 0
+  return 0;
+}
+
+// Fonction du mode Standard
+void modeStandard()
+{  
+  // Initialisation des interruptions
+  // Mesure et sauvegarde des capteurs avec vérification des erreurs 
+  mesureCapteurs();
+  sauvMesure();
+  verifErreurs();
+  return Mode;
+}
+
+// Fonction mode Eco
+void modeEco()
+{ 
+  // Initialisation des interruptions
+  // Mesure et sauvegarde des capteurs avec vérification des erreurs 
+  mesureCapteurs();
+  sauvMesure();
+  checkErreur();
+  return Mode;
+}
+
+// Fonction mode Maintenance
+void modeMaintenance() 
+{
+  // Initialisation des interruptions
+  // Mise à jour du clignottement des LEDs
+  couleurLed(Orange)
+  // Affichage du mode
+  stopMesure();
+  accesSD();
+  affSerie();
+  return Mode;
+}
+
+void sauvMesure()
+{
+  //Initialiser une variable qui compte le nombre de fichiers dans un dossier
+
+  //Ouvrir un dossier
+    //Si le dossier contient 9 fichiers
+      
+        //Créer un nouveau dossier 
+        //Réinitialiser la variable qui compte le nombre de fichiers dans un dossier
+
+    //ouvrir le fichier
+        //si le fichier s'ouvre correctement
+            //écrire les mesures dans le fichier
+            //incrémenter la variable qui compte le nombre de fichiers dans un dossier
+            //fermer le fichier
+
+        //sinon (le fichier ne s'ouvre pas correctement)
+            //afficher un message d'erreur
+}
+
+float arrondi(float var)
+{
+  // Renvoie un flottant envoyé en entrée arrondi au centieme
+}
+
+struct MesureCapteurs
+{
+  float Heure[1];
+  float GPS[2];
+  float Capteurs[5];
+} mesure;
+
+// Rassemble les différentes mesures des capteurs et les renvoie sur forme de float
+
+
+float Heure()
+{
+  // Renvoie l'heure de captation des mesures sous forme de float
+}
+
+// Fonction GPS, renvoie la latitude et la longitude sous forme de float
+byte GPS(pinGPS)
+{
+  if(canal disponible)
+  {
+    // Récupération des données du GPS
+    if (gps.location.isUpdated())
+    {                                      // Si les données sont mises à jour
+      float lat = (gps.location.lat(), 6); // On récupère la latitude
+      float lng = (gps.location.lng(), 6); // On récupère la longitude
+    }
+    return lat, lng; // On renvoie la latitude et la longitude
+  }
+}
+
+void mesureCapteurs(lat, lng)
+{
+  // Declaration des variables qui captent les différents paramètres
+  float lux;
+  float pression;
+  float tempAir;
+  float hygro;
+  // Insertion des valeurs dans la structure MesureCapteurs
+  struct MesureCapteurs mesure = {heure, lat, lng, lux, pression, tempAir, hygro};
+}
+
+// Gestion de la couleur de la LED
+void couleurLed(Couleur)
+{
+  // Détermination des couleurs en variant les paramètres RGB
+  if (Couleur == Rouge)
+  {
+    // R = 255
+  }
+  else if (Couleur == Vert)
+  {
+    // V = 255
+  }
+  else if (Couleur == Jaune)
+  {
+    // R = 127
+    // V = 127)
+  }
+  else if (Couleur == Bleu)
+  {
+    // B = 255
+  }
+  else if (Couleur == Orange)
+  {
+    // R = 255
+    // V = 127
+    // B = 127
+  }
+  // Blanc
+  else
+  {
+    // R = 255
+    // V = 255
+    // B = 255
+  }
+}
+
+// Définition de la fonction verifErreurs, qui retournera le nombre d'erreurs rencontrées à chaque série de mesure.
+int verifErreurs(lux, pression, tempAir, tempEau, hygro)
+{
+  // Initialisation d'erreur à zéro à chaque vérification
+  int erreur = 0;
+  // Vérfication de la présence des mesures
+  if (lux || pression || tempAir || tempEau || hygro == NULL)
+  {
+    erreur++;
+  }
+  // Vérification de la cohérence physique des mesures
+  else if (lux || pression || tempEau || hygro < 0)
+  {
+    erreur++;
+  }
+  // Vérification de la cohérence de la luminosité
+  else if (lux > 10000)
+  {
+    erreur++;
+  }
+  // Vérification de la cohérence de la pression
+  else if (pression > 1000000)
+  {
+    erreur++;
+  }
+  // Vérification de la cohérence de la température de l'air
+  else if (tempAir > 50)
+  {
+    erreur++;
+  }
+  // Vérification de la cohérence de la température de l'eau
+  else if (temp Eau > 50)
+  {
+    erreur++;
+  }
+  // Vérification de la cohérence de l'hygrométrie
+  else if (hygro > 100)
+  {
+    erreur++;
+  }
+}
+
+// Fonction appelée lors de l'appui sur le bouton rouge en mode standard
+void appuiBoutonRougeS()
+{
+  Couleur = Rouge;      // On change la couleur de la LED
+  Mode = Maintenance;   // On passe en mode maintenance
+  return Couleur, Mode; // On renvoie la couleur et le mode
+}
+
+// Fonction appelée lors de l'appui sur le bouton rouge en mode standard
+void appuiBoutonVertS()
+{
+  Couleur = Bleu;       // On change la couleur de la LED
+  Mode = Eco;           // On passe en mode maintenance
+  return Couleur, Mode; // On renvoie la couleur et le mode
+}
+
+// Fonction appelée lors de l'appui sur le bouton rouge en mode maintenance
+void appuiBoutonRougeM()
+{
+  if (Mode == Eco)
+  {
+    Couleur = Bleu;       // On change la couleur de la LED
+    Mode = Eco;           // On passe en mode maintenance
+    return Couleur, Mode; // On renvoie la couleur et le mode
+  }
+  else
+  {
+    Couleur = Vert;       // On change la couleur de la LED
+    Mode = Standard;      // On passe en mode maintenance
+    return Couleur, Mode; // On renvoie la couleur et le mode
+  }
+}
+
+// Fonction appelée lors de l'appui sur le bouton rouge en mode éco
+void appuiBoutonRougeE()
+{
+  Couleur = Rouge;      // On change la couleur de la LED
+  Mode = Maintenance;   // On passe en mode maintenance
+  return Couleur, Mode; // On renvoie la couleur et le mode
+}
+
+// Fonction appelée lors de l'appui sur le bouton rouge en mode éco
+void appuiBoutonVertE()
+{
+  Couleur = Bleu;       // On change la couleur de la LED
+  Mode = Standrad;      // On passe en mode maintenance
+  return Couleur, Mode; // On renvoie la couleur et le mode
+}
+
+// Boucle infinie
+void loop() 
+{
+  Modes();
+}
