@@ -125,6 +125,61 @@ void modeMaintenance()
   return Mode;
 }
 
+void sauvMesure()
+{
+  //sauvegarder les mesures des capteurs dans un fichier avec le nom de la date et de l'heure
+  
+  //ouvrir le fichier
+  File dataFile = SD.open("datalog.txt", FILE_WRITE);
+
+  //si le fichier s'ouvre correctement
+  if (dataFile) 
+  {
+    //sauvegarder les mesures dans le fichier
+    dataFile.print("Temperature : ");
+    dataFile.println(temperature);
+    dataFile.print("Humidite : ");
+    dataFile.println(humidite);
+    dataFile.print("Luminosite : ");
+    dataFile.println(luminosite);
+    dataFile.print("Pression : ");
+    dataFile.println(pression);
+    dataFile.print("Altitude : ");
+    dataFile.println(altitude);
+    dataFile.print("Date : ");
+    dataFile.println(date);
+    dataFile.print("Heure : ");
+    dataFile.println(heure);
+    dataFile.print("Latitude : ");
+    dataFile.println(latitude);
+    dataFile.print("Longitude : ");
+    dataFile.println(longitude);
+    dataFile.print("Vitesse : ");
+    dataFile.println(vitesse);
+    dataFile.print("Satellites : ");
+    dataFile.println(satellites);
+    dataFile.print("Qualite : ");
+    dataFile.println(qualite);
+    dataFile.print("Erreur : ");
+    dataFile.println(erreur);
+    dataFile.println(" ");
+    dataFile.close();
+  }
+  //si le fichier ne s'ouvre pas correctement
+  else 
+  {
+    //afficher un message d'erreur
+    Serial.println("erreur d'ouverture du fichier");
+  }
+  //Un dossier ne peut contenir que 9 fichiers
+  //Si le dossier contient 9 fichiers, on en créée un nouveau
+  if (dataFile == 9)
+  {
+    dataFile = SD.open("datalog2.txt", FILE_WRITE);
+  }
+}
+
+
 void loop() 
 {
   Modes();
