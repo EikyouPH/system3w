@@ -125,6 +125,100 @@ void modeMaintenance()
   return Mode;
 }
 
+// Définition de la fonction verifErreurs, qui retournera le nombre d'erreurs rencontrées à chaque série de mesure.
+int verifErreurs(lux, pression, tempAir, tempEau, hygro)
+{
+  // Initialisation d'erreur à zéro à chaque vérification
+  int erreur = 0;
+
+  // Vérification de l'accès à l'horloge RTC
+
+  // Vérfication de la présence des mesures
+  if (lux || pression || tempAir || tempEau || hygro == NULL)
+  {
+    while(True)
+    {
+      couleurLed(Rouge);
+      delay(1000);
+      couleurLed(Vert);
+      delay(1000);
+      erreur++;
+    }
+  }
+  // Vérification de la cohérence physique des mesures
+  else if (lux || pression || tempEau || hygro < 0)
+  {
+    while(True)
+    {
+      couleurLed(Rouge);
+      delay(1000);
+      couleurLed(Vert);
+      delay(2000);
+      erreur++;
+    }
+  }
+  // Vérification de la cohérence de la luminosité
+  else if (lux > 10000)
+  {
+    {
+      couleurLed(Rouge);
+      delay(1000);
+      couleurLed(Vert);
+      delay(2000);
+      erreur++;
+    }
+  }
+  // Vérification de la cohérence de la pression
+  else if (pression > 1000000)
+  {
+    {
+      couleurLed(Rouge);
+      delay(1000);
+      couleurLed(Vert);
+      delay(2000);
+      erreur++;
+    }
+  }
+  // Vérification de la cohérence de la température de l'air
+  else if (tempAir > 50)
+  {
+    {
+      couleurLed(Rouge);
+      delay(1000);
+      couleurLed(Vert);
+      delay(2000);
+      erreur++;
+    }
+  }
+  // Vérification de la cohérence de la température de l'eau
+  else if (temp Eau > 50)
+  {
+    {
+      couleurLed(Rouge);
+      delay(1000);
+      couleurLed(Vert);
+      delay(2000);
+      erreur++;
+    }
+  }
+  // Vérification de la cohérence de l'hygrométrie
+  else if (hygro > 100)
+  {
+    {
+      couleurLed(Rouge);
+      delay(1000);
+      couleurLed(Vert);
+      delay(2000);
+      erreur++;
+    }
+  }
+
+  // Vérification de la saturation de la carte SD
+
+  // Vérification de l'accès et de la possibilité d'écriture de la carte SD
+
+}
+
 void loop() 
 {
   Modes();
