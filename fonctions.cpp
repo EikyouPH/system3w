@@ -4,48 +4,6 @@
 // On définit l'horloge
 iarduino_RTC watch(RTC_DS1307);
 
-// Définition de la fonction verifErreurs, qui retournera le nombre d'erreurs rencontrées à chaque série de mesure.
-int verifErreurs(lux, pression, tempAir, tempEau, hygro)
-{
-  // Initialisation d'erreur à zéro à chaque vérification
-  int erreur = 0;
-  // Vérfication de la présence des mesures
-  if (lux || pression || tempAir || tempEau || hygro == NULL)
-  {
-    erreur++;
-  }
-  // Vérification de la cohérence physique des mesures
-  else if (lux || pression || tempEau || hygro < 0)
-  {
-    erreur++;
-  }
-  // Vérification de la cohérence de la luminosité
-  else if (lux > 10000)
-  {
-    erreur++;
-  }
-  // Vérification de la cohérence de la pression
-  else if (pression > 1000000)
-  {
-    erreur++;
-  }
-  // Vérification de la cohérence de la température de l'air
-  else if (tempAir > 50)
-  {
-    erreur++;
-  }
-  // Vérification de la cohérence de la température de l'eau
-  else if (temp Eau > 50)
-  {
-    erreur++;
-  }
-  // Vérification de la cohérence de l'hygrométrie
-  else if (hygro > 100)
-  {
-    erreur++;
-  }
-}
-
 // Renvoie un flottant envoyé en entrée arrondi au centieme
 float arrondi(float var)
 {
@@ -150,4 +108,53 @@ void couleurLed(Couleur)
     analogWrite(pinVert, 255);
     analogWrite(pinBleu, 255);
   }
+}
+
+// Fonction appelée lors de l'appui sur le bouton rouge en mode standard
+void appuiBoutonRougeS()
+{ 
+  Couleur = Rouge; // On change la couleur de la LED
+  Mode = Maintenance; // On passe en mode maintenance
+  return Couleur, Mode; // On renvoie la couleur et le mode
+}
+
+// Fonction appelée lors de l'appui sur le bouton rouge en mode standard
+void appuiBoutonVertS()
+{ 
+  Couleur = Bleu; // On change la couleur de la LED
+  Mode = Eco; // On passe en mode maintenance
+  return Couleur, Mode; // On renvoie la couleur et le mode
+}
+
+// Fonction appelée lors de l'appui sur le bouton rouge en mode maintenance
+void appuiBoutonRougeM()
+{ 
+  if(Mode == Eco)
+  {
+    Couleur = Bleu; // On change la couleur de la LED
+    Mode = Eco; // On passe en mode maintenance
+    return Couleur, Mode; // On renvoie la couleur et le mode
+  }
+  else
+  {
+    Couleur = Vert; // On change la couleur de la LED
+    Mode = Standard; // On passe en mode maintenance
+    return Couleur, Mode; // On renvoie la couleur et le mode
+  }
+}
+
+// Fonction appelée lors de l'appui sur le bouton rouge en mode éco
+void appuiBoutonRougeE()
+{ 
+  Couleur = Rouge; // On change la couleur de la LED
+  Mode = Maintenance; // On passe en mode maintenance
+  return Couleur, Mode; // On renvoie la couleur et le mode
+}
+
+// Fonction appelée lors de l'appui sur le bouton rouge en mode éco
+void appuiBoutonVertE()
+{ 
+  Couleur = Bleu; // On change la couleur de la LED
+  Mode = Standrad; // On passe en mode maintenance
+  return Couleur, Mode; // On renvoie la couleur et le mode
 }
