@@ -110,6 +110,48 @@ void couleurLed(Couleur)
   }
 }
 
+// Définition de la fonction verifErreurs, qui retournera le nombre d'erreurs rencontrées à chaque série de mesure.
+int verifErreurs(lux, pression, tempAir, tempEau, hygro)
+{
+  // Initialisation d'erreur à zéro à chaque vérification
+  int erreur = 0;
+  // Vérfication de la présence des mesures
+  if (lux || pression || tempAir || tempEau || hygro == NULL)
+  {
+    erreur++;
+  }
+  // Vérification de la cohérence physique des mesures
+  else if (lux || pression || tempEau || hygro < 0)
+  {
+    erreur++;
+  }
+  // Vérification de la cohérence de la luminosité
+  else if (lux > 10000)
+  {
+    erreur++;
+  }
+  // Vérification de la cohérence de la pression
+  else if (pression > 1000000)
+  {
+    erreur++;
+  }
+  // Vérification de la cohérence de la température de l'air
+  else if (tempAir > 50)
+  {
+    erreur++;
+  }
+  // Vérification de la cohérence de la température de l'eau
+  else if (temp Eau > 50)
+  {
+    erreur++;
+  }
+  // Vérification de la cohérence de l'hygrométrie
+  else if (hygro > 100)
+  {
+    erreur++;
+  }
+}
+
 // Fonction appelée lors de l'appui sur le bouton rouge en mode standard
 void appuiBoutonRougeS()
 { 
