@@ -1,7 +1,7 @@
 // Programme contenant les differentes focntions annexes
 // Ces fonctions sont utiles à l'exécution du fichier main.cpp qui contient le programe principale
 
-//
+// On définit l'horloge
 iarduino_RTC watch(RTC_DS1307);
 
 // Définition de la fonction verifErreurs, qui retournera le nombre d'erreurs rencontrées à chaque série de mesure.
