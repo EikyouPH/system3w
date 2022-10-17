@@ -109,3 +109,52 @@ void couleurLed(Couleur)
     analogWrite(pinBleu, 255);
   }
 }
+
+// Fonction appelée lors de l'appui sur le bouton rouge en mode standard
+void appuiBoutonRougeS()
+{ 
+  Couleur = Rouge; // On change la couleur de la LED
+  Mode = Maintenance; // On passe en mode maintenance
+  return Couleur, Mode; // On renvoie la couleur et le mode
+}
+
+// Fonction appelée lors de l'appui sur le bouton rouge en mode standard
+void appuiBoutonVertS()
+{ 
+  Couleur = Bleu; // On change la couleur de la LED
+  Mode = Eco; // On passe en mode maintenance
+  return Couleur, Mode; // On renvoie la couleur et le mode
+}
+
+// Fonction appelée lors de l'appui sur le bouton rouge en mode maintenance
+void appuiBoutonRougeM()
+{ 
+  if(Mode == Eco)
+  {
+    Couleur = Bleu; // On change la couleur de la LED
+    Mode = Eco; // On passe en mode maintenance
+    return Couleur, Mode; // On renvoie la couleur et le mode
+  }
+  else
+  {
+    Couleur = Vert; // On change la couleur de la LED
+    Mode = Standard; // On passe en mode maintenance
+    return Couleur, Mode; // On renvoie la couleur et le mode
+  }
+}
+
+// Fonction appelée lors de l'appui sur le bouton rouge en mode éco
+void appuiBoutonRougeE()
+{ 
+  Couleur = Rouge; // On change la couleur de la LED
+  Mode = Maintenance; // On passe en mode maintenance
+  return Couleur, Mode; // On renvoie la couleur et le mode
+}
+
+// Fonction appelée lors de l'appui sur le bouton rouge en mode éco
+void appuiBoutonVertE()
+{ 
+  Couleur = Bleu; // On change la couleur de la LED
+  Mode = Standrad; // On passe en mode maintenance
+  return Couleur, Mode; // On renvoie la couleur et le mode
+}

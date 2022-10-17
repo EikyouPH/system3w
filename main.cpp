@@ -49,14 +49,6 @@ void setup()
   
 }
 
-// Fonction appelée lors de l'appui sur le bouton rouge en mode standard
-void appuiBoutonRougeS()
-{ 
-  Couleur = Rouge; // On change la couleur de la LED
-  Mode = Maintenance; // On passe en mode maintenance
-  return Couleur, Mode; // On renvoie la couleur et le mode
-}
-
 // Fonction permettant de basculer d'un mode à l'autre
 void Modes(Mode) 
 {
