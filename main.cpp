@@ -6,23 +6,51 @@ const int boutonVert = 3;
 bool bRouge = true;
 bool bVert = true;
 mode Mode;
-
+int precMode;
+long duree;
+int tmp;
 
 void appuiRouge(){
-  if(Mode == Debut){
-    Mode = Config;
+  bRouge = digitalRead(boutonRouge);
+  if(!bRouge){
+    duree = millis();
   }
-  else if(Mode == Standard || Mode == Eco){
-    Mode = Maintenance;
+  else if(bRouge){
+    if(millis()-duree > 5000){
+      if(Mode == Debut){
+        Mode = Config;
+      }
+      else if(Mode == Standard || Mode == Eco){
+        precMode = Mode;
+        Mode = Maintenance;
+      }
+      else if(Mode == Maintenance){
+        if(precMode == Eco){
+          Mode = Eco;
+        }
+        else{
+          Mode = Standard;
+        }
+      }
+    }
   }
 }
 
+
 void appuiVert(){
-  if(Mode == Standard){
-    Mode = Eco;
+  bVert = digitalRead(boutonVert);
+  if(!bVert){
+    duree = millis();
   }
-  else if(Mode == Eco){
-    Mode = Standard;
+  else if(bVert){
+    if(millis()-duree > 5000){
+      if(Mode == Standard){
+        Mode = Eco;
+      }
+      else if(Mode == Eco){
+        Mode = Standard;
+      }
+    }
   }
 }
 
@@ -35,8 +63,8 @@ void setup()
   pinMode(boutonRouge, INPUT);
   pinMode(boutonVert, INPUT);
   // Initialisation des interruptions
-  attachInterrupt(digitalPinToInterrupt(boutonRouge), appuiRouge, LOW);
-  attachInterrupt(digitalPinToInterrupt(boutonVert), appuiVert, LOW);
+  attachInterrupt(digitalPinToInterrupt(boutonRouge), appuiRouge, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(boutonVert), appuiVert, CHANGE);
 
   //interruption possible sur le bouton rouge pour passer en mode config
   delay(5000);
@@ -78,11 +106,13 @@ void loop(){
 
 void modeStandard(){
   Serial.println("Mode standard");
+  delay(10);
   leds.setColorRGB(0, 0, 255, 0);
 }
 
 void modeEco(){
   Serial.println("Eco");
+  delay(10);
   leds.setColorRGB(0, 0, 0, 255);
 }
 void modeConfig(){
@@ -91,5 +121,6 @@ void modeConfig(){
 }
 void modeMaintenance(){
   Serial.println("Maintenance");
+  delay(10);
   leds.setColorRGB(0, 255, 127, 0);
 }
