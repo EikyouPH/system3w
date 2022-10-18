@@ -20,7 +20,6 @@ void loop()
 {
     if (Serial.available() > 0) // Si les données sont disponibles sur la liaison série
     {
-        int RetourNumComm;
         while (c == "") // Atendre l'entré de l'utilisateur
         {
             delay(10);
