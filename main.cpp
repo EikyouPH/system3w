@@ -2,9 +2,9 @@
 // Il est le premier lancé et contient toutes les fonctions principales
 
 // Importation d'une bibliothèque permettant d'interagir avec des périphriques SPI
-#include <Arduino/SPI.h>
+#include <SPI.h>
 // Importation d'une bibliothèque permettant l'écriture sur la carte SD
-#include <Arduino/SD.h>
+#include <SD.h>
 // Importation de l'ensemble de nos fonctions secondaires dans le fichier fonctions.cpp
 #include <fonctions.cpp>
 // Importation de la librairie SoftwareSerial
