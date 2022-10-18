@@ -315,6 +315,7 @@ void appuiBoutonVertE()
 // Ce mode permet de configurer le système grâce à une interaction depuis une console sur l’interface série
 // Boucle de traitement du mode
 
+/// @brief 
 void ModeConfig()
 {
     if (Serial.available() > 0) // Si les données sont disponibles sur la liaison série
