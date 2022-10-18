@@ -127,31 +127,33 @@ void modeMaintenance()
 void sauvMesure()
 {
   //Initialiser une variable qui compte le nombre de fichiers dans un dossier
+  int nbFichiers = 0;
 
   //Ouvrir un dossier
+  File dir = SD.open("/");
+
      //Si le dossier contient 9 fichiers
-      
-        //Créer un nouveau dossier 
+      if (nbFichiers == 9){
+        //Créer un nouveau dossier
+        File newDir = SD.open("/nouveauDossier");
         //Réinitialiser la variable qui compte le nombre de fichiers dans un dossier
-
-        //ouvrir le fichier
-          //si le fichier s'ouvre correctement
-            //écrire les mesures dans le fichier
-            //incrémenter la variable qui compte le nombre de fichiers dans un dossier
-            //fermer le fichier
-
-        //si le fichier ne s'ouvre pas correctement
-            //afficher un message d'erreur
-
-    //Sinon
+        nbFichiers=0;
+      }
       //ouvrir le fichier
-        //si le fichier s'ouvre correctement
+      File dataFile = SD.open("data.txt", FILE_WRITE);
+      //si le fichier s'ouvre correctement
+      if (dataFile) {
         //écrire les mesures dans le fichier
+        dataFile.println(MesuresCapteurs);
         //incrémenter la variable qui compte le nombre de fichiers dans un dossier
+        nbFichiers++;
         //fermer le fichier
-
-      //si le fichier ne s'ouvre pas correctement
-        //afficher un message d'erreur
+        dataFile.close();
+      }
+      else{
+        //si le fichier ne s'ouvre pas correctement
+        Serial.println("erreur d'ouverture du fichier");
+      }
 }
 
 
