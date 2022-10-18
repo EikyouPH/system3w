@@ -231,40 +231,40 @@ void verifErreurs(lux, pression, tempAir, hygro, Heure)
   
   else if (lux || pression || tempAir || hygro == NULL)
   {
-    //Vérification d’accès aux données des capteurs
-    //si pas de données des capteurs, alors clignotement de la DEL intermittent rouge et vert
+    // Vérification d’accès aux données des capteurs
+    // Si pas de données des capteurs, alors clignotement de la LED intermittent rouge et vert
   }
   
   else if (lux > 10000)
   {
     // Vérification de la cohérence de la luminosité
-    //Si luminosité incohérente, alors clignotement de la DEL intermittent rouge et vert (durée 2x plus longue pour le vert)
+    // Si luminosité incohérente, alors clignotement de la LED intermittent rouge et vert (durée 2x plus longue pour le vert)
   }
   
   else if (pression > 1000000)
   {
     // Vérification de la cohérence de la pression
-    //Si pression incohérente, alors clignotement de la DEL intermittent rouge et vert (durée 2x plus longue pour le vert)
+    // Si pression incohérente, alors clignotement de la LED intermittent rouge et vert (durée 2x plus longue pour le vert)
   }
   
   else if (tempAir > 50)
   {
     // Vérification de la cohérence de la température de l'air
-    //Si température de l'air incohérente, alors clignotement de la DEL intermittent rouge et vert (durée 2x plus longue pour le vert)
+    //Si température de l'air incohérente, alors clignotement de la LED intermittent rouge et vert (durée 2x plus longue pour le vert)
   }
   
   else if (hygro > 100)
   {
     // Vérification de la cohérence de l'hygrométrie
-    //Si hygronométrie incohérente, alors clignotement de la DEL intermittent rouge et vert (durée 2x plus longue pour le vert)
+    // Si hygronométrie incohérente, alors clignotement de la LED intermittent rouge et vert (durée 2x plus longue pour le vert)
   }
 
   else if(Erreur d'accès ou d'écriture carte SD){
-    //Clignotement de la DEL intermittent rouge et blanc (durée 2x plus longue pour le blanc)
+    // Clignotement de la LED intermittent rouge et blanc (durée 2x plus longue pour le blanc)
   }
 
   else if(Carte SD pleine){
-    //Clignotement de la DEL intermittent rouge et blanc
+    // Clignotement de la LED intermittent rouge et blanc
   }
 
 }
