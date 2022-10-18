@@ -130,7 +130,7 @@ void sauvMesure()
   int nbFichiers = 0;
 
   //Ouvrir un dossier
-  File dir = SD.open("/");
+  monFichier = SD.open(nomDuFichier)
 
      //Si le dossier contient 9 fichiers
       if (nbFichiers == 9){
@@ -139,12 +139,22 @@ void sauvMesure()
         //Réinitialiser la variable qui compte le nombre de fichiers dans un dossier
         nbFichiers=0;
       }
+      
+      //
+      char datafile[12];
+      int jour=moment.day();
+      int mois = moment.month();
+      int annee= moment.year(); 
+      sprintf(datafile,"%d_%d_%d.txt",jour,mois,annee,nbFichiers);  //  %d pour un int 
+      
       //ouvrir le fichier
-      File dataFile = SD.open("data.txt", FILE_WRITE);
+      File dataFile = SD.open(datafile, FILE_WRITE);
       //si le fichier s'ouvre correctement
       if (dataFile) {
         //écrire les mesures dans le fichier
         dataFile.println(MesuresCapteurs);
+
+        
         //incrémenter la variable qui compte le nombre de fichiers dans un dossier
         nbFichiers++;
         //fermer le fichier
