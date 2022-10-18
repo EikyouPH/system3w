@@ -133,30 +133,110 @@ void modeMaintenance(){
   Serial.println("Maintenance");
   delay(10);
   leds.setColorRGB(0, 255, 127, 0);
+  mesureCapteurs();
+  delay(3000);
 }
 
-void mesureCapteurs()
+void affichage(float lumiere, float humidite, float temperature, float pression){
+  Serial.print("Niveau luminosite : ");
+  Serial.print(lumiere);
+  Serial.println(" lux");
+  Serial.print("Taux d'humidite : ");
+  Serial.print(humidite);
+  Serial.println("%");
+  Serial.print("Temperature : ");
+  Serial.print(temperature);
+  Serial.println("*C");
+  Serial.print("Pression  : ");
+  Serial.print(pression);
+  Serial.println(" Pa");
+}
+
+
+float mesureCapteurs()
 {
-  int lumiere = analogRead(pinLux);
+  float lumiere = analogRead(pinLux);
   Serial.println(lumiere);
   float temp_hum_val[2] = {0};
   dht.readTempAndHumidity(temp_hum_val);
-  int humidite = temp_hum_val[0];
-  int temperature = temp_hum_val[1];
+  float humidite = temp_hum_val[0];
+  float temperature = temp_hum_val[1];
   float pression = 8.3144621 * (273.15 + temperature) * masseVolumique(temperature) / 0.029;
+  erreur(lumiere, humidite, temperature, pression);
+  if(Mode == Maintenance){
+    affichage(lumiere, humidite, temperature, pression);
+  }
+  return lumiere, humidite, temperature, pression;
 }
 
-float masseVolumique(int temperature){
-  if(temperature < 7.5){
-    return 1.292;
+ float masseVolumique(float temperature){
+   if(temperature < 7.5){
+     return 1.292;
+   }
+    else if(7.5 <= temperature < 17.5){
+     return 1.225 ;
+   }
+    else if(17.5 <= temperature < 22.5){
+     return 1.204 ;
+   }
+    else if(22.5 <= temperature){
+     return 1.292 ;
+   }
+ }
+
+void erreur(float lumiere, float humidite, float temperature, float pression){
+  // horloge 0
+  // GPS 1
+  // capteur inaccessible 2
+  //données incoherentes 3
+  if(lumiere < 0 || lumiere > 1000 || humidite < 0 || humidite > 100 || temperature < -50 || temperature > 50 || pression < 100000 || pression > 110000){
+    clignotement(3);
   }
-  else if(7.5 <= temperature < 17.5){
-    return 1.225 ;
-  }
-  else if(17.5 <= temperature < 22.5){
-    return 1.204 ;
-  }
-  else if(22.5 <= temperature){
-    return 1.292 ;
+  // carte sd pleine 4
+  // carte sd inaccessible 5
+  // passage au mode précédent
+}
+
+void clignotement(int type){
+  while(true){
+    switch(type)
+    {
+      case 0: // horloge
+        leds.setColorRGB(0, 255, 0, 0);
+        delay(1000);
+        leds.setColorRGB(0, 0, 0, 255);
+        delay(1000);
+        break;
+      case 1: // GPS
+        leds.setColorRGB(0, 255, 0, 0);
+        delay(1000);
+        leds.setColorRGB(0, 255, 255, 0);
+        delay(1000);
+        break;
+      case 2: // acces capteur
+        leds.setColorRGB(0, 255, 0, 0);
+        delay(1000);
+        leds.setColorRGB(0, 0, 255, 0);
+        delay(1000);
+        break;
+      case 3: // donnee incoherente
+        leds.setColorRGB(0, 255, 0, 0);
+        delay(1000);
+        leds.setColorRGB(0, 0, 255, 0);
+        delay(2000);
+        break;
+      case 4: // SD pleine
+        leds.setColorRGB(0, 255, 0, 0);
+        delay(1000);
+        leds.setColorRGB(0, 255, 255, 255);
+        delay(1000);
+        break;
+      case 5: // SD inaccessible
+        leds.setColorRGB(0, 255, 0, 0);
+        delay(1000);
+        leds.setColorRGB(0, 255, 255, 255);
+        delay(2000);
+        break;
+    }
   }
 }
