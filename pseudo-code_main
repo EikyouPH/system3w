@@ -214,7 +214,7 @@ void couleurLed(Couleur)
 }
 
 // Définition de la fonction verifErreurs, qui vérifie toutes les erreurs possibles
-int verifErreurs(lux, pression, tempAir, hygro, Heure)
+void verifErreurs(lux, pression, tempAir, hygro, Heure)
 {
   
   if (Heure == NULL)
@@ -266,6 +266,7 @@ int verifErreurs(lux, pression, tempAir, hygro, Heure)
   else if(Carte SD pleine){
     //Clignotement de la DEL intermittent rouge et blanc
   }
+
 }
 
 // Fonction appelée lors de l'appui sur le bouton rouge en mode standard

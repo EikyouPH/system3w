@@ -48,7 +48,12 @@ void setup()
   pinMode(pinVert, OUTPUT);
   pinMode(pinBleu, OUTPUT);
   time.begin();
-  
+
+  //interruption possible sur le bouton rouge pour passer en mode config
+  Mode=Config;
+  attachInterrupt(digitalPinToInterrupt(boutonRouge), modeConfig, CHANGE);
+  delay(10000);
+  Mode=Standard;
 }
 
 // Fonction permettant de basculer d'un mode à l'autre
