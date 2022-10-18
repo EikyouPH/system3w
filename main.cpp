@@ -1,4 +1,8 @@
+// Importation de la bibliothèque permettant de gérer la LED
 #include <ChainableLED.h>
+// Importation de la bibliothèque permettant d'utiliser le capteur d'humidité et de température
+#include "DHT.h"
+
 ChainableLED leds(6, 7, 1);
 enum mode {Standard = 0, Eco, Maintenance, Config, Debut};
 const int boutonRouge = 2;
@@ -11,7 +15,7 @@ mode Mode;
 int precMode;
 long duree;
 int tmp;
-#include "DHT.h"
+
 #define DHTTYPE DHT11
 #define DHTPIN 8
 DHT dht(DHTPIN, DHTTYPE);
