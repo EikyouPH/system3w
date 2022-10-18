@@ -3,12 +3,18 @@ ChainableLED leds(6, 7, 1);
 enum mode {Standard = 0, Eco, Maintenance, Config, Debut};
 const int boutonRouge = 2;
 const int boutonVert = 3;
+// Pins pour les capteurs
+const int pinLux = A1;
 bool bRouge = true;
 bool bVert = true;
 mode Mode;
 int precMode;
 long duree;
 int tmp;
+#include "DHT.h"
+#define DHTTYPE DHT11
+#define DHTPIN 8
+DHT dht(DHTPIN, DHTTYPE);
 
 void appuiRouge(){
   bRouge = digitalRead(boutonRouge);
@@ -62,6 +68,9 @@ void setup()
   Serial.println("Demarrage du programme");
   pinMode(boutonRouge, INPUT);
   pinMode(boutonVert, INPUT);
+  pinMode(pinLux, INPUT);
+  Wire.begin();
+  dht.begin();
   // Initialisation des interruptions
   attachInterrupt(digitalPinToInterrupt(boutonRouge), appuiRouge, CHANGE);
   attachInterrupt(digitalPinToInterrupt(boutonVert), appuiVert, CHANGE);
@@ -108,6 +117,7 @@ void modeStandard(){
   Serial.println("Mode standard");
   delay(10);
   leds.setColorRGB(0, 0, 255, 0);
+  mesureCapteurs();
 }
 
 void modeEco(){
@@ -123,4 +133,30 @@ void modeMaintenance(){
   Serial.println("Maintenance");
   delay(10);
   leds.setColorRGB(0, 255, 127, 0);
+}
+
+void mesureCapteurs()
+{
+  int lumiere = analogRead(pinLux);
+  Serial.println(lumiere);
+  float temp_hum_val[2] = {0};
+  dht.readTempAndHumidity(temp_hum_val);
+  int humidite = temp_hum_val[0];
+  int temperature = temp_hum_val[1];
+  float pression = 8.3144621 * (273.15 + temperature) * masseVolumique(temperature) / 0.029;
+}
+
+float masseVolumique(int temperature){
+  if(temperature < 7.5){
+    return 1.292;
+  }
+  else if(7.5 <= temperature < 17.5){
+    return 1.225 ;
+  }
+  else if(17.5 <= temperature < 22.5){
+    return 1.204 ;
+  }
+  else if(22.5 <= temperature){
+    return 1.292 ;
+  }
 }
