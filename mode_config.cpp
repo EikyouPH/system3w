@@ -1,4 +1,5 @@
 // Ce mode permet de configurer le système grâce à une interaction depuis une console sur l’interface série
+#include <EEPROM.h>
 
 String commandeEnter;     // variable pour stocker la commande entrée par l’utilisateur
 String valeurEnterString; // variable pour stocker la valeur entrée par l’utilisateur
@@ -20,14 +21,8 @@ void Mode_Config()
 {
     Serial.println(F("Mode config"));         // Affichage d’un message de bienvenue
     Serial.println(F("Entrez une commande")); // Affichage d’un message d’information
-    while (Serial.available() == 0)           // Tant que rien n’est entré dans la console on attend
-    {
-    }
-
-    commandeEnter = Serial.readString(); // On stocke la commande entrée dans la variable commandeEnter
-    commandeEnter.trim();                // On supprime les espaces avant et après la commande
-
-    if (commandeEnter == "LOG_INTERVAL") // Si la commande est LOG_INTERVAL
+    commandeEnter = ReadandTrimString();      // Lecture de la commande entrée par l’utilisateur
+    if (commandeEnter == "LOG_INTERVAL")      // Si la commande est LOG_INTERVAL
     {
         Serial.println(F("LOG_INTERVAL"));                                 // On affiche LOG_INTERVAL
         Serial.println(F("Rentrez la nouvelle valeur pour LOG_INTERVAL")); // On demande la nouvelle valeur pour LOG_INTERVAL
@@ -71,12 +66,8 @@ void Mode_Config()
     {
         Serial.println(F("RESET"));                                                                                           // On affiche RESET
         Serial.println(F("Voulez-vous vraiment réinitialiser l’ensemble des paramètres à leurs valeurs par défaut ? (O/N)")); // On demande confirmation à l’utilisateur pour réinitialiser les paramètres à leurs valeurs par défaut
-        while (Serial.available() == 0)                                                                                       // Tant que rien n’est entré dans la console on attend
-        {
-        }
-        valeurEnterString = Serial.readString(); // On stocke la valeur entrée dans la variable valeurEnter
-        valeurEnterString.trim();
-        if (valeurEnterString == "O") // Si la valeur est O
+        ReadandTrimString();                                                                                                  // On appelle la fonction ReadandTrimString
+        if (valeurEnterString == "O")                                                                                         // Si la valeur est O
         {
             // oui tkt ça va reset les paramètres à leurs valeurs par défaut
             Serial.println(F("RESET effectué")); // On informe l’utilisateur que le RESET a été effectué
@@ -495,13 +486,9 @@ void Mode_Config()
 
     else if (commandeEnter == "DAY") // Si la commande est DAY
     {
-        Serial.println(F("DAY"));                           // On affiche DAY
-        Serial.println(F("Rentrez le jour de la semaine")); // On demande le jour de la semaine
-        while (Serial.available() == 0)                     // Tant que rien n’est entré dans la console on attend
-        {
-        }
-        String jourSemaineEnter = Serial.readString(); // On stocke le jour de la semaine entré dans la variable jourSemaineEnter
-        jourSemaineEnter.trim();
+        Serial.println(F("DAY"));                                                                                                                                                                                    // On affiche DAY
+        Serial.println(F("Rentrez le jour de la semaine"));                                                                                                                                                          // On demande le jour de la semaine
+        String jourSemaineEnter = ReadandTrimString();                                                                                                                                                               // On appelle la fonction ReadandTrimString et on stocke la valeur entrée dans la variable jourSemaineEnter
         if (jourSemaineEnter == "MON" || jourSemaineEnter == "TUE" || jourSemaineEnter == "WED" || jourSemaineEnter == "THU" || jourSemaineEnter == "FRI" || jourSemaineEnter == "SAT" || jourSemaineEnter == "SUN") // Si le jour de la semaine entré est égal à l'un des jours de la semaine
         {
             delay(100);
@@ -555,11 +542,17 @@ void Mode_Config()
 
 int ReadandConvert()
 {
+    String valeurEnterString = ReadandTrimString(); // On lit la valeur entrée et on la convertit en String (pour pouvoir utiliser la fonction .toInt())
+    valeurEnterInt = valeurEnterString.toInt();     // On convertit la valeur entrée en int
+    return valeurEnterInt;                          // On retourne la valeur entrée en int
+}
+
+void ReadandTrimString()
+{
     while (Serial.available() == 0) // Tant que rien n’est entré dans la console on attend
     {
     }
-    valeurEnterString = Serial.readString();    // On stocke la valeur entrée dans la variable valeurEnterString
-    valeurEnterString.trim();                   // On supprime les espaces avant et après la valeur entrée
-    valeurEnterInt = valeurEnterString.toInt(); // On convertit la valeur entrée en int
-    return valeurEnterInt;                      // On retourne la valeur entrée en int
+    valeurEnterString = Serial.readString(); // On stocke la valeur entrée dans la variable valeurEnterString
+    valeurEnterString.trim();                // On supprime les espaces avant et après la valeur entrée
+    return valeurEnterString;                // On retourne la valeur trimée en String
 }
