@@ -32,11 +32,25 @@ const int pinVert = 10;
 const int pinBleu = 11;
 // Pins pour les capteurs
 const int pinLux = A1;
-enum Mode {Standard = 0, Eco, Maintenance, Config};
-enum Couleur {Rouge = 0, Vert, Jaune, Bleu, Orange, Blanc};
+enum Mode
+{
+  Standard = 0,
+  Eco,
+  Maintenance,
+  Config
+};
+enum Couleur
+{
+  Rouge = 0,
+  Vert,
+  Jaune,
+  Bleu,
+  Orange,
+  Blanc
+};
 
 // Intitialisation du programme
-void setup() 
+void setup()
 {
   Serial.begin(9600);
   ss.begin(9600);
@@ -49,33 +63,33 @@ void setup()
   pinMode(pinBleu, OUTPUT);
   time.begin();
 
-  //interruption possible sur le bouton rouge pour passer en mode config
-  Mode=Config;
+  // interruption possible sur le bouton rouge pour passer en mode config
+  Mode = Config;
   attachInterrupt(digitalPinToInterrupt(boutonRouge), modeConfig, CHANGE);
   delay(10000);
-  Mode=Standard;
+  Mode = Standard;
 }
 
 // Fonction permettant de basculer d'un mode à l'autre
-void Modes(Mode) 
+void Modes(Mode)
 {
   // Mode Standard
-  if(Mode == Standard)
+  if (Mode == Standard)
   {
     modeStandard();
   }
-  // Mode Eco   
-  else if(Mode == Eco)
+  // Mode Eco
+  else if (Mode == Eco)
   {
     modeEco();
   }
   // Mode Maintenance
-  else if(Mode == Maintenance)
+  else if (Mode == Maintenance)
   {
     modeMaintenance();
   }
   // Mode Config
-  else if(Mode == Config)
+  else if (Mode == Config)
   {
     modeConfig();
   }
@@ -85,11 +99,11 @@ void Modes(Mode)
 
 // Fonction du mode Standard
 void modeStandard()
-{  
+{
   // Initialisation des interruptions
   attachinterrupt(digitalPinToInterrupt(boutonRouge), appuiBoutonRougeS, CHANGE);
   attachinterrupt(digitalPinToInterrupt(boutonVert), appuiBoutonVertS, CHANGE);
-  // Mesure et sauvegarde des capteurs avec vérification des erreurs 
+  // Mesure et sauvegarde des capteurs avec vérification des erreurs
   mesureCapteurs();
   sauvMesure();
   verifErreurs();
@@ -98,11 +112,11 @@ void modeStandard()
 
 // Fonction mode Eco
 void modeEco()
-{ 
+{
   // Initialisation des interruptions
   attachinterrupt(digitalPinToInterrupt(boutonRouge), appuiBoutonRougeE, CHANGE);
   attachinterrupt(digitalPinToInterrupt(boutonVert), appuiBoutonVertE, CHANGE);
-  // Mesure et sauvegarde des capteurs avec vérification des erreurs 
+  // Mesure et sauvegarde des capteurs avec vérification des erreurs
   mesureCapteurs();
   sauvMesure();
   checkErreur();
@@ -110,14 +124,14 @@ void modeEco()
 }
 
 // Fonction mode Maintenance
-void modeMaintenance() 
+void modeMaintenance()
 {
   // Initialisation des interruptions
   attachinterrupt(digitalPinToInterrupt(boutonRouge), appuiBoutonRougeM, CHANGE);
   // Mise à jour du clignottement des LEDs
   couleurLed(Orange)
-  // Affichage du mode
-  Serial.println("Mode Maintenance");
+      // Affichage du mode
+      Serial.println("Mode Maintenance");
   stopMesure();
   accesSD();
   affSerie();
@@ -126,46 +140,50 @@ void modeMaintenance()
 
 void sauvMesure()
 {
-  //Initialiser une variable qui compte le nombre de fichiers dans un dossier
+  // Initialiser une variable qui compte le nombre de fichiers dans un dossier
   int nbFichiers = 0;
   SdFile fichier;
-  
 
-  //Ouvrir un dossier (le dossier ouvert est automatiquement créé si il n'existe pas)
+  // Ouvrir un dossier (le dossier ouvert est automatiquement créé si il n'existe pas)
   SD.mkdir("sys3w_relevé_mesures");
 
-  //ouvrir un fichier dans repertoire "sys3w_relevé_mesures"
-  
+  // ouvrir un fichier dans repertoire "sys3w_relevé_mesures"
+
   char datafile[32];
-  int jour=moment.day();
+  int jour = moment.day();
   int mois = moment.month();
-  int annee= moment.year(); 
-  sprintf(datafile,"sys3w_relevé_mesures/%d%d%d_%d.LOG",jour,mois,annee,nbFichiers);  //  %d pour un int
-  if(fichier = SD.open(datafile, FILE_WRITE)){
-    if(fichier.position()>FILE_MAX_SIZE){
+  int annee = moment.year();
+  sprintf(datafile, "sys3w_relevé_mesures/%d%d%d_%d.LOG", jour, mois, annee, nbFichiers); //  %d pour un int
+  if (fichier = SD.open(datafile, FILE_WRITE))
+  {
+    if (fichier.position() > FILE_MAX_SIZE)
+    {
       char datafile2[32];
-      bool move=true;
+      bool move = true;
 
       fichier.close();
-      do{
-        nbFichiers++;
-        if(nbFichier==9){
-          Archivage();
-          nbFichiers=0;
-          move=false;
-        }
-        sprintf(datafile2,"sys3w_relevé_mesures/%d%d%d_%d.LOG",jour,mois,annee,nbFichiers);  //  %d pour un int
-
-      }while(SD.exists(datafile2));
-      
-      //renommer le fichier
-      if(move)
+      do
       {
-        SDrename(datafile,datafile2);
+        nbFichiers++;
+        if (nbFichier == 9)
+        {
+          Archivage();
+          nbFichiers = 0;
+          move = false;
+        }
+        sprintf(datafile2, "sys3w_relevé_mesures/%d%d%d_%d.LOG", jour, mois, annee, nbFichiers); //  %d pour un int
+
+      } while (SD.exists(datafile2));
+
+      // renommer le fichier
+      if (move)
+      {
+        SDrename(datafile, datafile2);
       }
 
-      //ouvrir à nouveau le fichier (maintenant vide)
-      if(!fichier = SD.open(datafile, FILE_WRITE)){
+      // ouvrir à nouveau le fichier (maintenant vide)
+      if (!fichier = SD.open(datafile, FILE_WRITE))
+      {
         Serial.println("erreur ouverture fichier");
       }
     }
@@ -173,71 +191,76 @@ void sauvMesure()
     datafile.println(MesuresCapteurs);
     datafile.close();
   }
-  else{
+  else
+  {
     Serial.println("erreur ouverture fichier");
   }
-
 }
 
-//fonction renommant un fichier
+// fonction renommant un fichier
 
-void SDrename(source, destination){
+void SDrename(source, destination)
+{
   SdFile ficsource;
   SdFile ficdestination;
 
-  
-  if(!ficsource = SD.open(source, FILE_READ)){
+  if (!ficsource = SD.open(source, FILE_READ))
+  {
     Serial.println("erreur ouverture fichier source");
   }
-  if(!ficdestination = SD.open(destination, FILE_WRITE)){
+  if (!ficdestination = SD.open(destination, FILE_WRITE))
+  {
     Serial.println("erreur ouverture fichier destination");
   }
-  while(data=ficsource.read() >= 0){
+  while (data = ficsource.read() >= 0)
+  {
     ficdestination.write(data);
   }
   ficsource.close();
   ficdestination.close();
   ficsource.remove();
-
 }
 
-void Archivage() {
+void Archivage()
+{
 
   /* Ouvre le premier fichier */
   repfile = SD.open("/sys3w_relevé_mesures");
 
   File entry = repfile.openNextFile();
-  int a=0;
+  int a = 0;
 
-  while (entry) {
-  
-    if (entry.isDirectory()) {
+  while (entry)
+  {
+
+    if (entry.isDirectory())
+    {
       a++;
-      
-    } 
-    entry = repfile.openNextFile();
     }
-    repfile.close();
+    entry = repfile.openNextFile();
+  }
+  repfile.close();
 
-    sprintf(nomDoss,"sys3w_relevé_mesures/archives_%d", a);
-    mkdir(nomDoss);
-    repfile = SD.open("/sys3w_relevé_mesures");
+  sprintf(nomDoss, "sys3w_relevé_mesures/archives_%d", a);
+  mkdir(nomDoss);
+  repfile = SD.open("/sys3w_relevé_mesures");
 
-//mettre dans ce nouveau doss
+  // mettre dans ce nouveau doss
   File entry = repfile.openNextFile();
-  while (entry) {
-  
-    if (!entry.isDirectory()) { 
-      sprintf(nomFic,"sys3w_relevé_mesures/archives_%d/%s", a, entry.name());
-      SDrename(entry.name(),nomFic);
-    } 
-    entry = repfile.openNextFile();
+  while (entry)
+  {
+
+    if (!entry.isDirectory())
+    {
+      sprintf(nomFic, "sys3w_relevé_mesures/archives_%d/%s", a, entry.name());
+      SDrename(entry.name(), nomFic);
     }
-    repfile.close();
+    entry = repfile.openNextFile();
+  }
+  repfile.close();
 }
 
-
-void loop() 
+void loop()
 {
   Modes();
 }
