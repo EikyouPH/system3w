@@ -170,57 +170,12 @@ void sauvMesure()
       }
     }
     // écrire les données dans le fichier
-    dataFile.println(MesuresCapteurs);
-    dataFile.close();
+    datafile.println(MesuresCapteurs);
+    datafile.close();
   }
   else{
     Serial.println("erreur ouverture fichier");
   }
-
-     
-     
-     
-     //Si le dossier contient 9 fichiers
-      if (nbFichiers == 9){
-        //Créer un nouveau dossier
-        File monFichier = SD.open("/nouveauDossier");
-        //Réinitialiser la variable qui compte le nombre de fichiers dans un dossier
-        nbFichiers=0;
-      }
-      
-      //
-       
-      
-      //ouvrir le fichier
-      File dataFile = SD.open(datafile, FILE_WRITE);
-      //si le fichier s'ouvre correctement
-      if (dataFile) {
-        //écrire les mesures dans le fichier
-        dataFile.println(MesuresCapteurs);
-        //Quand un fichier est plein, le système crée une copie du fichier avec le numéro de révision adapté puis recommence à enregistrer les données au début du fichier (révision 0).
-        //Si le fichier est plein
-        if  (dataFile.size() == 512){
-          //Créer une copie du fichier avec le numéro de révision adapté
-          File dataFile = SD.open(datafile, FILE_WRITE);
-          //Réinitialiser le fichier
-          dataFile.close();
-        }
-
-      //fermer le dossier
-      monFichier.close();
-        
-        //incrémenter la variable qui compte le nombre de fichiers dans un dossier
-        nbFichiers++;
-        //fermer le fichier
-        dataFile.close();
-      }
-      else{
-        //si le fichier ne s'ouvre pas correctement
-        Serial.println("erreur d'ouverture du fichier");
-      }
-
-      
-
 
 }
 
