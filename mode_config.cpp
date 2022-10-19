@@ -7,21 +7,20 @@ int valeurEnterInt;       // variable pour stocker la valeur entrée par l’uti
 // Initialisation du mode
 void setup()
 {
-    Serial.begin(9600);                       // Initialisation de la liaison série
-    Serial.println(F("Mode config"));         // Affichage d’un message de bienvenue
-    Serial.println(F("Entrez une commande")); // Affichage d’un message d’information
+    Serial.begin(9600); // Initialisation de la liaison série
 }
 
 void loop()
 {
-    Commande(); // Appel de la fonction Commande
+    Mode_Config(); // Appel de la fonction Commande
 }
 
 // Boucle de traitement du mode
-void Commande()
+void Mode_Config()
 {
-
-    while (Serial.available() == 0) // Tant que rien n’est entré dans la console on attend
+    Serial.println(F("Mode config"));         // Affichage d’un message de bienvenue
+    Serial.println(F("Entrez une commande")); // Affichage d’un message d’information
+    while (Serial.available() == 0)           // Tant que rien n’est entré dans la console on attend
     {
     }
 
@@ -76,7 +75,8 @@ void Commande()
         {
         }
         valeurEnterString = Serial.readString(); // On stocke la valeur entrée dans la variable valeurEnter
-        if (valeurEnterString == "O")            // Si la valeur est O
+        valeurEnterString.trim();
+        if (valeurEnterString == "O") // Si la valeur est O
         {
             // oui tkt ça va reset les paramètres à leurs valeurs par défaut
             Serial.println(F("RESET effectué")); // On informe l’utilisateur que le RESET a été effectué
@@ -97,10 +97,13 @@ void Commande()
 
     else if (commandeEnter == "VERSION") // Si la commande est VERSION
     {
-        Serial.println(F("VERSION"));                          // On affiche VERSION
+        Serial.println(F("VERSION")); // On affiche VERSION
+        delay(100);
         Serial.println(F("La version du système est la 1.0")); // On affiche la version du système
-        Serial.println(F("Le numéro de lot est le 123456"));   // On affiche le numéro de lot
-        setup();                                               // On relance le mode
+        delay(100);
+        Serial.println(F("Le numéro de lot est le 123456")); // On affiche le numéro de lot
+        delay(100);
+        setup(); // On relance le mode
     }
 
     else if (commandeEnter == "TIMEOUT") // Si la commande est TIMEOUT
@@ -262,7 +265,7 @@ void Commande()
                 setup();                                                    // On relance le mode
                 break;
             default:                                                // Si la valeur est autre chose que 0 ou 1
-                Serial.println(F("Valeur incorrecte -> "));         // On affiche un message d’erreur
+                Serial.print(F("Valeur incorrecte -> "));           // On affiche un message d’erreur
                 Serial.println(valeurEnterInt);                     // On affiche la valeur entrée
                 Serial.println(F("Veuillez choisir entre 0 et 1")); // On affiche un message d’erreur
                 setup();                                            // On relance le mode
@@ -458,26 +461,35 @@ void Commande()
                 }
                 else // Si l'année n'est pas comprise entre 0 et 99
                 {
-                    Serial.println(F("Valeur incorrecte -> "));                             // On affiche un message d’erreur
-                    Serial.println(anneeEnter);                                             // On affiche la valeur entrée
+                    Serial.println(F("Valeur incorrecte -> ")); // On affiche un message d’erreur
+                    delay(100);
+                    Serial.println(anneeEnter); // On affiche la valeur entrée
+                    delay(100);
                     Serial.println(F("Veuillez entrer une valeur comprise entre 0 et 99")); // On affiche un message d’information
-                    setup();                                                                // On relance le mode
+                    delay(100);
+                    setup(); // On relance le mode
                 }
             }
             else // Si le jour n'est pas compris entre 1 et 31
             {
-                Serial.println(F("Valeur incorrecte -> "));                             // On affiche un message d’erreur
-                Serial.println(jourEnter);                                              // On affiche la valeur entrée
+                Serial.println(F("Valeur incorrecte -> ")); // On affiche un message d’erreur
+                delay(100);
+                Serial.println(jourEnter); // On affiche la valeur entrée
+                delay(100);
                 Serial.println(F("Veuillez entrer une valeur comprise entre 1 et 31")); // On affiche un message d’ information
-                setup();                                                                // On relance le mode
+                delay(100);
+                setup(); // On relance le mode
             }
         }
         else // Si le mois n'est pas compris entre 1 et 12
         {
-            Serial.println(F("Valeur incorrecte -> "));                             // On affiche un message d’erreur
-            Serial.println(moisEnter);                                              // On affiche la valeur entrée
+            Serial.println(F("Valeur incorrecte -> ")); // On affiche un message d’erreur
+            delay(100);
+            Serial.println(moisEnter); // On affiche la valeur entrée
+            delay(100);
             Serial.println(F("Veuillez entrer une valeur comprise entre 1 et 12")); // On affiche un message d’information
-            setup();                                                                // On relance le mode
+            delay(100);
+            setup(); // On relance le mode
         }
     }
 
@@ -488,9 +500,11 @@ void Commande()
         while (Serial.available() == 0)                     // Tant que rien n’est entré dans la console on attend
         {
         }
-        String jourSemaineEnter = Serial.readString();                                                                                                                                                               // On stocke le jour de la semaine entré dans la variable jourSemaineEnter
+        String jourSemaineEnter = Serial.readString(); // On stocke le jour de la semaine entré dans la variable jourSemaineEnter
+        jourSemaineEnter.trim();
         if (jourSemaineEnter == "MON" || jourSemaineEnter == "TUE" || jourSemaineEnter == "WED" || jourSemaineEnter == "THU" || jourSemaineEnter == "FRI" || jourSemaineEnter == "SAT" || jourSemaineEnter == "SUN") // Si le jour de la semaine entré est égal à l'un des jours de la semaine
         {
+            delay(100);
             Serial.print(F("Le jour de la semaine a été mis à jour à ")); // On informe l’utilisateur que la valeur a été mise à jour
             Serial.println(jourSemaineEnter);                             // On affiche le jour de la semaine entré
             setup();                                                      // On relance le mode
@@ -526,6 +540,7 @@ void Commande()
         Serial.println(F("CLOCK : configuration de l’heure du jour au format HEURE{0-23}:MINUTE{0-59}:SECONDE{0-59}"));                                 // On affiche la description de la commande CLOCK
         Serial.println(F("DATE : configuration de la date du jour au format MOIS{1-12},JOUR{1-31},ANNEE{2000-2099}"));                                  // On affiche la description de la commande DATE
         Serial.println(F("DAY : Configuration du jour de la semaine{MON,TUE,WED,THU,FRI,SAT,SUN}"));                                                    // On affiche la description de la commande DAY
+        delay(100);
         setup();
     }
 
