@@ -128,7 +128,7 @@ void sauvMesure()
 {
   //Initialiser une variable qui compte le nombre de fichiers dans un dossier
   int nbFichiers = 0;
-  SdFile Fichier;
+  SdFile fichier;
   
 
   //Ouvrir un dossier (le dossier ouvert est automatiquement créé si il n'existe pas)
@@ -147,7 +147,7 @@ void sauvMesure()
       bool move=true;
 
       fichier.close();
-      do(){
+      do{
         nbFichiers++;
         if(nbFichier==9){
           Archivage();
@@ -178,6 +178,8 @@ void sauvMesure()
   }
 
 }
+
+//fonction renommant un fichier
 
 void SDrename(source, destination){
   SdFile ficsource;
