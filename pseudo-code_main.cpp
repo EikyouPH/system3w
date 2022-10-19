@@ -214,7 +214,7 @@ void couleurLed(Couleur)
 }
 
 // Définition de la fonction verifErreurs, qui vérifie toutes les erreurs possibles
-int verifErreurs(lux, pression, tempAir, hygro, Heure)
+void verifErreurs(lux, pression, tempAir, hygro, Heure)
 {
   
   if (Heure == NULL)
@@ -266,6 +266,7 @@ int verifErreurs(lux, pression, tempAir, hygro, Heure)
   else if(Carte SD pleine){
     // Clignotement de la LED intermittent rouge et blanc
   }
+
 }
 
 // Fonction appelée lors de l'appui sur le bouton rouge en mode standard
@@ -314,6 +315,7 @@ void appuiBoutonVertE()
 // Ce mode permet de configurer le système grâce à une interaction depuis une console sur l’interface série
 // Boucle de traitement du mode
 
+/// @brief 
 void ModeConfig()
 {
     if (Serial.available() > 0) // Si les données sont disponibles sur la liaison série

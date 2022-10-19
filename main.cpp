@@ -48,7 +48,12 @@ void setup()
   pinMode(pinVert, OUTPUT);
   pinMode(pinBleu, OUTPUT);
   time.begin();
-  
+
+  //interruption possible sur le bouton rouge pour passer en mode config
+  Mode=Config;
+  attachInterrupt(digitalPinToInterrupt(boutonRouge), modeConfig, CHANGE);
+  delay(10000);
+  Mode=Standard;
 }
 
 // Fonction permettant de basculer d'un mode à l'autre
@@ -122,31 +127,111 @@ void modeMaintenance()
 void sauvMesure()
 {
   //Initialiser une variable qui compte le nombre de fichiers dans un dossier
+  int nbFichiers = 0;
+  SdFile Fichier;
+  
 
-  //Ouvrir un dossier
-     //Si le dossier contient 9 fichiers
+  //Ouvrir un dossier (le dossier ouvert est automatiquement créé si il n'existe pas)
+  SD.mkdir("sys3w_relevé_mesures");
+
+  //ouvrir un fichier dans repertoire "sys3w_relevé_mesures"
+  
+  char datafile[32];
+  int jour=moment.day();
+  int mois = moment.month();
+  int annee= moment.year(); 
+  sprintf(datafile,"sys3w_relevé_mesures/%d%d%d_%d.LOG",jour,mois,annee,nbFichiers);  //  %d pour un int
+  if(fichier = SD.open(datafile, FILE_WRITE)){
+    if(fichier.position()>FILE_MAX_SIZE){
+      char datafile2[32];
+      bool move=true;
+
+      fichier.close();
+      do(){
+        nbFichiers++;
+        if(nbFichier==9){
+          Archivage();
+          nbFichiers=0;
+          move=false;
+        }
+        sprintf(datafile2,"sys3w_relevé_mesures/%d%d%d_%d.LOG",jour,mois,annee,nbFichiers);  //  %d pour un int
+
+      }while(SD.exists(datafile2));
       
-        //Créer un nouveau dossier 
-        //Réinitialiser la variable qui compte le nombre de fichiers dans un dossier
+      //renommer le fichier
+      if(move)
+      {
+        SDrename(datafile,datafile2);
+      }
 
-        //ouvrir le fichier
-          //si le fichier s'ouvre correctement
-            //écrire les mesures dans le fichier
-            //incrémenter la variable qui compte le nombre de fichiers dans un dossier
-            //fermer le fichier
+      //ouvrir à nouveau le fichier (maintenant vide)
+      if(!fichier = SD.open(datafile, FILE_WRITE)){
+        Serial.println("erreur ouverture fichier");
+      }
+    }
+    // écrire les données dans le fichier
+    datafile.println(MesuresCapteurs);
+    datafile.close();
+  }
+  else{
+    Serial.println("erreur ouverture fichier");
+  }
 
-        //si le fichier ne s'ouvre pas correctement
-            //afficher un message d'erreur
+}
 
-    //Sinon
-      //ouvrir le fichier
-        //si le fichier s'ouvre correctement
-        //écrire les mesures dans le fichier
-        //incrémenter la variable qui compte le nombre de fichiers dans un dossier
-        //fermer le fichier
+void SDrename(source, destination){
+  SdFile ficsource;
+  SdFile ficdestination;
 
-      //si le fichier ne s'ouvre pas correctement
-        //afficher un message d'erreur
+  
+  if(!ficsource = SD.open(source, FILE_READ)){
+    Serial.println("erreur ouverture fichier source");
+  }
+  if(!ficdestination = SD.open(destination, FILE_WRITE)){
+    Serial.println("erreur ouverture fichier destination");
+  }
+  while(data=ficsource.read() >= 0){
+    ficdestination.write(data);
+  }
+  ficsource.close();
+  ficdestination.close();
+  ficsource.remove();
+
+}
+
+void Archivage() {
+
+  /* Ouvre le premier fichier */
+  repfile = SD.open("/sys3w_relevé_mesures");
+
+  File entry = repfile.openNextFile();
+  int a=0;
+
+  while (entry) {
+  
+    if (entry.isDirectory()) {
+      a++;
+      
+    } 
+    entry = repfile.openNextFile();
+    }
+    repfile.close();
+
+    sprintf(nomDoss,"sys3w_relevé_mesures/archives_%d", a);
+    mkdir(nomDoss);
+    repfile = SD.open("/sys3w_relevé_mesures");
+
+//mettre dans ce nouveau doss
+  File entry = repfile.openNextFile();
+  while (entry) {
+  
+    if (!entry.isDirectory()) { 
+      sprintf(nomFic,"sys3w_relevé_mesures/archives_%d/%s", a, entry.name());
+      SDrename(entry.name(),nomFic);
+    } 
+    entry = repfile.openNextFile();
+    }
+    repfile.close();
 }
 
 

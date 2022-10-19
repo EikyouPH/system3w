@@ -35,6 +35,9 @@ byte GPS(pinGPS)
   }
 }
 
+/// @brief 
+/// @param  
+/// @param  
 void mesureCapteurs(lat, lng)
 {
 
@@ -141,6 +144,6 @@ void appuiBoutonRougeE()
 // Fonction appelée lors de l'appui sur le bouton rouge en mode éco
 void appuiBoutonVertE()
 { 
-  Mode = Standrad; // On passe en mode maintenance
+  Mode = Standard; // On passe en mode maintenance
   return Mode; // On renvoie la couleur et le mode
 }
