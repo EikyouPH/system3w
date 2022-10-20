@@ -23,9 +23,9 @@ void Mode_Config()
     Serial.println(F("Mode config")); // Affichage d’un message de bienvenue
 
     // initialisation des variables ?
-    Serial.println(F("Voulez-vous initialiser les varibles à leurs valeurs pas défaut ? (O/N)")); // Demande à l’utilisateur s’il veut initialiser les variables à leurs valeurs par défaut
-    InitialisationParametre = ReadandTrimString();                                                // On appelle la fonction ReadandTrimString
-    if (InitialisationParametre == "O")                                                           // Si la valeur est O
+    Serial.println(F("Voulez-vous initialiser les variables à leurs valeurs pas défaut ? (O/N)")); // Demande à l’utilisateur s’il veut initialiser les variables à leurs valeurs par défaut
+    InitialisationParametre = ReadandTrimString();                                                 // On appelle la fonction ReadandTrimString
+    if (InitialisationParametre == "O")                                                            // Si la valeur est O
     {
         IntialisationsVar();                        // On appelle la fonction IntialisationsVar
         Serial.println(F("initialisation faites")); // On informe l’utilisateur que l’initialisation est faite
