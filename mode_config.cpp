@@ -71,7 +71,7 @@ void Mode_Config()
         Serial.println(F("FILE_MAX_SIZE"));                                 // On affiche FILE_MAX_SIZE
         Serial.println(F("Rentrez la nouvelle valeur pour FILE_MAX_SIZE")); // On demande la nouvelle valeur pour FILE_MAX_SIZE
         ReadandConvert();                                                   // On appelle la fonction ReadandConvert
-        if (valeurEnterInt >= 0)                                            // Si la valeur est supérieure à 0
+        if (valeurEnterInt > 0)                                             // Si la valeur est supérieure à 0
         {
             Serial.print(F("FILE_MAX_SIZE mis à jour à la valeur ")); // On informe l’utilisateur que la valeur a été mise à jour
             EEPROM.put(2, valeurEnterInt);                            // On met à jour la valeur dans l’EEPROM
