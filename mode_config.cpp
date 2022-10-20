@@ -435,11 +435,14 @@ void Mode_Config()
                 if (secondeEnter >= 0 && secondeEnter <= 59) // Si les secondes sont comprises entre 0 et 59
                 {
                     Serial.print(F("L'heure a été mise à jour à ")); // On informe l’utilisateur que la valeur a été mise à jour
-                    Serial.print(heureEnter);                        // On affiche l'heure entrée
+                    EEPROM.put(30, heureEnter);                      // On met à jour la valeur dans l’EEPROM
+                    Serial.print(EEPROM.get(30, heureEnter));        // On affiche la nouvelle valeur
                     Serial.print(F(":"));                            // On affiche un :
-                    Serial.print(minuteEnter);                       // On affiche les minutes entrées
+                    EEPROM.put(32, minuteEnter);                     // On met à jour la valeur dans l’EEPROM
+                    Serial.print(EEPROM.get(32, minuteEnter));       // On affiche la nouvelle valeur
                     Serial.print(F(":"));                            // On affiche un :
-                    Serial.println(secondeEnter);                    // On affiche les secondes entrées
+                    EEPROM.put(34, secondeEnter);                    // On met à jour la valeur dans l’EEPROM
+                    Serial.println(EEPROM.get(34, secondeEnter));    // On affiche la nouvelle valeur
                     setup();                                         // On relance le mode
                 }
                 else // Si les secondes ne sont pas comprises entre 0 et 59
@@ -487,11 +490,14 @@ void Mode_Config()
                 if (anneeEnter >= 0 && anneeEnter <= 99) // Si l'année est comprise entre 0 et 99
                 {
                     Serial.print(F("La date a été mise à jour à ")); // On informe l’utilisateur que la valeur a été mise à jour
-                    Serial.print(jourEnter);                         // On affiche le jour entré
+                    EEPROM.put(36, moisEnter);                       // On met à jour la valeur dans l’EEPROM
+                    Serial.print(EEPROM.get(36, moisEnter));         // On affiche la nouvelle valeur
                     Serial.print(F("/"));                            // On affiche un /
-                    Serial.print(moisEnter);                         // On affiche le mois entré
+                    EEPROM.put(38, jourEnter);                       // On met à jour la valeur dans l’EEPROM
+                    Serial.print(EEPROM.get(38, jourEnter));         // On affiche la nouvelle valeur
                     Serial.print(F("/"));                            // On affiche un /
-                    Serial.println(anneeEnter);                      // On affiche l'année entrée
+                    EEPROM.put(40, anneeEnter);                      // On met à jour la valeur dans l’EEPROM
+                    Serial.println(EEPROM.get(40, anneeEnter));      // On affiche la nouvelle valeur
                     setup();                                         // On relance le mode
                 }
                 else // Si l'année n'est pas comprise entre 0 et 99
@@ -537,7 +543,8 @@ void Mode_Config()
         {
             delay(100);
             Serial.print(F("Le jour de la semaine a été mis à jour à ")); // On informe l’utilisateur que la valeur a été mise à jour
-            Serial.println(jourSemaineEnter);                             // On affiche le jour de la semaine entré
+            EEPROM.put(42, jourSemaineEnter);                             // On met à jour la valeur dans l’EEPROM
+            Serial.println(EEPROM.get(42, jourSemaineEnter));             // On affiche la nouvelle valeur
             setup();                                                      // On relance le mode
         }
         else // Si le jour de la semaine entré n'est pas égal à l'un des jours de la semaine
@@ -649,4 +656,25 @@ void IntialisationsVar()
 
     int pressure_max = 1080;      // définition du seuil de pression atmosphérique (en HPa) au-dessus duquel le capteur se mettra en erreur
     EEPROM.put(28, pressure_max); // On stocke la valeur de pressure_max dans l'EEPROM
+
+    int heure = 0;         // définition de l'heure
+    EEPROM.put(30, heure); // On stocke la valeur de heure dans l'EEPROM
+
+    int minute = 0;         // définition des minutes
+    EEPROM.put(32, minute); // On stocke la valeur de minute dans l'EEPROM
+
+    int seconde = 0;         // définition des secondes
+    EEPROM.put(34, seconde); // On stocke la valeur de seconde dans l'EEPROM
+
+    int jour = 01;        // définition du jour
+    EEPROM.put(36, jour); // On stocke la valeur de jour dans l'EEPROM
+
+    int mois = 01;        // définition du mois
+    EEPROM.put(38, mois); // On stocke la valeur de mois dans l'EEPROM
+
+    int annee = 00;        // définition de l'année
+    EEPROM.put(40, annee); // On stocke la valeur de annee dans l'EEPROM
+
+    String jour_semaine = "MON";  // définition du jour de la semaine
+    EEPROM.put(42, jour_semaine); // On stocke la valeur de jour_semaine dans l'EEPROM
 }
