@@ -1,10 +1,8 @@
 // Ce mode permet de configurer le système grâce à une interaction depuis une console sur l’interface série
 #include <EEPROM.h> // Pour la sauvegarde des paramètres
 
-String commandeEnter;           // variable pour stocker la commande entrée par l’utilisateur
-String InitialisationParametre; // variable pour stocker le paramètre à initialiser
-String valeurEnterString;       // variable pour stocker la valeur entrée par l’utilisateur
-int valeurEnterInt;             // variable pour stocker la valeur entrée par l’utilisateur en int
+String valeurEnterString; // variable pour stocker la valeur entrée par l’utilisateur
+int valeurEnterInt;       // variable pour stocker la valeur entrée par l’utilisateur en int
 
 // Initialisation du mode
 void setup()
@@ -24,7 +22,7 @@ void Mode_Config()
 
     // initialisation des variables ?
     Serial.println(F("Voulez-vous initialiser les variables à leurs valeurs pas défaut ? (O/N)")); // Demande à l’utilisateur s’il veut initialiser les variables à leurs valeurs par défaut
-    InitialisationParametre = ReadandTrimString();                                                 // On appelle la fonction ReadandTrimString
+    String InitialisationParametre = ReadandTrimString();                                          // On appelle la fonction ReadandTrimString
     if (InitialisationParametre == "O")                                                            // Si la valeur est O
     {
         IntialisationsVar();                        // On appelle la fonction IntialisationsVar
@@ -43,9 +41,9 @@ void Mode_Config()
     }
 
     // Boucle de traitement des commandes
-    Serial.println(F("Entrez une commande")); // Affichage d’un message d’information
-    commandeEnter = ReadandTrimString();      // Lecture de la commande entrée par l’utilisateur
-    if (commandeEnter == "LOG_INTERVAL")      // Si la commande est LOG_INTERVAL
+    Serial.println(F("Entrez une commande"));   // Affichage d’un message d’information
+    String commandeEnter = ReadandTrimString(); // Lecture de la commande entrée par l’utilisateur
+    if (commandeEnter == "LOG_INTERVAL")        // Si la commande est LOG_INTERVAL
     {
         Serial.println(F("LOG_INTERVAL"));                                 // On affiche LOG_INTERVAL
         Serial.println(F("Rentrez la nouvelle valeur pour LOG_INTERVAL")); // On demande la nouvelle valeur pour LOG_INTERVAL
@@ -593,9 +591,9 @@ void Mode_Config()
 
 int ReadandConvert()
 {
-    String valeurEnterString = ReadandTrimString(); // On lit la valeur entrée et on la convertit en String (pour pouvoir utiliser la fonction .toInt())
-    valeurEnterInt = valeurEnterString.toInt();     // On convertit la valeur entrée en int
-    return valeurEnterInt;                          // On retourne la valeur entrée en int
+    valeurEnterString = ReadandTrimString();    // On lit la valeur entrée et on la convertit en String (pour pouvoir utiliser la fonction .toInt())
+    valeurEnterInt = valeurEnterString.toInt(); // On convertit la valeur entrée en int
+    return valeurEnterInt;                      // On retourne la valeur entrée en int
 }
 
 String ReadandTrimString()
