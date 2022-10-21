@@ -420,12 +420,19 @@ void clignotement(int type){
     Serial.write(recu); // Affichage dans le moniteur série
     }
 }*/
+
+
+// Fonction pour sauvegarder les mesures dans la carte SD
+
 void sauvMesures(float mes1, float mes2,float mes3, float mes4)
 {
   //Initialiser une variable qui compte le nombre de fichiers dans un dossier
   int nbFichiers = 0;
   int FILE_MAX_SIZE = 4096;
 /*  DateTime now = rtc.now();*/
+
+// Si le dossier à créer n'existe pas, on le crée
+// Test de la création du dossier
 
   if (!SD.exists("sys3w")) {
     Serial.println (F("Creation dossier"));
@@ -436,8 +443,6 @@ void sauvMesures(float mes1, float mes2,float mes3, float mes4)
   
   
   Serial.println (F("Dossier cree "));
-  // Serial.println("Dossier sys3w cree ");
-  
 
   //ouvrir un fichier dans repertoire "sys3w_releve_mesures"
 
@@ -448,10 +453,13 @@ void sauvMesures(float mes1, float mes2,float mes3, float mes4)
   int annee = 22;
   
   sprintf(datafile,"sys3w/%d%d%d_%d.LOG",annee,mois,jour,nbFichiers);  //  %d pour un int
-  //datafile = "sys3w_releve_mesures" + "/" + jour + mois + annee + "_" + nbFichiers + "." + "LOG" ;
+  // Le tableau datafile contient le chemin complet et le nom du fichier à créer
 
   Serial.print(F("Ouverture "));
   Serial.println(datafile);
+
+  // La variable fichier va ouvrir notre fichier en écriture
+
   File fichier = SD.open(datafile, FILE_WRITE);
   //Si le fichier s'ouvre
   if(fichier)
@@ -464,20 +472,33 @@ void sauvMesures(float mes1, float mes2,float mes3, float mes4)
       char datafile2[33];
       bool move=true;
 
+      // Fermer le fichier
       fichier.close();
+
+      // Tant que le fichier datafile2 existe
       do
       {
         Serial.println(nbFichiers);
-        
+        // On incrémente le nombre de fichiers
         nbFichiers++;
+
+        // Si le nombre de fichier dans le dossier est de 10 (compte de 0 à 9)
         if(nbFichiers==9){
+
           Serial.println (F("Dossier plein"));
+
+          // On crée un nouveau dossier (archivage)
           Archivage();
+
+          // Le nombre de fichiers est donc réinitialisé
           nbFichiers=0;
           move=false;
         }
-        sprintf(datafile2,"sys3w/%s_%d.LOG",annee,mois,jour,nbFichiers);  //  %d pour un int
-        //datafile2 = "sys3w" + "/" + jour + mois + annee + "_" + nbFichiers ;
+
+        // Mettre dans datafile2 le chemin complet et le nom du fichier à créer
+        sprintf(datafile2,"sys3w/%d%d%d_%d.LOG",annee,mois,jour,nbFichiers);  //  %d pour un int
+        
+
         Serial.println(datafile2);
         
       }while(SD.exists(datafile2));
@@ -486,19 +507,21 @@ void sauvMesures(float mes1, float mes2,float mes3, float mes4)
       if(move)
       {
         Serial.println(F("move"));
-        //renommer le fichier
+        //Copie et renomme le fichier
         SDrename(datafile,datafile2);
       }
 
       //ouvrir à nouveau le fichier (maintenant vide)
       fichier = SD.open(datafile, FILE_WRITE);
+
+      // Test de l'ouverture du fichier
       if(!fichier){
         Serial.println (F("erreur d'ouverture fichier"));
       }
       Serial.println(datafile);
     }
-    // ecrire les donnees dans le fichier
-    fichier.print(lumiere); //("%d,%d,%d,%d", lumiere, humidite, temperature, pression);  //datafile.println
+    // ecrire les données des mesures des capteurs dans le fichier
+    fichier.print(lumiere); 
     fichier.print(",");
     
     fichier.print(humidite);
@@ -510,6 +533,7 @@ void sauvMesures(float mes1, float mes2,float mes3, float mes4)
     fichier.print(pression);
     fichier.println(".");
     
+    // Une fois que la session de données est écrite sur le fichier, on ferme le fichier
     fichier.close();
     Serial.println (F("Releve des capteurs ecrits sur la carte SD"));
     Serial.print("Mesure n*");
@@ -523,21 +547,29 @@ void sauvMesures(float mes1, float mes2,float mes3, float mes4)
   }
 }
 
+// Fonction pour copier un fichier dans un autre et renommer le nouveau fichier en fonction des autres fichiers existants
 void SDrename(char* source,char* destination){
+  
+  // Déclaration des variables pour la fonction rename, qui sont des pointeurs vers les adresses des caractères du nom du fichier à 'copier'
   File ficsource;
   File ficdestination;
   Serial.println(F("SDrename"));
   
+  // Ouverture du fichier source
   ficsource = SD.open(source, FILE_READ);
   Serial.println(source);
   
+  // Test si le fichier source s'ouvre bien
   if(!ficsource)
   {
     Serial.println (F("erreur ouverture fichier source"));
   }
+  
+  // Si le fichier source s'ouvre bien, ouvrir le fichier destination
   ficdestination = SD.open(destination, FILE_WRITE);
   Serial.println(destination);
   
+  // Test si le fichier destination s'ouvre bien
   if(!ficdestination)
   {
     Serial.println (F("erreur ouverture fichier destination"));
@@ -545,55 +577,75 @@ void SDrename(char* source,char* destination){
 
 
   /*
+  // Alternative (qui lit des plus grosses quantités de données pour que la copie se fasse plus rapidement )
   size_t data;
   uint8_t buf[64];
   */
 
-long data;
+  // Déclarer la variable qui va contenir les données lues dans le fichier source
+  long data;
   
-  while(data = ficsource.read() >= 0){ //(data= ficsource.read(buf,sizeof(buf))) >= 0
+  // Tant que le fichier source n'est pas vide, lire les données dans le fichier source et les écrire dans le fichier destination
+  while(data = ficsource.read() >= 0){ // ou (data= ficsource.read(buf,sizeof(buf))) >= 0
     Serial.println();
-    ficdestination.write(data); //buf,
+    ficdestination.write(data); // ou avec buf,
 
   }
+  
   Serial.println(F("data copiee"));
+  
+  // Quand la copie est terminée, fermer les deux fichiers (source et destination)
   ficsource.close();
   ficdestination.close();
   SD.remove(source);
 }
 
+
+//fonction pour archiver les fichiers déjà existants, dès que le dossier est plein, en créé un nouveau et mets les fichiers pleins dedans
+
 void Archivage() {
 
-  // Ouvre le premier fichier
+  // Ouvre le premier dossier
   File repfile = SD.open("/sys3w/");
 
+  //Parcours le dossier
   File entry = repfile.openNextFile();
+  
   int a=0;
+  
   String en = String(entry);
   Serial.println(en);
   Serial.println(F("Parcours dossiers rep"));
 
+  // Tant qu'il y a un fichier dans le dossier
   while (entry) {
     Serial.println(entry.name());
+    
+    // Si le dossier est un dossier
     if (entry.isDirectory()) {
       a++;
       Serial.println(F("rep"));     
     } 
     entry = repfile.openNextFile();
   }
+
+  //Ferme le fichier
   repfile.close();
   
+  //Création du dossier d'archivage
   char nomDoss[17];
   sprintf(nomDoss,"sys3w/arch_%d", a);
-    //nomDoss= "sys3w_releve_mesures" + "_" + a;
+  // Le nouveau dossier aura le nom "arch_a" avec a le nombre de dossier déjà existant
   Serial.println(nomDoss);
   
+  // Test de la création du nouveau dossier
   Serial.println(F("Creation nouveau dossier")); 
   if(!SD.mkdir(nomDoss)){
       Serial.println(F("Erreur creation dossier"));
   }
   Serial.println(F("doss cree"));
-  
+
+  //Parcours le dossier pour déplacer les fichiers
   File repfile2 = SD.open("/sys3w/");
 
   entry = repfile2.openNextFile();
@@ -606,21 +658,30 @@ void Archivage() {
   Serial.println(en);
   
   Serial.println(F("Parcours fichiers rep"));
+  *
+  // Tant qu'il y a un fichier dans le dossier
   while (entry) {
     Serial.println(entry.name());
-     
+    
+    // Si le dossier est un dossier
     if (entry.isDirectory()) {
     Serial.println(F("rep"));
     } else { 
+      
+      //Création du nom du fichier
       Serial.println(F("fic"));
       char nomFic[50];
       sprintf(nomFic,"sys3w/arch_%d/%s", a, entry.name());
+      
+      // Utilise la fonction SDrename pour déplacer les fichiers
       SDrename(entry.name(),nomFic);
       Serial.println(nomFic);
       
     } 
+
+
     entry = repfile2.openNextFile();
-    }
+  }
     repfile2.close();
   Serial.println(F("fin Parcours fichiers rep"));
   
