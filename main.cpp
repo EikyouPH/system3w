@@ -1,67 +1,104 @@
-// Programme principal
-// Il est le premier lancé et contient toutes les fonctions principales
+// Importation de la bibliothèque permettant de gérer la LED
+#include <ChainableLED.h>
+// Importation de la bibliothèque permettant d'utiliser le capteur d'humidité et de température
+#include "DHT.h"
 
-// Importation d'une bibliothèque permettant d'interagir avec des périphriques SPI
-#include <Arduino/SPI.h>
-// Importation d'une bibliothèque permettant l'écriture sur la carte SD
-#include <Arduino/SD.h>
-// Importation de l'ensemble de nos fonctions secondaires dans le fichier fonctions.cpp
-#include <fonctions.cpp>
-// Importation de la librairie SoftwareSerial
-#include <SoftwareSerial.h>
-// Importation de la librairie RTC
-#include <iarduino_RTC.h>
-// Importation de la bibliothèque poru l'arrondi
-#include <iostream>
-#include <math.h>
-
-// Initialisation du terminal série ss pour le GPS
-SoftwareSerial ss(4, 3);
-
-// Définition des variables globales
-// Délai entre deux mesures en mode standard (à doubler dans le mode éco)
-const int delaiMesure = 10000;
-// Pin pour lier la carte SD
-const int pinCS = 11;
-// Pins pour les boutons
-const int boutonRouge = 5;
-const int boutonVert = 6;
-// Pins pour les LEDs
-const int pinRouge = 9;
-const int pinVert = 10;
-const int pinBleu = 11;
-// Pins pour les capteurs
-const int pinLux = A1;
-enum Mode
+ChainableLED leds(6, 7, 1);
+enum mode
 {
   Standard = 0,
   Eco,
   Maintenance,
-  Config
+  Config,
+  Debut
 };
-enum Couleur
+const int boutonRouge = 2;
+const int boutonVert = 3;
+// Pins pour les capteurs
+const int pinLux = A1;
+bool bRouge = true;
+bool bVert = true;
+mode Mode;
+int precMode;
+long duree;
+int tmp;
+
+#define DHTTYPE DHT11
+#define DHTPIN 8
+DHT dht(DHTPIN, DHTTYPE);
+
+void appuiRouge()
 {
-  Rouge = 0,
-  Vert,
-  Jaune,
-  Bleu,
-  Orange,
-  Blanc
-};
+  bRouge = digitalRead(boutonRouge);
+  if (!bRouge)
+  {
+    duree = millis();
+  }
+  else if (bRouge)
+  {
+    if (millis() - duree > 5000)
+    {
+      if (Mode == Debut)
+      {
+        Mode = Config;
+      }
+      else if (Mode == Standard || Mode == Eco)
+      {
+        precMode = Mode;
+        Mode = Maintenance;
+      }
+      else if (Mode == Maintenance)
+      {
+        if (precMode == Eco)
+        {
+          Mode = Eco;
+        }
+        else
+        {
+          Mode = Standard;
+        }
+      }
+    }
+  }
+}
+
+void appuiVert()
+{
+  bVert = digitalRead(boutonVert);
+  if (!bVert)
+  {
+    duree = millis();
+  }
+  else if (bVert)
+  {
+    if (millis() - duree > 5000)
+    {
+      if (Mode == Standard)
+      {
+        Mode = Eco;
+      }
+      else if (Mode == Eco)
+      {
+        Mode = Standard;
+      }
+    }
+  }
+}
 
 // Intitialisation du programme
 void setup()
 {
+  Mode = Debut;
   Serial.begin(9600);
-  ss.begin(9600);
   Serial.println("Demarrage du programme");
-  SD.begin(pinCS);
   pinMode(boutonRouge, INPUT);
   pinMode(boutonVert, INPUT);
-  pinMode(pinRouge, OUTPUT);
-  pinMode(pinVert, OUTPUT);
-  pinMode(pinBleu, OUTPUT);
-  time.begin();
+  pinMode(pinLux, INPUT);
+  Wire.begin();
+  dht.begin();
+  // Initialisation des interruptions
+  attachInterrupt(digitalPinToInterrupt(boutonRouge), appuiRouge, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(boutonVert), appuiVert, CHANGE);
 
   // interruption possible sur le bouton rouge pour passer en mode config
   Mode = Config;
@@ -74,7 +111,7 @@ void setup()
 void Modes(Mode)
 {
   // Mode Standard
-  if (Mode == Standard)
+  if  (Mode == Standard)
   {
     modeStandard();
   }
@@ -84,12 +121,12 @@ void Modes(Mode)
     modeEco();
   }
   // Mode Maintenance
-  else if (Mode == Maintenance)
+  else if  (Mode == Maintenance)
   {
     modeMaintenance();
   }
   // Mode Config
-  else if (Mode == Config)
+  else if  (Mode == Config)
   {
     modeConfig();
   }
@@ -97,7 +134,11 @@ void Modes(Mode)
   return 0;
 }
 
-// Fonction du mode Standard
+void loop()
+{
+  Modes();
+}
+
 void modeStandard()
 {
   // Initialisation des interruptions
@@ -105,40 +146,45 @@ void modeStandard()
   attachinterrupt(digitalPinToInterrupt(boutonVert), appuiBoutonVertS, CHANGE);
   // Mesure et sauvegarde des capteurs avec vérification des erreurs
   mesureCapteurs();
-  sauvMesure();
-  verifErreurs();
-  return Mode;
 }
 
-// Fonction mode Eco
 void modeEco()
 {
-  // Initialisation des interruptions
-  attachinterrupt(digitalPinToInterrupt(boutonRouge), appuiBoutonRougeE, CHANGE);
-  attachinterrupt(digitalPinToInterrupt(boutonVert), appuiBoutonVertE, CHANGE);
-  // Mesure et sauvegarde des capteurs avec vérification des erreurs
-  mesureCapteurs();
-  sauvMesure();
-  checkErreur();
-  return Mode;
+  Serial.println("Eco");
+  delay(10);
+  leds.setColorRGB(0, 0, 0, 255);
 }
-
-// Fonction mode Maintenance
+void modeConfig()
+{
+  Serial.println("Conf");
+  leds.setColorRGB(0, 255, 255, 0);
+}
 void modeMaintenance()
 {
-  // Initialisation des interruptions
-  attachinterrupt(digitalPinToInterrupt(boutonRouge), appuiBoutonRougeM, CHANGE);
-  // Mise à jour du clignottement des LEDs
-  couleurLed(Orange)
-      // Affichage du mode
-      Serial.println("Mode Maintenance");
-  stopMesure();
-  accesSD();
-  affSerie();
-  return Mode;
+  Serial.println("Maintenance");
+  delay(10);
+  leds.setColorRGB(0, 255, 127, 0);
+  mesureCapteurs();
+  delay(3000);
 }
 
-void sauvMesure()
+void affichage(float lumiere, float humidite, float temperature, float pression)
+{
+  Serial.print("Niveau luminosite : ");
+  Serial.print(lumiere);
+  Serial.println(" lux");
+  Serial.print("Taux d'humidite : ");
+  Serial.print(humidite);
+  Serial.println("%");
+  Serial.print("Temperature : ");
+  Serial.print(temperature);
+  Serial.println("*C");
+  Serial.print("Pression  : ");
+  Serial.print(pression);
+  Serial.println(" Pa");
+}
+
+float mesureCapteurs()
 {
   // Initialiser une variable qui compte le nombre de fichiers dans un dossier
   int nbFichiers = 0;
@@ -199,57 +245,40 @@ void sauvMesure()
 
 // fonction renommant un fichier
 
-void SDrename(source, destination)
+float masseVolumique(float temperature)
 {
-  SdFile ficsource;
-  SdFile ficdestination;
-
-  if (!ficsource = SD.open(source, FILE_READ))
+  if (temperature < 7.5)
   {
-    Serial.println("erreur ouverture fichier source");
+    return 1.292;
   }
-  if (!ficdestination = SD.open(destination, FILE_WRITE))
+  else if (7.5 <= temperature < 17.5)
   {
-    Serial.println("erreur ouverture fichier destination");
+    return 1.225;
   }
-  while (data = ficsource.read() >= 0)
+  else if (17.5 <= temperature < 22.5)
   {
-    ficdestination.write(data);
+    return 1.204;
   }
-  ficsource.close();
-  ficdestination.close();
-  ficsource.remove();
+  else if (22.5 <= temperature)
+  {
+    return 1.292;
+  }
 }
 
-void Archivage()
+void erreur(float lumiere, float humidite, float temperature, float pression)
 {
-
-  /* Ouvre le premier fichier */
-  repfile = SD.open("/sys3w_relevé_mesures");
-
-  File entry = repfile.openNextFile();
-  int a = 0;
-
-  while (entry)
+  // horloge 0
+  // GPS 1
+  // capteur inaccessible 2
+  // données incoherentes 3
+  if (lumiere < 0 || lumiere > 1000 || humidite < 0 || humidite > 100 || temperature < -50 || temperature > 50 || pression < 100000 || pression > 110000)
   {
-
-    if (entry.isDirectory())
-    {
-      a++;
-    }
-    entry = repfile.openNextFile();
+    clignotement(3);
   }
-  repfile.close();
-
-  sprintf(nomDoss, "sys3w_relevé_mesures/archives_%d", a);
-  mkdir(nomDoss);
-  repfile = SD.open("/sys3w_relevé_mesures");
-
-  // mettre dans ce nouveau doss
-  File entry = repfile.openNextFile();
-  while (entry)
-  {
-
+  // carte sd pleine 4
+  // carte sd inaccessible 5
+  // passage au mode précédent
+}
     if (!entry.isDirectory())
     {
       sprintf(nomFic, "sys3w_relevé_mesures/archives_%d/%s", a, entry.name());
@@ -260,7 +289,48 @@ void Archivage()
   repfile.close();
 }
 
-void loop()
+void clignotement(int type)
 {
-  Modes();
+  while (true)
+  {
+    switch (type)
+    {
+    case 0: // horloge
+      leds.setColorRGB(0, 255, 0, 0);
+      delay(1000);
+      leds.setColorRGB(0, 0, 0, 255);
+      delay(1000);
+      break;
+    case 1: // GPS
+      leds.setColorRGB(0, 255, 0, 0);
+      delay(1000);
+      leds.setColorRGB(0, 255, 255, 0);
+      delay(1000);
+      break;
+    case 2: // acces capteur
+      leds.setColorRGB(0, 255, 0, 0);
+      delay(1000);
+      leds.setColorRGB(0, 0, 255, 0);
+      delay(1000);
+      break;
+    case 3: // donnee incoherente
+      leds.setColorRGB(0, 255, 0, 0);
+      delay(1000);
+      leds.setColorRGB(0, 0, 255, 0);
+      delay(2000);
+      break;
+    case 4: // SD pleine
+      leds.setColorRGB(0, 255, 0, 0);
+      delay(1000);
+      leds.setColorRGB(0, 255, 255, 255);
+      delay(1000);
+      break;
+    case 5: // SD inaccessible
+      leds.setColorRGB(0, 255, 0, 0);
+      delay(1000);
+      leds.setColorRGB(0, 255, 255, 255);
+      delay(2000);
+      break;
+    }
+  }
 }
