@@ -540,7 +540,7 @@ void SDrename(char* source,char* destination){
   }
 
   /*
-  // Alternative (qui lit des plus grosses quantités de données pour que la copie se fasse plus rapidement )
+  // Alternative (qui lit des plus grosses quantités de données pour que la copie se fasse plus rapidement) :
   size_t data;
   uint8_t buf[64];
   */
@@ -556,6 +556,8 @@ void SDrename(char* source,char* destination){
   // Quand la copie est terminée, fermer les deux fichiers (source et destination)
   ficsource.close();
   ficdestination.close();
+
+  // Supprimer le fichier source, il sera recréé au début de la sauvegarde des données (fonction sauvMesures())
   SD.remove(source);
 }
 
@@ -566,17 +568,22 @@ void SDrename(char* source,char* destination){
 void Archivage() {
   // Ouvre le premier dossier
   File repfile = SD.open("/sys3w/");
-  //Parcours le dossier
+  //Parcours le dossier 
   File entry = repfile.openNextFile();
-  int a = 0;
+  
+  int a=0;
+  
   String en = String(entry);
   Serial.println(en);
+  */
+
   Serial.println(F("Parcours dossiers rep"));
   // Tant qu'il y a un fichier dans le dossier
   while (entry) {
     Serial.println(entry.name());
     // Si le dossier est un dossier
     if (entry.isDirectory()) {
+      // incrémente la variable a
       a++;
       Serial.println(F("rep"));     
     } 
