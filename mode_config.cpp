@@ -37,7 +37,7 @@ void Mode_Config()
         Serial.print(F("ERREUR : Valeur incorrecte -> ")); // On affiche un message d’erreur
         Serial.println(InitialisationParametre);           // On affiche la valeur entrée
         Serial.println(F("Veuillez entrer O ou N"));       // On affiche un message d’information
-        setup();                                           // On relance le mode
+        Mode_Config();                                           // On relance le mode
     }
 
     // Boucle de traitement des commandes
@@ -53,14 +53,14 @@ void Mode_Config()
             Serial.print(F("LOG_INTERVAL mis à jour à la valeur ")); // On informe l’utilisateur que la valeur a été mise à jour
             EEPROM.put(0, valeurEnterInt);                           // On met à jour la valeur dans l’EEPROM
             Serial.println(EEPROM.get(0, valeurEnterInt));           // On affiche la nouvelle valeur
-            setup();                                                 // On relance le mode
+            Mode_Config();                                                 // On relance le mode
         }
         else // Si la valeur est inférieure ou égale à 0
         {
             Serial.print(F("ERREUR : Valeur incorrecte ")); // On informe l’utilisateur que la valeur est incorrecte
             Serial.print(valeurEnterInt);
             Serial.println(F(" doit être supérieure à 0"));
-            setup(); // On relance le mode
+            Mode_Config(); // On relance le mode
         }
     }
 
@@ -74,14 +74,14 @@ void Mode_Config()
             Serial.print(F("FILE_MAX_SIZE mis à jour à la valeur ")); // On informe l’utilisateur que la valeur a été mise à jour
             EEPROM.put(2, valeurEnterInt);                            // On met à jour la valeur dans l’EEPROM
             Serial.println(EEPROM.get(2, valeurEnterInt));            // On affiche la nouvelle valeur
-            setup();                                                  // On relance le mode
+            Mode_Config();                                                  // On relance le mode
         }
         else // Si la valeur est inférieure à 0
         {
             Serial.print(F("ERREUR : Valeur incorrecte ")); // On informe l’utilisateur que la valeur est incorrecte
             Serial.print(valeurEnterInt);
             Serial.println(F(" doit être supérieure à 0"));
-            setup(); // On relance le mode
+            Mode_Config(); // On relance le mode
         }
     }
 
@@ -95,19 +95,19 @@ void Mode_Config()
             // oui tkt ça va reset les paramètres à leurs valeurs par défaut
             Serial.println(F("RESET effectué")); // On informe l’utilisateur que le RESET a été effectué
             IntialisationsVar();                 // On appelle la fonction IntialisationsVar
-            setup();                             // On relance le mode
+            Mode_Config();                             // On relance le mode
         }
         else if (valeurEnterString == "N") // Si la valeur est N
         {
             Serial.println(F("RESET annulé")); // On affiche comme quoi le reset a été annulé
-            setup();                           // On relance le mode
+            Mode_Config();                           // On relance le mode
         }
         else // Si la valeur est autre chose que O ou N
         {
             Serial.print(F("ERREUR : Valeur incorrecte -> ")); // On affiche un message d’erreur
             Serial.println(valeurEnterString);                 // On affiche la valeur entrée
             Serial.println(F("Veuillez entrer O ou N"));       // On affiche un message d’information
-            setup();                                           // On relance le mode
+            Mode_Config();                                           // On relance le mode
         }
     }
 
@@ -119,7 +119,7 @@ void Mode_Config()
         delay(100);
         Serial.println(F("Le numéro de lot est le 123456")); // On affiche le numéro de lot
         delay(100);
-        setup(); // On relance le mode
+        Mode_Config(); // On relance le mode
     }
 
     else if (commandeEnter == "TIMEOUT") // Si la commande est TIMEOUT
@@ -132,14 +132,14 @@ void Mode_Config()
             Serial.print(F("TIMEOUT mis à jour à la valeur ")); // On informe l’utilisateur que la valeur a été mise à jour
             EEPROM.put(4, valeurEnterInt);                      // On met à jour la valeur dans l’EEPROM
             Serial.println(EEPROM.get(4, valeurEnterInt));      // On affiche la nouvelle valeur
-            setup();                                            // On relance le mode
+            Mode_Config();                                            // On relance le mode
         }
         else // Si la valeur est inférieure à 0
         {
             Serial.println(F("Valeur incorrecte -> "));                              // On affiche un message d’erreur
             Serial.println(valeurEnterInt);                                          // On affiche la valeur entrée
             Serial.println(F("Veuillez entrer une valeur supérieure ou égale à 0")); // On affiche un message d’information
-            setup();                                                                 // On relance le mode
+            Mode_Config();                                                                 // On relance le mode
         }
     }
     else if (commandeEnter == "LUMIN") // Si la commande est LUMIN
@@ -153,16 +153,16 @@ void Mode_Config()
             case 0:                                                               // Si la valeur est 0
                 Serial.println(F("Capteur de luminosité désactivé avec succès")); // On informe l’utilisateur que la valeur a été mise à jour
                 EEPROM.put(6, valeurEnterInt);                                    // On met à jour la valeur dans l’EEPROM
-                setup();                                                          // On relance le mode
+                Mode_Config();                                                         // On relance le mode
                 break;
             case 1:                                                            // Si la valeur est 1
                 Serial.println(F("Capteur de luminosité activé avec succès")); // On informe l’utilisateur que la valeur a été mise à jour
                 EEPROM.put(6, valeurEnterInt);                                 // On met à jour la valeur dans l’EEPROM
-                setup();                                                       // On relance le mode
+                Mode_Config();                                                       // On relance le mode
                 break;
             default:                                                          // Si la valeur est autre chose que 0 ou 1
                 Serial.println(F("Valeur incorrecte, choisir entre 0 et 1")); // On affiche un message d’erreur
-                setup();                                                      // On relance le mode
+                Mode_Config();                                                      // On relance le mode
                 break;
             }
         }
@@ -178,7 +178,7 @@ void Mode_Config()
             Serial.print(F("LUMIN_LOW mis à jour à la valeur ")); // On informe l’utilisateur que la valeur a été mise à jour
             EEPROM.put(8, valeurEnterInt);                        // On met à jour la valeur dans l’EEPROM
             Serial.println(EEPROM.get(8, valeurEnterInt));        // On affiche la nouvelle valeur
-            setup();                                              // On relance le mode
+            Mode_Config();                                              // On relance le mode
         }
     }
 
@@ -192,14 +192,14 @@ void Mode_Config()
             Serial.print("LUMIN_HIGH mis à jour à la valeur "); // On informe l’utilisateur que la valeur a été mise à jour
             EEPROM.put(10, valeurEnterInt);                     // On met à jour la valeur dans l’EEPROM
             Serial.println(EEPROM.get(10, valeurEnterInt));     // On affiche la nouvelle valeur
-            setup();                                            // On relance le mode
+            Mode_Config();                                            // On relance le mode
         }
         else // Si la valeur est vide ou si la valeur n'est pas comprise entre 0 et 1023
         {
             Serial.println(F("Valeur incorrecte -> "));                               // On affiche un message d’erreur
             Serial.println(valeurEnterInt);                                           // On affiche la valeur entrée
             Serial.println(F("Veuillez entrer une valeur comprise entre 0 et 1023")); // On affiche un message d’information
-            setup();                                                                  // On relance le mode
+            Mode_Config();                                                                  // On relance le mode
         }
     }
 
@@ -214,18 +214,18 @@ void Mode_Config()
             case 0:                                                                // Si la valeur est 0
                 Serial.println(F("Capteur de température désactivé avec succès")); // On informe l’utilisateur que la valeur a été mise à jour
                 EEPROM.put(12, valeurEnterInt);                                    // On met à jour la valeur dans l’EEPROM
-                setup();                                                           // On relance le mode
+                Mode_Config();                                                           // On relance le mode
                 break;
             case 1:                                                             // Si la valeur est 1
                 Serial.println(F("Capteur de température activé avec succès")); // On informe l’utilisateur que la valeur a été mise à jour
                 EEPROM.put(12, valeurEnterInt);                                 // On met à jour la valeur dans l’EEPROM
-                setup();                                                        // On relance le mode
+                Mode_Config();                                                        // On relance le mode
                 break;
             default:                                                // Si la valeur est autre chose que 0 ou 1
                 Serial.println(F("Valeur incorrecte -> "));         // On affiche un message d’erreur
                 Serial.println(valeurEnterInt);                     // On affiche la valeur entrée
                 Serial.println(F("Veuillez choisir entre 0 et 1")); // On affiche un message d’erreur
-                setup();                                            // On relance le mode
+                Mode_Config();                                            // On relance le mode
                 break;
             }
         }
@@ -241,14 +241,14 @@ void Mode_Config()
             Serial.print(F("MIN_TEMP_AIR mis à jour à la valeur ")); // On informe l’utilisateur que la valeur a été mise à jour
             EEPROM.put(14, valeurEnterInt);                          // On met à jour la valeur dans l’EEPROM
             Serial.println(EEPROM.get(14, valeurEnterInt));          // On affiche la nouvelle valeur
-            setup();                                                 // On relance le mode
+            Mode_Config();                                                 // On relance le mode
         }
         else // Si la valeur est vide ou si la valeur n'est pas comprise entre -40 et 85
         {
             Serial.println(F("Valeur incorrecte -> "));                               // On affiche un message d’erreur
             Serial.println(valeurEnterInt);                                           // On affiche la valeur entrée
             Serial.println(F("Veuillez entrer une valeur comprise entre -40 et 85")); // On affiche un message d’information
-            setup();                                                                  // On relance le mode
+            Mode_Config();                                                                  // On relance le mode
         }
     }
 
@@ -262,14 +262,14 @@ void Mode_Config()
             Serial.print(F("MAX_TEMP_AIR mis à jour à la valeur ")); // On informe l’utilisateur que la valeur a été mise à jour
             EEPROM.put(16, valeurEnterInt);                          // On met à jour la valeur dans l’EEPROM
             Serial.println(EEPROM.get(16, valeurEnterInt));          // On affiche la nouvelle valeur
-            setup();                                                 // On relance le mode
+            Mode_Config();                                                 // On relance le mode
         }
         else // Si la valeur est vide ou si la valeur n'est pas comprise entre -40 et 85
         {
             Serial.println(F("Valeur incorrecte -> "));                               // On affiche un message d’erreur
             Serial.println(valeurEnterInt);                                           // On affiche la valeur entrée
             Serial.println(F("Veuillez entrer une valeur comprise entre -40 et 85")); // On affiche un message d’information
-            setup();                                                                  // On relance le mode
+            Mode_Config();                                                                  // On relance le mode
         }
     }
 
@@ -284,18 +284,18 @@ void Mode_Config()
             case 0:                                                            // Si la valeur est 0
                 Serial.println(F("Capteur d'humidité désactivé avec succès")); // On informe l’utilisateur que la valeur a été mise à jour
                 EEPROM.put(18, valeurEnterInt);                                // On met à jour la valeur dans l’EEPROM
-                setup();                                                       // On relance le mode
+                Mode_Config();                                                       // On relance le mode
                 break;
             case 1:                                                         // Si la valeur est 1
                 Serial.println(F("Capteur d'humidité activé avec succès")); // On informe l’utilisateur que la valeur a été mise à jour
                 EEPROM.put(18, valeurEnterInt);                             // On met à jour la valeur dans l’EEPROM
-                setup();                                                    // On relance le mode
+                Mode_Config();                                                   // On relance le mode
                 break;
             default:                                                // Si la valeur est autre chose que 0 ou 1
                 Serial.print(F("Valeur incorrecte -> "));           // On affiche un message d’erreur
                 Serial.println(valeurEnterInt);                     // On affiche la valeur entrée
                 Serial.println(F("Veuillez choisir entre 0 et 1")); // On affiche un message d’erreur
-                setup();                                            // On relance le mode
+                Mode_Config();                                            // On relance le mode
                 break;
             }
         }
@@ -311,14 +311,14 @@ void Mode_Config()
             Serial.print(F("HYGR_MINT mis à jour à la valeur ")); // On informe l’utilisateur que la valeur a été mise à jour
             EEPROM.put(20, valeurEnterInt);                       // On met à jour la valeur dans l’EEPROM
             Serial.println(EEPROM.get(20, valeurEnterInt));       // On affiche la nouvelle valeur
-            setup();                                              // On relance le mode
+            Mode_Config();                                              // On relance le mode
         }
         else // Si la valeur est vide ou si la valeur n'est pas comprise entre -45 et 85
         {
             Serial.println(F("Valeur incorrecte -> "));                               // On affiche un message d’erreur
             Serial.println(valeurEnterInt);                                           // On affiche la valeur entrée
             Serial.println(F("Veuillez entrer une valeur comprise entre -45 et 80")); // On affiche un message d’information
-            setup();                                                                  // On relance le mode
+            Mode_Config();                                                                  // On relance le mode
         }
     }
 
@@ -339,7 +339,7 @@ void Mode_Config()
             Serial.println(F("Valeur incorrecte -> "));                               // On affiche un message d’erreur
             Serial.println(valeurEnterInt);                                           // On affiche la valeur entrée
             Serial.println(F("Veuillez entrer une valeur comprise entre -45 et 80")); // On affiche un message d’information
-            setup();                                                                  // On relance le mode
+            Mode_Config();                                                                 // On relance le mode
         }
     }
 
@@ -354,18 +354,18 @@ void Mode_Config()
             case 0:                                                             // Si la valeur est 0
                 Serial.println(F("Capteur de pression désactivé avec succès")); // On informe l’utilisateur que la valeur a été mise à jour
                 EEPROM.put(24, valeurEnterInt);                                 // On met à jour la valeur dans l’EEPROM
-                setup();                                                        // On relance le mode
+                Mode_Config();                                                       // On relance le mode
                 break;
             case 1:                                                          // Si la valeur est 1
                 Serial.println(F("Capteur de pression activé avec succès")); // On informe l’utilisateur que la valeur a été mise à jour
                 EEPROM.put(24, valeurEnterInt);                              // On met à jour la valeur dans l’EEPROM
-                setup();                                                     // On relance le mode
+                Mode_Config();                                                    // On relance le mode
                 break;
             default:                                                // Si la valeur est autre chose que 0 ou 1
                 Serial.println(F("Valeur incorrecte -> "));         // On affiche un message d’erreur
                 Serial.println(valeurEnterInt);                     // On affiche la valeur entrée
                 Serial.println(F("Veuillez choisir entre 0 et 1")); // On affiche un message d’erreur
-                setup();                                            // On relance le mode
+                Mode_Config();                                            // On relance le mode
                 break;
             }
         }
@@ -381,14 +381,14 @@ void Mode_Config()
             Serial.print(F("PRESSURE_MIN mis à jour à la valeur ")); // On informe l’utilisateur que la valeur a été mise à jour
             EEPROM.put(26, valeurEnterInt);                          // On met à jour la valeur dans l’EEPROM
             Serial.println(EEPROM.get(26, valeurEnterInt));          // On affiche la nouvelle valeur
-            setup();                                                 // On relance le mode
+            Mode_Config();                                                // On relance le mode
         }
         else // Si la valeur est vide ou si la valeur n'est pas comprise entre 300 et 1100
         {
             Serial.println(F("Valeur incorrecte -> "));                                 // On affiche un message d’erreur
             Serial.println(valeurEnterInt);                                             // On affiche la valeur entrée
             Serial.println(F("Veuillez entrer une valeur comprise entre 300 et 1100")); // On affiche un message d’information
-            setup();                                                                    // On relance le mode
+            Mode_Config();                                                                    // On relance le mode
         }
     }
 
@@ -402,14 +402,14 @@ void Mode_Config()
             Serial.print(F("PRESSURE_MAX mis à jour à la valeur ")); // On informe l’utilisateur que la valeur a été mise à jour
             EEPROM.put(28, valeurEnterInt);                          // On met à jour la valeur dans l’EEPROM
             Serial.println(EEPROM.get(28, valeurEnterInt));          // On affiche la nouvelle valeur
-            setup();                                                 // On relance le mode
+            Mode_Config();                                                 // On relance le mode
         }
         else // Si la valeur est vide ou si la valeur n'est pas comprise entre 300 et 1100
         {
             Serial.println(F("Valeur incorrecte -> "));                                 // On affiche un message d’erreur
             Serial.println(valeurEnterInt);                                             // On affiche la valeur entrée
             Serial.println(F("Veuillez entrer une valeur comprise entre 300 et 1100")); // On affiche un message d’information
-            setup();                                                                    // On relance le mode
+            Mode_Config();                                                                    // On relance le mode
         }
     }
 
@@ -441,14 +441,14 @@ void Mode_Config()
                     Serial.print(F(":"));                            // On affiche un :
                     EEPROM.put(34, secondeEnter);                    // On met à jour la valeur dans l’EEPROM
                     Serial.println(EEPROM.get(34, secondeEnter));    // On affiche la nouvelle valeur
-                    setup();                                         // On relance le mode
+                    Mode_Config();                                         // On relance le mode
                 }
                 else // Si les secondes ne sont pas comprises entre 0 et 59
                 {
                     Serial.println(F("Valeur incorrecte -> "));                             // On affiche un message d’erreur
                     Serial.println(secondeEnter);                                           // On affiche la valeur entrée
                     Serial.println(F("Veuillez entrer une valeur comprise entre 0 et 59")); // On affiche un message d’information
-                    setup();                                                                // On relance le mode
+                    Mode_Config();                                                                // On relance le mode
                 }
             }
             else // Si les minutes ne sont pas comprises entre 0 et 59
@@ -456,7 +456,7 @@ void Mode_Config()
                 Serial.println(F("Valeur incorrecte -> "));                             // On affiche un message d’erreur
                 Serial.println(minuteEnter);                                            // On affiche la valeur entrée
                 Serial.println(F("Veuillez entrer une valeur comprise entre 0 et 59")); // On affiche un message d’information
-                setup();
+                Mode_Config();
             }
         }
         else // Si l'heure n'est pas comprise entre 0 et 23
@@ -464,7 +464,7 @@ void Mode_Config()
             Serial.println(F("Valeur incorrecte -> "));                             // On affiche un message d’erreur
             Serial.println(heureEnter);                                             // On affiche la valeur entrée
             Serial.println(F("Veuillez entrer une valeur comprise entre 0 et 23")); // On affiche un message d’information
-            setup();                                                                // On relance le mode
+            Mode_Config();                                                               // On relance le mode
         }
     }
 
@@ -496,7 +496,7 @@ void Mode_Config()
                     Serial.print(F("/"));                            // On affiche un /
                     EEPROM.put(40, anneeEnter);                      // On met à jour la valeur dans l’EEPROM
                     Serial.println(EEPROM.get(40, anneeEnter));      // On affiche la nouvelle valeur
-                    setup();                                         // On relance le mode
+                    Mode_Config();                                         // On relance le mode
                 }
                 else // Si l'année n'est pas comprise entre 0 et 99
                 {
@@ -506,7 +506,7 @@ void Mode_Config()
                     delay(100);
                     Serial.println(F("Veuillez entrer une valeur comprise entre 0 et 99")); // On affiche un message d’information
                     delay(100);
-                    setup(); // On relance le mode
+                    Mode_Config(); // On relance le mode
                 }
             }
             else // Si le jour n'est pas compris entre 1 et 31
@@ -517,7 +517,7 @@ void Mode_Config()
                 delay(100);
                 Serial.println(F("Veuillez entrer une valeur comprise entre 1 et 31")); // On affiche un message d’ information
                 delay(100);
-                setup(); // On relance le mode
+                Mode_Config(); // On relance le mode
             }
         }
         else // Si le mois n'est pas compris entre 1 et 12
@@ -528,7 +528,7 @@ void Mode_Config()
             delay(100);
             Serial.println(F("Veuillez entrer une valeur comprise entre 1 et 12")); // On affiche un message d’information
             delay(100);
-            setup(); // On relance le mode
+            Mode_Config(); // On relance le mode
         }
     }
 
@@ -543,13 +543,13 @@ void Mode_Config()
             Serial.print(F("Le jour de la semaine a été mis à jour à ")); // On informe l’utilisateur que la valeur a été mise à jour
             EEPROM.put(42, jourSemaineEnter);                             // On met à jour la valeur dans l’EEPROM
             Serial.println(EEPROM.get(42, jourSemaineEnter));             // On affiche la nouvelle valeur
-            setup();                                                      // On relance le mode
+            Mode_Config();                                                      // On relance le mode
         }
         else // Si le jour de la semaine entré n'est pas égal à l'un des jours de la semaine
         {
             Serial.println(F("Valeur incorrecte -> ")); // On affiche un message d’erreur
             Serial.println(jourSemaineEnter);           // On affiche la valeur entrée
-            setup();                                    // On relance le mode
+            Mode_Config();                                    // On relance le mode
         }
     }
 
@@ -577,7 +577,7 @@ void Mode_Config()
         Serial.println(F("DATE : configuration de la date du jour au format MOIS{1-12},JOUR{1-31},ANNEE{2000-2099}"));                                  // On affiche la description de la commande DATE
         Serial.println(F("DAY : Configuration du jour de la semaine{MON,TUE,WED,THU,FRI,SAT,SUN}"));                                                    // On affiche la description de la commande DAY
         delay(100);
-        setup();
+        Mode_Config();
     }
 
     else
@@ -585,7 +585,7 @@ void Mode_Config()
         Serial.print(F("Commande "));
         Serial.print(commandeEnter);
         Serial.print(F(" inconnue \n"));
-        setup();
+        Mode_Config();
     }
 }
 
