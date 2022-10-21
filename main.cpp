@@ -585,7 +585,7 @@ void SDrename(char* source,char* destination){
 
 
   /*
-  // Alternative (qui lit des plus grosses quantités de données pour que la copie se fasse plus rapidement )
+  // Alternative (qui lit des plus grosses quantités de données pour que la copie se fasse plus rapidement) :
   size_t data;
   uint8_t buf[64];
   */
