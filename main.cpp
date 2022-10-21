@@ -606,7 +606,7 @@ void SDrename(char* source,char* destination){
   ficsource.close();
   ficdestination.close();
 
-  // Supprimer le fichier source, il sera recréé au début de la sauvegarde des données (sauvMesures)
+  // Supprimer le fichier source, il sera recréé au début de la sauvegarde des données (fonction sauvMesures())
   SD.remove(source);
 }
 
