@@ -1,12 +1,16 @@
-// Importation de la bibliothèque permettant de gérer la LED
+// Importation de la bibliothèque permettant de gerer la LED
 #include <ChainableLED.h>
-// Importation de la bibliothèque permettant d'utiliser le capteur d'humidité et de température
+// Importation de la bibliothèque permettant d'utiliser le capteur d'humidite et de temperature
 #include "DHT.h"
 // Importation des bibliothèques permettant d'utiliser la carte SD
 #include "SPI.h"
 #include "SD.h"
+#include <EEPROM.h> // Pour la sauvegarde des paramètres
 
-// Déclaration du type et du pin utilisés pour les capteurs d'humidité et de température
+String valeurEnterString; // variable pour stocker la valeur entree par l’utilisateur
+int valeurEnterInt; 
+int ligne = 0;
+// Declaration du type et du pin utilises pour les capteurs d'humidite et de temperature
 #define DHTTYPE DHT11
 #define DHTPIN 8
 DHT dht(DHTPIN, DHTTYPE);
@@ -21,23 +25,24 @@ const int pinCS = 4;
 // Pins pour la LED (pin6, pin7, nombre de LED)
 ChainableLED leds(6, 7, 1);
 
-// Booléens pour controler la pression ou non du bouton, true = non pressé
+// Booleens pour controler la pression ou non du bouton, true = non presse
 bool bRouge = true;
 bool bVert = true;
 
-// Variable stockant le mode précédent pour le mode maintenance
+// Variable stockant le mode precedent pour le mode maintenance
 int precMode;
 
-// Définition du délai entre deux mesure (1000 = 1 seconde)
-const int delaiMesure = 10000;
+// Definition du delai entre deux mesure (1000 = 1 seconde)
 
-// Variable stockant le temps écoulé depuis le début du programme à l'aide de millis()
+int LOG_INTERVAL = EEPROM.get(0, LOG_INTERVAL);
+
+// Variable stockant le temps ecoule depuis le debut du programme à l'aide de millis()
 long duree, delai;
 
 // Variables contenant les valeurs obtenues des capteurs
 float lumiere, temperature, humidite, pression;
 
-// Enumération des modes principaux
+// Enumeration des modes principaux
 enum mode {Standard = 0, Eco, Maintenance, Config, Debut};
 //
 mode Mode;
@@ -51,7 +56,7 @@ void setup()
 {
   // Initialisation du mode à "Debut" : dans aucun des modes principaux
   Mode = Debut;
-  // Définition du débit de données
+  // Definition du debit de donnees
   Serial.begin(9600);
   Serial.println("Demarrage du programme");
   // Initialisation des pins
@@ -67,7 +72,7 @@ void setup()
   attachInterrupt(digitalPinToInterrupt(boutonVert), appuiVert, CHANGE);
 
   //interruption possible sur le bouton rouge pour passer en mode config
-  attendre(5);
+  attendre(5000);
   // Si pas d'interruption pour passer au mode config, passage au mode standard
   if(Mode == Debut){
     Mode = Standard;
@@ -79,26 +84,26 @@ void setup()
 void appuiRouge(){
   // Lecture de la position du bouton rouge
   bRouge = digitalRead(boutonRouge);
-  // Si le bouton est appuyé (on vient de le presser), on stocke le temps écoulé depuis le début du programme
+  // Si le bouton est appuye (on vient de le presser), on stocke le temps ecoule depuis le debut du programme
   if(!bRouge){
     duree = millis();
   }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-  // Si le bouton n'est pas appuyé (on vient de le lâcher), on teste s'il a été appuyé pendant au moins 5 secondes
+  // Si le bouton n'est pas appuye (on vient de le lâcher), on teste s'il a ete appuye pendant au moins 5 secondes
   else if(bRouge){
     if(millis()-duree > 5000){
-      // Si l'on est au début du programme, on passe Mode à Config
+      // Si l'on est au debut du programme, on passe Mode à Config
       if(Mode == Debut){
         Mode = Config;
       }
-      // Si on est dans le mode Standard ou Eco, on passe au mode Maintenance après avoir stocké le précédent mode
+      // Si on est dans le mode Standard ou Eco, on passe au mode Maintenance après avoir stocke le precedent mode
       else if(Mode == Standard || Mode == Eco){
         precMode = Mode;
         Mode = Maintenance;
       }
-      // Si on était dans le mode Maintenance, on repasse au mode précédent (Standard ou Eco)
+      // Si on etait dans le mode Maintenance, on repasse au mode precedent (Standard ou Eco)
       else if(Mode == Maintenance){
         if(precMode == Eco){
           Mode = Eco;
@@ -116,11 +121,11 @@ void appuiRouge(){
 void appuiVert(){
   // Lecture de la position du bouton vert
   bVert = digitalRead(boutonVert);
-  // Si le bouton est appuyé (on vient de le presser), on stocke le temps écoulé depuis le début du programme
+  // Si le bouton est appuye (on vient de le presser), on stocke le temps ecoule depuis le debut du programme
   if(!bVert){
     duree = millis();
   }
-  // Si le bouton n'est pas appuyé (on vient de le lâcher), on teste s'il a été appuyé pendant au moins 5 secondes
+  // Si le bouton n'est pas appuye (on vient de le lâcher), on teste s'il a ete appuye pendant au moins 5 secondes
   else{
     if(millis()-duree > 5000){
       // Si on est en mode Standard, on passe ne mode Eco
@@ -154,9 +159,9 @@ void Modes(){
       modeMaintenance();
       break;
     // Mode Config
-  case 3:
-    modeConfig();
-    break;
+    /*case 3:
+      modeConfig();
+    break;*/
   }
 }
 
@@ -170,9 +175,9 @@ void loop(){
 }
 
 void modeStandard(){
-  attendre(delaiMesure);
+  attendre(LOG_INTERVAL);
   Serial.println("Mode standard");
-  delay(10);
+  attendre(10);
   leds.setColorRGB(0, 0, 255, 0);
   lumiere = mesureLumiere();
   humidite = mesureHumidite();
@@ -183,21 +188,17 @@ void modeStandard(){
 }
 
 void modeEco(){
-  if(millis()-delai >= delaiMesure * 2){
+  if(millis()-delai >= LOG_INTERVAL * 2){
     delai = millis();
     Serial.println("Eco");
-    delay(10);
+    attendre(10);
     leds.setColorRGB(0, 0, 0, 255);
   }
-}
-void modeConfig(){
-  Serial.println("Conf");
-  leds.setColorRGB(0, 255, 255, 0);
 }
 
 void modeMaintenance(){
   Serial.println("Maintenance");
-  delay(10);
+  attendre(10);
   leds.setColorRGB(0, 255, 127, 0);
   lumiere = mesureLumiere();
   humidite = mesureHumidite();
@@ -205,7 +206,7 @@ void modeMaintenance(){
   pression = mesurePression();
   erreur(lumiere, humidite, temperature, pression);
   affichage(lumiere, humidite, temperature, pression);
-  delay(100);
+  attendre(100);
 
 }
 
@@ -228,7 +229,6 @@ void affichage(float lumiere, float humidite, float temperature, float pression)
 float mesureLumiere()
 {
   float lumiere = analogRead(pinLux);
-  Serial.println(lumiere);
   return lumiere;
 }
 
@@ -251,9 +251,7 @@ float mesurePression(){
   return pression;
 }
 
-
-
- float masseVolumique(float temperature){
+float masseVolumique(float temperature){
    if(temperature < 7.5){
      return 1.292;
    }
@@ -272,7 +270,7 @@ void erreur(float lumiere, float humidite, float temperature, float pression){
   // horloge 0
   // GPS 1
   // capteur inaccessible 2
-  //données incoherentes 3
+  //donnees incoherentes 3
   if(lumiere < 0 || lumiere > 1000 || humidite < 0 || humidite > 100 || temperature < -50 || temperature > 50 || pression < 100000 || pression > 110000){
     clignotement(3);
   }
@@ -289,39 +287,39 @@ void clignotement(int type){
     {
       case 0: // horloge
         leds.setColorRGB(0, 255, 0, 0);
-        delay(1000);
+        attendre(1000);
         leds.setColorRGB(0, 0, 0, 255);
-        delay(1000);
+        attendre(1000);
         break;
       case 1: // GPS
-        leds.setColorRGB(0, 255, 0, 0);
-        delay(1000);
+              leds.setColorRGB(0, 255, 0, 0);
+        attendre(1000);
         leds.setColorRGB(0, 255, 255, 0);
-        delay(1000);
+        attendre(1000);
         break;
       case 2: // acces capteur
         leds.setColorRGB(0, 255, 0, 0);
-        delay(1000);
+        attendre(1000);
         leds.setColorRGB(0, 0, 255, 0);
-        delay(1000);
+        attendre(1000);
         break;
       case 3: // donnee incoherente
         leds.setColorRGB(0, 255, 0, 0);
-        delay(1000);
+        attendre(1000);
         leds.setColorRGB(0, 0, 255, 0);
-        delay(2000);
+        attendre(2000);
         break;
       case 4: // SD pleine
         leds.setColorRGB(0, 255, 0, 0);
-        delay(1000);
+        attendre(1000);
         leds.setColorRGB(0, 255, 255, 255);
-        delay(1000);
+        attendre(1000);
         break;
       case 5: // SD inaccessible
         leds.setColorRGB(0, 255, 0, 0);
-        delay(1000);
+        attendre(1000);
         leds.setColorRGB(0, 255, 255, 255);
-        delay(2000);
+        attendre(2000);
         break;
     }
   }
@@ -331,13 +329,12 @@ void sauvMesures(float mes1, float mes2,float mes3, float mes4)
 {
   //Initialiser une variable qui compte le nombre de fichiers dans un dossier
   int nbFichiers = 0;
-  
   int FILE_MAX_SIZE = 4096;
 
   if (!SD.exists("sys3w")) {
-    Serial.println (F("Création dossier"));
+    Serial.println (F("Creation dossier"));
    if(!SD.mkdir("sys3w")){
-      Serial.println("Erreur creation dossier");
+      Serial.println(F("Erreur creation dossier"));
   }   
   } 
   
@@ -348,16 +345,16 @@ void sauvMesures(float mes1, float mes2,float mes3, float mes4)
 
   //ouvrir un fichier dans repertoire "sys3w_releve_mesures"
 
-  //Déterminer le chemin pour arriver à notre dossier et modifier son nom
+  //Determiner le chemin pour arriver à notre dossier et modifier son nom
   char datafile[33];
   int jour = 15; // moment.day();
   int mois = 10; // moment.month();
   int annee = 22; // moment.year()
   
   sprintf(datafile,"sys3w/%d%d%d_%d.LOG",jour,mois,annee,nbFichiers);  //  %d pour un int
-  //datafile = "sys3w_releve_mesures" + "/" + jour + mois + année + "_" + nbFichiers + "." + "LOG" ;
+  //datafile = "sys3w_releve_mesures" + "/" + jour + mois + annee + "_" + nbFichiers + "." + "LOG" ;
 
-  Serial.print("Ouverture ");
+  Serial.print(F("Ouverture "));
   Serial.println(datafile);
   File fichier = SD.open(datafile, FILE_WRITE);
   //Si le fichier s'ouvre
@@ -392,7 +389,7 @@ void sauvMesures(float mes1, float mes2,float mes3, float mes4)
       
       if(move)
       {
-        Serial.println("move");
+        Serial.println(F("move"));
         //renommer le fichier
         SDrename(datafile,datafile2);
       }
@@ -419,6 +416,8 @@ void sauvMesures(float mes1, float mes2,float mes3, float mes4)
     
     fichier.close();
     Serial.println (F("Releve des capteurs ecrits sur la carte SD"));
+    Serial.println(ligne);
+    ligne++;    
     
   }
   else
@@ -430,7 +429,7 @@ void sauvMesures(float mes1, float mes2,float mes3, float mes4)
 void SDrename(char* source,char* destination){
   File ficsource;
   File ficdestination;
-  Serial.println("SDrename");
+  Serial.println(F("SDrename"));
   
   ficsource = SD.open(source, FILE_READ);
   Serial.println(source);
@@ -448,16 +447,19 @@ void SDrename(char* source,char* destination){
   }
 
 
-  
+  /*
   size_t data;
   uint8_t buf[64];
+  */
+
+long data;
   
-  while((data= ficsource.read(buf,sizeof(buf))) >= 0){
-    Serial.println(data);
-    ficdestination.write(buf, data);
+  while(data = ficsource.read() >= 0){ //(data= ficsource.read(buf,sizeof(buf))) >= 0
+    Serial.println();
+    ficdestination.write(data); //buf,
 
   }
-  Serial.println("data copiée");
+  Serial.println(F("data copiee"));
   ficsource.close();
   ficdestination.close();
   SD.remove(source);
@@ -472,13 +474,13 @@ void Archivage() {
   int a=0;
   String en = String(entry);
   Serial.println(en);
-  Serial.println("Parcours dossiers rep");
+  Serial.println(F("Parcours dossiers rep"));
 
   while (entry) {
     Serial.println(entry.name());
     if (entry.isDirectory()) {
       a++;
-      Serial.println("rep");     
+      Serial.println(F("rep"));     
     } 
     entry = repfile.openNextFile();
   }
@@ -489,12 +491,11 @@ void Archivage() {
     //nomDoss= "sys3w_releve_mesures" + "_" + a;
   Serial.println(nomDoss);
   
-  Serial.println("Création nouveau dossier"); 
+  Serial.println(F("Creation nouveau dossier")); 
   if(!SD.mkdir(nomDoss)){
-      Serial.println("Erreur creation dossier");
+      Serial.println(F("Erreur creation dossier"));
   }
-  Serial.println("doss cree");
-  delay(100);
+  Serial.println(F("doss cree"));
   
   File repfile2 = SD.open("/sys3w/");
 
@@ -507,14 +508,14 @@ void Archivage() {
   en = String(entry);
   Serial.println(en);
   
-  Serial.println("Parcours fichiers rep");
+  Serial.println(F("Parcours fichiers rep"));
   while (entry) {
     Serial.println(entry.name());
      
     if (entry.isDirectory()) {
-    Serial.println("rep");
+    Serial.println(F("rep"));
     } else { 
-      Serial.println("fic");
+      Serial.println(F("fic"));
       char nomFic[50];
       sprintf(nomFic,"sys3w/arch_%d/%s", a, entry.name());
       SDrename(entry.name(),nomFic);
@@ -524,6 +525,641 @@ void Archivage() {
     entry = repfile2.openNextFile();
     }
     repfile2.close();
-  Serial.println("fin Parcours fichiers rep");
+  Serial.println(F("fin Parcours fichiers rep"));
   
+}
+
+///////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
+
+void modeConfig()
+{
+    Serial.println(F("Mode config")); // Affichage d’un message de bienvenue
+    leds.setColorRGB(0, 255, 255, 0);    // initialisation des variables ?
+    Serial.println(F("Voulez-vous initialiser les variables à leurs valeurs pas defaut ? (O/N)")); // Demande à l’utilisateur s’il veut initialiser les variables à leurs valeurs par defaut
+    String InitialisationParametre = ReadandTrimString();                                          // On appelle la fonction ReadandTrimString
+    if (InitialisationParametre == "O")                                                            // Si la valeur est O
+    {
+        IntialisationsVar();                        // On appelle la fonction IntialisationsVar
+        Serial.println(F("initialisation faites")); // On informe l’utilisateur que l’initialisation est faite
+    }
+    else if (InitialisationParametre == "N") // Si la valeur est N
+    {
+        Serial.println(F("initialisation annulee")); // On informe l’utilisateur que l’initialisation est annulee
+    }
+    else // Si la valeur est autre chose que O ou N
+    {
+        Serial.print(F("ERREUR : Valeur incorrecte -> ")); // On affiche un message d’erreur
+        Serial.println(InitialisationParametre);           // On affiche la valeur entree
+        Serial.println(F("Veuillez entrer O ou N"));       // On affiche un message d’information
+        modeConfig();                                           // On relance le mode
+    }
+
+    // Boucle de traitement des commandes
+    Serial.println(F("Entrez une commande"));   // Affichage d’un message d’information
+    String commandeEnter = ReadandTrimString(); // Lecture de la commande entree par l’utilisateur
+    if (commandeEnter == "LOG_INTERVAL")        // Si la commande est LOG_INTERVAL
+    {
+        Serial.println(F("LOG_INTERVAL"));                                 // On affiche LOG_INTERVAL
+        Serial.println(F("Rentrez la nouvelle valeur pour LOG_INTERVAL")); // On demande la nouvelle valeur pour LOG_INTERVAL
+        ReadandConvert();                                                  // On appelle la fonction ReadandConvert
+        if (valeurEnterInt > 0)                                            // Si la valeur est superieure à 0
+        {
+            Serial.print(F("LOG_INTERVAL mis à jour à la valeur ")); // On informe l’utilisateur que la valeur a ete mise à jour
+            EEPROM.put(0, valeurEnterInt);                           // On met à jour la valeur dans l’EEPROM
+            Serial.println(EEPROM.get(0, valeurEnterInt));           // On affiche la nouvelle valeur
+            modeConfig();                                                 // On relance le mode
+        }
+        else // Si la valeur est inferieure ou egale à 0
+        {
+            Serial.print(F("ERREUR : Valeur incorrecte ")); // On informe l’utilisateur que la valeur est incorrecte
+            Serial.print(valeurEnterInt);
+            Serial.println(F(" doit être superieure à 0"));
+            modeConfig(); // On relance le mode
+        }
+    }
+
+    else if (commandeEnter == "FILE_MAX_SIZE") // Si la commande est FILE_MAX_SIZE
+    {
+        Serial.println(F("FILE_MAX_SIZE"));                                 // On affiche FILE_MAX_SIZE
+        Serial.println(F("Rentrez la nouvelle valeur pour FILE_MAX_SIZE")); // On demande la nouvelle valeur pour FILE_MAX_SIZE
+        ReadandConvert();                                                   // On appelle la fonction ReadandConvert
+        if (valeurEnterInt > 0)                                             // Si la valeur est superieure à 0
+        {
+            Serial.print(F("FILE_MAX_SIZE mis à jour à la valeur ")); // On informe l’utilisateur que la valeur a ete mise à jour
+            EEPROM.put(2, valeurEnterInt);                            // On met à jour la valeur dans l’EEPROM
+            Serial.println(EEPROM.get(2, valeurEnterInt));            // On affiche la nouvelle valeur
+            modeConfig();                                                  // On relance le mode
+        }
+        else // Si la valeur est inferieure à 0
+        {
+            Serial.print(F("ERREUR : Valeur incorrecte ")); // On informe l’utilisateur que la valeur est incorrecte
+            Serial.print(valeurEnterInt);
+            Serial.println(F(" doit être superieure à 0"));
+            modeConfig(); // On relance le mode
+        }
+    }
+
+    else if (commandeEnter == "RESET") // Si la commande est RESET
+    {
+        Serial.println(F("RESET"));                                                                                           // On affiche RESET
+        Serial.println(F("Voulez-vous vraiment reinitialiser l’ensemble des paramètres à leurs valeurs par defaut ? (O/N)")); // On demande confirmation à l’utilisateur pour reinitialiser les paramètres à leurs valeurs par defaut
+        ReadandTrimString();                                                                                                  // On appelle la fonction ReadandTrimString
+        if (valeurEnterString == "O")                                                                                         // Si la valeur est O
+        {
+            // oui tkt ça va reset les paramètres à leurs valeurs par defaut
+            Serial.println(F("RESET effectue")); // On informe l’utilisateur que le RESET a ete effectue
+            IntialisationsVar();                 // On appelle la fonction IntialisationsVar
+            modeConfig();                             // On relance le mode
+        }
+        else if (valeurEnterString == "N") // Si la valeur est N
+        {
+            Serial.println(F("RESET annule")); // On affiche comme quoi le reset a ete annule
+            modeConfig();                           // On relance le mode
+        }
+        else // Si la valeur est autre chose que O ou N
+        {
+            Serial.print(F("ERREUR : Valeur incorrecte -> ")); // On affiche un message d’erreur
+            Serial.println(valeurEnterString);                 // On affiche la valeur entree
+            Serial.println(F("Veuillez entrer O ou N"));       // On affiche un message d’information
+            modeConfig();                                           // On relance le mode
+        }
+    }
+
+    else if (commandeEnter == "VERSION") // Si la commande est VERSION
+    {
+        Serial.println(F("VERSION")); // On affiche VERSION
+        attendre(100);
+        Serial.println(F("La version du système est la 1.0")); // On affiche la version du système
+        attendre(100);
+        Serial.println(F("Le numero de lot est le 123456")); // On affiche le numero de lot
+        attendre(100);
+        modeConfig(); // On relance le mode
+    }
+
+    else if (commandeEnter == "TIMEOUT") // Si la commande est TIMEOUT
+    {
+        Serial.println(F("TIMEOUT"));                                     // On affiche TIMEOUT
+        Serial.println(F("Rentrez la nouvelle valeur pour TIMEOUT (s)")); // On demande la nouvelle valeur pour TIMEOUT en secondes
+        ReadandConvert();                                                 // On appelle la fonction ReadandConvert
+        if (valeurEnterInt >= 0)                                          // Si la valeur n'est pas vide et si la valeur est superieure ou egale à 0
+        {
+            Serial.print(F("TIMEOUT mis à jour à la valeur ")); // On informe l’utilisateur que la valeur a ete mise à jour
+            EEPROM.put(4, valeurEnterInt);                      // On met à jour la valeur dans l’EEPROM
+            Serial.println(EEPROM.get(4, valeurEnterInt));      // On affiche la nouvelle valeur
+            modeConfig();                                            // On relance le mode
+        }
+        else // Si la valeur est inferieure à 0
+        {
+            Serial.println(F("Valeur incorrecte -> "));                              // On affiche un message d’erreur
+            Serial.println(valeurEnterInt);                                          // On affiche la valeur entree
+            Serial.println(F("Veuillez entrer une valeur superieure ou egale à 0")); // On affiche un message d’information
+            modeConfig();                                                                 // On relance le mode
+        }
+    }
+    else if (commandeEnter == "LUMIN") // Si la commande est LUMIN
+    {
+        Serial.println(F("LUMIN"));                                 // On affiche LUMIN
+        Serial.println(F("Rentrez la nouvelle valeur pour LUMIN")); // On demande une nouvelle valeur pour LUMIN
+        ReadandConvert();                                           // On appelle la fonction ReadandConvert
+        switch (valeurEnterInt)                                     // On verifie la valeur entree
+        {
+            {
+            case 0:                                                               // Si la valeur est 0
+                Serial.println(F("Capteur de luminosite desactive avec succès")); // On informe l’utilisateur que la valeur a ete mise à jour
+                EEPROM.put(6, valeurEnterInt);                                    // On met à jour la valeur dans l’EEPROM
+                modeConfig();                                                          // On relance le mode
+                break;
+            case 1:                                                            // Si la valeur est 1
+                Serial.println(F("Capteur de luminosite active avec succès")); // On informe l’utilisateur que la valeur a ete mise à jour
+                EEPROM.put(6, valeurEnterInt);                                 // On met à jour la valeur dans l’EEPROM
+                modeConfig();                                                       // On relance le mode
+                break;
+            default:                                                          // Si la valeur est autre chose que 0 ou 1
+                Serial.println(F("Valeur incorrecte, choisir entre 0 et 1")); // On affiche un message d’erreur
+                modeConfig();                                                      // On relance le mode
+                break;
+            }
+        }
+    }
+
+    else if (commandeEnter == "LUMIN_LOW") // Si la commande est LUMIN_LOW
+    {
+        Serial.println(F("LUMIN_LOW"));                                 // On affiche LUMIN_LOW
+        Serial.println(F("Rentrez la nouvelle valeur pour LUMIN_LOW")); // On demande la nouvelle valeur pour LUMIN_LOW
+        ReadandConvert();                                               // On appelle la fonction ReadandConvert
+        if (valeurEnterInt >= 0 && valeurEnterInt <= 1023)              // Si la valeur n'est pas vide et est comprise entre 0 et 1023
+        {
+            Serial.print(F("LUMIN_LOW mis à jour à la valeur ")); // On informe l’utilisateur que la valeur a ete mise à jour
+            EEPROM.put(8, valeurEnterInt);                        // On met à jour la valeur dans l’EEPROM
+            Serial.println(EEPROM.get(8, valeurEnterInt));        // On affiche la nouvelle valeur
+            modeConfig();                                              // On relance le mode
+        }
+    }
+
+    else if (commandeEnter == "LUMIN_HIGH") // Si la commande est LUMIN_HIGH
+    {
+        Serial.println(F("LUMIN_HIGH"));                                 // On affiche LUMIN_HIGH
+        Serial.println(F("Rentrez la nouvelle valeur pour LUMIN_HIGH")); // On demande la nouvelle valeur pour LUMIN_HIGH
+        ReadandConvert();                                                // On appelle la fonction ReadandConvert
+        if (valeurEnterInt >= 0 && valeurEnterInt <= 1023)               // Si la valeur n'est pas vide et est comprise entre 0 et 1023
+        {
+            Serial.print("LUMIN_HIGH mis à jour à la valeur "); // On informe l’utilisateur que la valeur a ete mise à jour
+            EEPROM.put(10, valeurEnterInt);                     // On met à jour la valeur dans l’EEPROM
+            Serial.println(EEPROM.get(10, valeurEnterInt));     // On affiche la nouvelle valeur
+            modeConfig();                                            // On relance le mode
+        }
+        else // Si la valeur est vide ou si la valeur n'est pas comprise entre 0 et 1023
+        {
+            Serial.println(F("Valeur incorrecte -> "));                               // On affiche un message d’erreur
+            Serial.println(valeurEnterInt);                                           // On affiche la valeur entree
+            Serial.println(F("Veuillez entrer une valeur comprise entre 0 et 1023")); // On affiche un message d’information
+            modeConfig();                                                                  // On relance le mode
+        }
+    }
+
+    else if (commandeEnter == "TEMP_AIR") // Si la commande est TEMP_AIR
+    {
+        Serial.println(F("TEMP_AIR"));                                 // On affiche TEMP_AIR
+        Serial.println(F("Rentrez la nouvelle valeur pour TEMP_AIR")); // On demande la nouvelle valeur pour TEMP_AIR
+        ReadandConvert();                                              // On appelle la fonction ReadandConvert
+        switch (valeurEnterInt)                                        // On verifie la valeur entree
+        {
+            {
+            case 0:                                                                // Si la valeur est 0
+                Serial.println(F("Capteur de temperature desactive avec succès")); // On informe l’utilisateur que la valeur a ete mise à jour
+                EEPROM.put(12, valeurEnterInt);                                    // On met à jour la valeur dans l’EEPROM
+                modeConfig();                                                           // On relance le mode
+                break;
+            case 1:                                                             // Si la valeur est 1
+                Serial.println(F("Capteur de temperature active avec succès")); // On informe l’utilisateur que la valeur a ete mise à jour
+                EEPROM.put(12, valeurEnterInt);                                 // On met à jour la valeur dans l’EEPROM
+                modeConfig();                                                        // On relance le mode
+                break;
+            default:                                                // Si la valeur est autre chose que 0 ou 1
+                Serial.println(F("Valeur incorrecte -> "));         // On affiche un message d’erreur
+                Serial.println(valeurEnterInt);                     // On affiche la valeur entree
+                Serial.println(F("Veuillez choisir entre 0 et 1")); // On affiche un message d’erreur
+                modeConfig();                                            // On relance le mode
+                break;
+            }
+        }
+    }
+
+    else if (commandeEnter == "MIN_TEMP_AIR") // Si la commande est MIN_TEMP_AIR
+    {
+        Serial.println(F("MIN_TEMP_AIR"));                                 // On affiche MIN_TEMP_AIR
+        Serial.println(F("Rentrez la nouvelle valeur pour MIN_TEMP_AIR")); // On demande la nouvelle valeur pour MIN_TEMP_AIR
+        ReadandConvert();                                                  // On appelle la fonction ReadandConvert
+        if (valeurEnterInt >= -40 && valeurEnterInt <= 85)                 // Si la valeur n'est pas vide et est comprise entre -40 et 85
+        {
+            Serial.print(F("MIN_TEMP_AIR mis à jour à la valeur ")); // On informe l’utilisateur que la valeur a ete mise à jour
+            EEPROM.put(14, valeurEnterInt);                          // On met à jour la valeur dans l’EEPROM
+            Serial.println(EEPROM.get(14, valeurEnterInt));          // On affiche la nouvelle valeur
+            modeConfig();                                                 // On relance le mode
+        }
+        else // Si la valeur est vide ou si la valeur n'est pas comprise entre -40 et 85
+        {
+            Serial.println(F("Valeur incorrecte -> "));                               // On affiche un message d’erreur
+            Serial.println(valeurEnterInt);                                           // On affiche la valeur entree
+            Serial.println(F("Veuillez entrer une valeur comprise entre -40 et 85")); // On affiche un message d’information
+            modeConfig();                                                                  // On relance le mode
+        }
+    }
+
+    else if (commandeEnter == "MAX_TEMP_AIR") // Si la commande est MAX_TEMP_AIR
+    {
+        Serial.println(F("MAX_TEMP_AIR"));                                 // On affiche MAX_TEMP_AIR
+        Serial.println(F("Rentrez la nouvelle valeur pour MAX_TEMP_AIR")); // On demande la nouvelle valeur pour MAX_TEMP_AIR
+        ReadandConvert();                                                  // On appelle la fonction ReadandConvert
+        if (valeurEnterInt >= -40 && valeurEnterInt <= 85)                 // Si la valeur n'est pas vide et est comprise entre -40 et 85
+        {
+            Serial.print(F("MAX_TEMP_AIR mis à jour à la valeur ")); // On informe l’utilisateur que la valeur a ete mise à jour
+            EEPROM.put(16, valeurEnterInt);                          // On met à jour la valeur dans l’EEPROM
+            Serial.println(EEPROM.get(16, valeurEnterInt));          // On affiche la nouvelle valeur
+            modeConfig();                                                 // On relance le mode
+        }
+        else // Si la valeur est vide ou si la valeur n'est pas comprise entre -40 et 85
+        {
+            Serial.println(F("Valeur incorrecte -> "));                               // On affiche un message d’erreur
+            Serial.println(valeurEnterInt);                                           // On affiche la valeur entree
+            Serial.println(F("Veuillez entrer une valeur comprise entre -40 et 85")); // On affiche un message d’information
+            modeConfig();                                                                  // On relance le mode
+        }
+    }
+
+    else if (commandeEnter == "HYGR") // Si la commande est HYGR
+    {
+        Serial.println(F("HYGR"));                                 // On affiche HYGR
+        Serial.println(F("Rentrez la nouvelle valeur pour HYGR")); // On demande la nouvelle valeur pour HYGR
+        ReadandConvert();                                          // On appelle la fonction ReadandConvert
+        switch (valeurEnterInt)                                    // On verifie la valeur entree
+        {
+            {
+            case 0:                                                            // Si la valeur est 0
+                Serial.println(F("Capteur d'humidite desactive avec succès")); // On informe l’utilisateur que la valeur a ete mise à jour
+                EEPROM.put(18, valeurEnterInt);                                // On met à jour la valeur dans l’EEPROM
+                modeConfig();                                                       // On relance le mode
+                break;
+            case 1:                                                         // Si la valeur est 1
+                Serial.println(F("Capteur d'humidite active avec succès")); // On informe l’utilisateur que la valeur a ete mise à jour
+                EEPROM.put(18, valeurEnterInt);                             // On met à jour la valeur dans l’EEPROM
+                modeConfig();                                                    // On relance le mode
+                break;
+            default:                                                // Si la valeur est autre chose que 0 ou 1
+                Serial.print(F("Valeur incorrecte -> "));           // On affiche un message d’erreur
+                Serial.println(valeurEnterInt);                     // On affiche la valeur entree
+                Serial.println(F("Veuillez choisir entre 0 et 1")); // On affiche un message d’erreur
+                modeConfig();                                            // On relance le mode
+                break;
+            }
+        }
+    }
+
+    else if (commandeEnter == "HYGR_MINT") // Si la commande est HYGR_MINT
+    {
+        Serial.println(F("HYGR_MINT"));                                 // On affiche HYGR_MINT
+        Serial.println(F("Rentrez la nouvelle valeur pour HYGR_MINT")); // On demande la nouvelle valeur pour HYGR_MINT
+        ReadandConvert();                                               // On appelle la fonction ReadandConvert
+        if (valeurEnterInt >= -45 && valeurEnterInt <= 85)              // Si la valeur n'est pas vide et est comprise entre -45 et 85
+        {
+            Serial.print(F("HYGR_MINT mis à jour à la valeur ")); // On informe l’utilisateur que la valeur a ete mise à jour
+            EEPROM.put(20, valeurEnterInt);                       // On met à jour la valeur dans l’EEPROM
+            Serial.println(EEPROM.get(20, valeurEnterInt));       // On affiche la nouvelle valeur
+            modeConfig();                                              // On relance le mode
+        }
+        else // Si la valeur est vide ou si la valeur n'est pas comprise entre -45 et 85
+        {
+            Serial.println(F("Valeur incorrecte -> "));                               // On affiche un message d’erreur
+            Serial.println(valeurEnterInt);                                           // On affiche la valeur entree
+            Serial.println(F("Veuillez entrer une valeur comprise entre -45 et 80")); // On affiche un message d’information
+            modeConfig();                                                                  // On relance le mode
+        }
+    }
+
+    else if (commandeEnter == "HYGR_MAXT") // Si la commande est HYGR_MAXT
+    {
+        Serial.println(F("HYGR_MAXT"));                                 // On affiche HYGR_MAXT
+        Serial.println(F("Rentrez la nouvelle valeur pour HYGR_MAXT")); // On demande la nouvelle valeur pour HYGR_MAXT
+        ReadandConvert();                                               // On appelle la fonction ReadandConvert
+        if (valeurEnterInt >= -45 && valeurEnterInt <= 85)              // Si la valeur n'est pas vide et est comprise entre -45 et 85
+        {
+            Serial.print(F("HYGR_MAXT mis à jour à la valeur ")); // On informe l’utilisateur que la valeur a ete mise à jour
+            EEPROM.put(22, valeurEnterInt);                       // On met à jour la valeur dans l’EEPROM
+            Serial.println(EEPROM.get(22, valeurEnterInt));       // On affiche la nouvelle valeur
+            modeConfig();                                              // On relance le mode
+        }
+        else // Si la valeur est vide ou si la valeur n'est pas comprise entre -45 et 85
+        {
+            Serial.println(F("Valeur incorrecte -> "));                               // On affiche un message d’erreur
+            Serial.println(valeurEnterInt);                                           // On affiche la valeur entree
+            Serial.println(F("Veuillez entrer une valeur comprise entre -45 et 80")); // On affiche un message d’information
+            modeConfig();                                                                  // On relance le mode
+        }
+    }
+
+    else if (commandeEnter == "PRESSURE") // Si la commande est PRESSURE
+    {
+        Serial.println(F("PRESSURE"));                                 // On affiche PRESSURE
+        Serial.println(F("Rentrez la nouvelle valeur pour PRESSURE")); // On demande la nouvelle valeur pour PRESSURE
+        ReadandConvert();                                              // On appelle la fonction ReadandConvert
+        switch (valeurEnterInt)                                        // On verifie la valeur entree
+        {
+            {
+            case 0:                                                             // Si la valeur est 0
+                Serial.println(F("Capteur de pression desactive avec succès")); // On informe l’utilisateur que la valeur a ete mise à jour
+                EEPROM.put(24, valeurEnterInt);                                 // On met à jour la valeur dans l’EEPROM
+                modeConfig();                                                        // On relance le mode
+                break;
+            case 1:                                                          // Si la valeur est 1
+                Serial.println(F("Capteur de pression active avec succès")); // On informe l’utilisateur que la valeur a ete mise à jour
+                EEPROM.put(24, valeurEnterInt);                              // On met à jour la valeur dans l’EEPROM
+                modeConfig();                                                     // On relance le mode
+                break;
+            default:                                                // Si la valeur est autre chose que 0 ou 1
+                Serial.println(F("Valeur incorrecte -> "));         // On affiche un message d’erreur
+                Serial.println(valeurEnterInt);                     // On affiche la valeur entree
+                Serial.println(F("Veuillez choisir entre 0 et 1")); // On affiche un message d’erreur
+                modeConfig();                                            // On relance le mode
+                break;
+            }
+        }
+    }
+
+    else if (commandeEnter == "PRESSURE_MIN") // Si la commande est PRESSURE_MIN
+    {
+        Serial.println(F("PRESSURE_MIN"));                                 // On affiche PRESSURE_MIN
+        Serial.println(F("Rentrez la nouvelle valeur pour PRESSURE_MIN")); // On demande la nouvelle valeur pour PRESSURE_MIN
+        ReadandConvert();                                                  // On appelle la fonction ReadandConvert
+        if (valeurEnterInt >= 300 && valeurEnterInt <= 1100)               // Si la valeur n'est pas vide et est comprise entre 300 et 1100
+        {
+            Serial.print(F("PRESSURE_MIN mis à jour à la valeur ")); // On informe l’utilisateur que la valeur a ete mise à jour
+            EEPROM.put(26, valeurEnterInt);                          // On met à jour la valeur dans l’EEPROM
+            Serial.println(EEPROM.get(26, valeurEnterInt));          // On affiche la nouvelle valeur
+            modeConfig();                                                 // On relance le mode
+        }
+        else // Si la valeur est vide ou si la valeur n'est pas comprise entre 300 et 1100
+        {
+            Serial.println(F("Valeur incorrecte -> "));                                 // On affiche un message d’erreur
+            Serial.println(valeurEnterInt);                                             // On affiche la valeur entree
+            Serial.println(F("Veuillez entrer une valeur comprise entre 300 et 1100")); // On affiche un message d’information
+            modeConfig();                                                                    // On relance le mode
+        }
+    }
+
+    else if (commandeEnter == "PRESSURE_MAX") // Si la commande est PRESSURE_MAX
+    {
+        Serial.println(F("PRESSURE_MAX"));                                 // On affiche PRESSURE_MAX
+        Serial.println(F("Rentrez la nouvelle valeur pour PRESSURE_MAX")); // On demande la nouvelle valeur pour PRESSURE_MAX
+        ReadandConvert();                                                  // On appelle la fonction ReadandConvert
+        if (valeurEnterInt >= 300 && valeurEnterInt <= 1100)               // Si la valeur n'est pas vide et est comprise entre 300 et 1100
+        {
+            Serial.print(F("PRESSURE_MAX mis à jour à la valeur ")); // On informe l’utilisateur que la valeur a ete mise à jour
+            EEPROM.put(28, valeurEnterInt);                          // On met à jour la valeur dans l’EEPROM
+            Serial.println(EEPROM.get(28, valeurEnterInt));          // On affiche la nouvelle valeur
+            modeConfig();                                                 // On relance le mode
+        }
+        else // Si la valeur est vide ou si la valeur n'est pas comprise entre 300 et 1100
+        {
+            Serial.println(F("Valeur incorrecte -> "));                                 // On affiche un message d’erreur
+            Serial.println(valeurEnterInt);                                             // On affiche la valeur entree
+            Serial.println(F("Veuillez entrer une valeur comprise entre 300 et 1100")); // On affiche un message d’information
+            modeConfig();                                                                    // On relance le mode
+        }
+    }
+
+    else if (commandeEnter == "CLOCK") // Si la commande est CLOCK
+    {
+        int heureEnter;   // Variable pour stocker l'heure entree
+        int minuteEnter;  // Variable pour stocker les minutes entrees
+        int secondeEnter; // Variable pour stocker les secondes entrees
+
+        Serial.println(F("CLOCK"));              // On affiche CLOCK
+        Serial.println(F("Rentrez l'heure"));    // On demande l'heure
+        heureEnter = ReadandConvert();           // On appelle la fonction ReadandConvert et on stocke la valeur entree dans la variable heureEnter
+        if (heureEnter >= 0 && heureEnter <= 23) // Si l'heure est comprise entre 0 et 23
+        {
+            Serial.println(F("Rentrez les minutes"));  // On demande les minutes
+            minuteEnter = ReadandConvert();            // On appelle la fonction ReadandConvert et on stocke la valeur entree dans la variable minuteEnter
+            if (minuteEnter >= 0 && minuteEnter <= 59) // Si les minutes sont comprises entre 0 et 59
+            {
+                Serial.println(F("Rentrez les secondes"));   // On demande les secondes
+                secondeEnter = ReadandConvert();             // On appelle la fonction ReadandConvert et on stocke la valeur entree dans la variable secondeEnter
+                if (secondeEnter >= 0 && secondeEnter <= 59) // Si les secondes sont comprises entre 0 et 59
+                {
+                    Serial.print(F("L'heure a ete mise à jour à ")); // On informe l’utilisateur que la valeur a ete mise à jour
+                    EEPROM.put(30, heureEnter);                      // On met à jour la valeur dans l’EEPROM
+                    Serial.print(EEPROM.get(30, heureEnter));        // On affiche la nouvelle valeur
+                    Serial.print(F(":"));                            // On affiche un :
+                    EEPROM.put(32, minuteEnter);                     // On met à jour la valeur dans l’EEPROM
+                    Serial.print(EEPROM.get(32, minuteEnter));       // On affiche la nouvelle valeur
+                    Serial.print(F(":"));                            // On affiche un :
+                    EEPROM.put(34, secondeEnter);                    // On met à jour la valeur dans l’EEPROM
+                    Serial.println(EEPROM.get(34, secondeEnter));    // On affiche la nouvelle valeur
+                    modeConfig();                                         // On relance le mode
+                }
+                else // Si les secondes ne sont pas comprises entre 0 et 59
+                {
+                    Serial.println(F("Valeur incorrecte -> "));                             // On affiche un message d’erreur
+                    Serial.println(secondeEnter);                                           // On affiche la valeur entree
+                    Serial.println(F("Veuillez entrer une valeur comprise entre 0 et 59")); // On affiche un message d’information
+                    modeConfig();                                                                // On relance le mode
+                }
+            }
+            else // Si les minutes ne sont pas comprises entre 0 et 59
+            {
+                Serial.println(F("Valeur incorrecte -> "));                             // On affiche un message d’erreur
+                Serial.println(minuteEnter);                                            // On affiche la valeur entree
+                Serial.println(F("Veuillez entrer une valeur comprise entre 0 et 59")); // On affiche un message d’information
+                modeConfig();
+            }
+        }
+        else // Si l'heure n'est pas comprise entre 0 et 23
+        {
+            Serial.println(F("Valeur incorrecte -> "));                             // On affiche un message d’erreur
+            Serial.println(heureEnter);                                             // On affiche la valeur entree
+            Serial.println(F("Veuillez entrer une valeur comprise entre 0 et 23")); // On affiche un message d’information
+            modeConfig();                                                                // On relance le mode
+        }
+    }
+
+    else if (commandeEnter == "DATE") // Si la commande est DATE
+    {
+        int moisEnter;  // Variable pour stocker le mois entre
+        int jourEnter;  // Variable pour stocker le jour entre
+        int anneeEnter; // Variable pour stocker l'annee entree
+
+        Serial.println(F("DATE"));             // On affiche DATE
+        Serial.println(F("Rentrez le mois"));  // On demande le mois
+        moisEnter = ReadandConvert();          // On appelle la fonction ReadandConvert et on stocke la valeur entree dans la variable moisEnter
+        if (moisEnter >= 1 && moisEnter <= 12) // Si le mois est compris entre 1 et 12
+        {
+            Serial.println(F("Rentrez le jour"));  // On demande le jour
+            jourEnter = ReadandConvert();          // On appelle la fonction ReadandConvert et on stocke la valeur entree dans la variable jourEnter
+            if (jourEnter >= 1 && jourEnter <= 31) // Si le jour est compris entre 1 et 31
+            {
+                Serial.println(F("Rentrez l'annee"));    // On demande l'annee
+                anneeEnter = ReadandConvert();           // On appelle la fonction ReadandConvert et on stocke la valeur entree dans la variable anneeEnter
+                if (anneeEnter >= 0 && anneeEnter <= 99) // Si l'annee est comprise entre 0 et 99
+                {
+                    Serial.print(F("La date a ete mise à jour à ")); // On informe l’utilisateur que la valeur a ete mise à jour
+                    EEPROM.put(36, moisEnter);                       // On met à jour la valeur dans l’EEPROM
+                    Serial.print(EEPROM.get(36, moisEnter));         // On affiche la nouvelle valeur
+                    Serial.print(F("/"));                            // On affiche un /
+                    EEPROM.put(38, jourEnter);                       // On met à jour la valeur dans l’EEPROM
+                    Serial.print(EEPROM.get(38, jourEnter));         // On affiche la nouvelle valeur
+                    Serial.print(F("/"));                            // On affiche un /
+                    EEPROM.put(40, anneeEnter);                      // On met à jour la valeur dans l’EEPROM
+                    Serial.println(EEPROM.get(40, anneeEnter));      // On affiche la nouvelle valeur
+                    modeConfig();                                         // On relance le mode
+                }
+                else // Si l'annee n'est pas comprise entre 0 et 99
+                {
+                    Serial.println(F("Valeur incorrecte -> ")); // On affiche un message d’erreur
+                    attendre(100);
+                    Serial.println(anneeEnter); // On affiche la valeur entree
+                    attendre(100);
+                    Serial.println(F("Veuillez entrer une valeur comprise entre 0 et 99")); // On affiche un message d’information
+                    attendre(100);
+                    modeConfig(); // On relance le mode
+                }
+            }
+            else // Si le jour n'est pas compris entre 1 et 31
+            {
+                Serial.println(F("Valeur incorrecte -> ")); // On affiche un message d’erreur
+                attendre(100);
+                Serial.println(jourEnter); // On affiche la valeur entree
+                attendre(100);
+                Serial.println(F("Veuillez entrer une valeur comprise entre 1 et 31")); // On affiche un message d’ information
+                attendre(100);
+                modeConfig(); // On relance le mode
+            }
+        }
+        else // Si le mois n'est pas compris entre 1 et 12
+        {
+            Serial.println(F("Valeur incorrecte -> ")); // On affiche un message d’erreur
+            attendre(100);
+            Serial.println(moisEnter); // On affiche la valeur entree
+            attendre(100);
+            Serial.println(F("Veuillez entrer une valeur comprise entre 1 et 12")); // On affiche un message d’information
+            attendre(100);
+            modeConfig(); // On relance le mode
+        }
+    }
+
+    else if (commandeEnter == "DAY") // Si la commande est DAY
+    {
+        Serial.println(F("DAY"));                                                                                                                                                     // On demande le jour de la semaine
+        String jourSemaineEnter = ReadandTrimString();                                                                                                                                                               // On appelle la fonction ReadandTrimString et on stocke la valeur entree dans la variable jourSemaineEnter
+        if (jourSemaineEnter == "MON" || jourSemaineEnter == "TUE" || jourSemaineEnter == "WED" || jourSemaineEnter == "THU" || jourSemaineEnter == "FRI" || jourSemaineEnter == "SAT" || jourSemaineEnter == "SUN") // Si le jour de la semaine entre est egal à l'un des jours de la semaine
+        {
+            attendre(100);
+            EEPROM.put(42, jourSemaineEnter);                             // On met à jour la valeur dans l’EEPROM
+            Serial.println(EEPROM.get(42, jourSemaineEnter));             // On affiche la nouvelle valeur
+            modeConfig();                                                      // On relance le mode
+        }
+        else // Si le jour de la semaine entre n'est pas egal à l'un des jours de la semaine
+        {
+            Serial.println(F("Valeur incorrecte -> ")); // On affiche un message d’erreur
+            Serial.println(jourSemaineEnter);           // On affiche la valeur entree
+            modeConfig();                                    // On relance le mode
+        }
+    }
+
+    else
+    {
+        Serial.print(F("Commande "));
+        Serial.print(commandeEnter);
+        Serial.print(F(" inconnue \n"));
+        modeConfig();
+    }
+}
+
+int ReadandConvert()
+{
+    valeurEnterString = ReadandTrimString();    // On lit la valeur entree et on la convertit en String (pour pouvoir utiliser la fonction .toInt())
+    valeurEnterInt = valeurEnterString.toInt(); // On convertit la valeur entree en int
+    return valeurEnterInt;                      // On retourne la valeur entree en int
+}
+
+String ReadandTrimString()
+{
+    while (Serial.available() == 0) // Tant que rien n’est entre dans la console on attend
+    {
+    }
+    valeurEnterString = Serial.readString(); // On stocke la valeur entree dans la variable valeurEnterString
+    valeurEnterString.trim();                // On supprime les espaces avant et après la valeur entree
+    return valeurEnterString;                // On retourne la valeur trimee en String
+}
+
+void IntialisationsVar()
+{
+    // Initialisation des variables dans l'EEPROM
+
+    int logInterval = 10;       // Intervalle entre 2 mesures (en s)
+    EEPROM.put(0, logInterval); // On stocke la valeur de logInterval dans l'EEPROM
+
+    int file_max_size = 4096;     // Taille maximale du fichier de log (en octets)
+    EEPROM.put(2, file_max_size); // On stocke la valeur de file_max_size dans l'EEPROM
+
+    int timeout = 30;       // Duree (en s) au bout de laquelle l’acquisition des donnees d’un capteur est abandonnee.
+    EEPROM.put(4, timeout); // On stocke la valeur de timeout dans l'EEPROM
+
+    int lumin = 1;        // Activation (1) ou desactivation (0) du capteur de luminosite
+    EEPROM.put(6, lumin); // On stocke la valeur de lumin dans l'EEPROM
+
+    int lumin_min = 255;      // definition de la valeur en dessous de laquelle la luminosite est consideree comme faible
+    EEPROM.put(8, lumin_min); // On stocke la valeur de lumin_min dans l'EEPROM
+
+    int lumin_max = 768;       // definition de la valeur au-dessus de laquelle la luminosite est consideree comme forte
+    EEPROM.put(10, lumin_max); // On stocke la valeur de lumin_max dans l'EEPROM
+
+    int temp_air = 1;         // Activation (1) ou desactivation (0) du capteur de temperature de l’air
+    EEPROM.put(12, temp_air); // On stocke la valeur de temp_air dans l'EEPROM
+
+    int min_temp_air = -10;       // definition du seuil de temperature de l'air (en °C) en dessous duquel le capteur se mettra en erreur.
+    EEPROM.put(14, min_temp_air); // On stocke la valeur de min_temp_air dans l'EEPROM
+
+    int max_temp_air = 60;        // definition du seuil de temperature de l'air (en °C) au-dessus duquel le capteur se mettra en erreur.
+    EEPROM.put(16, max_temp_air); // On stocke la valeur de max_temp_air dans l'EEPROM
+
+    int hygr = 1;         // Activation (1) ou desactivation (0) du capteur d’humidite
+    EEPROM.put(18, hygr); // On stocke la valeur de hygr dans l'EEPROM
+
+    int hygr_mint = 0;         // definition de la temperature en dessous de laquelle les mesures d’hygrometrie ne seront pas prises en compte
+    EEPROM.put(20, hygr_mint); // On stocke la valeur de hygr_mint dans l'EEPROM
+
+    int hygr_maxt = 50;        // definition de la temperature au-dessus de laquelle les mesures d’hygrometrie ne seront pas prises en compte
+    EEPROM.put(22, hygr_maxt); // On stocke la valeur de hygr_maxt dans l'EEPROM
+
+    int pressure = 1;         // Activation (1) ou desactivation (0) du capteur de pression
+    EEPROM.put(24, pressure); // On stocke la valeur de pressure dans l'EEPROM
+
+    int pressure_min = 850;       // definition du seuil de pression atmospherique (en HPa) en dessous duquel le capteur se mettra en erreur
+    EEPROM.put(26, pressure_min); // On stocke la valeur de pressure_min dans l'EEPROM
+
+    int pressure_max = 1080;      // definition du seuil de pression atmospherique (en HPa) au-dessus duquel le capteur se mettra en erreur
+    EEPROM.put(28, pressure_max); // On stocke la valeur de pressure_max dans l'EEPROM
+
+    int heure = 0;         // definition de l'heure
+    EEPROM.put(30, heure); // On stocke la valeur de heure dans l'EEPROM
+
+    int minute = 0;         // definition des minutes
+    EEPROM.put(32, minute); // On stocke la valeur de minute dans l'EEPROM
+
+    int seconde = 0;         // definition des secondes
+    EEPROM.put(34, seconde); // On stocke la valeur de seconde dans l'EEPROM
+
+    int jour = 01;        // definition du jour
+    EEPROM.put(36, jour); // On stocke la valeur de jour dans l'EEPROM
+
+    int mois = 01;        // definition du mois
+    EEPROM.put(38, mois); // On stocke la valeur de mois dans l'EEPROM
+
+    int annee = 00;        // definition de l'annee
+    EEPROM.put(40, annee); // On stocke la valeur de annee dans l'EEPROM
+
+    String jour_semaine = "MON";  // definition du jour de la semaine
+    EEPROM.put(42, jour_semaine); // On stocke la valeur de jour_semaine dans l'EEPROM
 }
