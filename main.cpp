@@ -605,6 +605,8 @@ void SDrename(char* source,char* destination){
   // Quand la copie est terminée, fermer les deux fichiers (source et destination)
   ficsource.close();
   ficdestination.close();
+
+  // Supprimer le fichier source, il sera recréé au début de la sauvegarde des données (sauvMesures)
   SD.remove(source);
 }
 
@@ -686,7 +688,6 @@ void Archivage() {
       Serial.println(nomFic);
       
     } 
-
 
     entry = repfile2.openNextFile();
   }
