@@ -70,7 +70,7 @@ int annee = EEPROM.get(40, annee);
 // Enumeration des modes principaux
 enum mode {Standard = 0, Eco, Maintenance, Config, Debut};
 
-//
+// Initialise le type de Mode
 mode Mode;
 
 
@@ -88,7 +88,6 @@ void setup()
   pinMode(boutonVert, INPUT);
   pinMode(pinLux, INPUT);
   SD.begin(pinCS);
-  // 
   Wire.begin();
   dht.begin();
   // Initialisation des interruptions (changement de position d'un des deux boutons)
@@ -634,11 +633,11 @@ void Archivage() {
 
 
 
-// 
+// Permet de modifier les valeurs des paramètres par défaut
 void modeConfig()
 {
     Serial.println(F("Mode config")); // Affichage d’un message de bienvenue
-    leds.setColorRGB(0, 255, 255, 0);    // initialisation des variables ?
+    leds.setColorRGB(0, 255, 255, 0);    // LED en jaune
     Serial.println(F("Voulez-vous initialiser les variables à leurs valeurs pas defaut ? (O/N)")); // Demande à l’utilisateur s’il veut initialiser les variables à leurs valeurs par defaut
     String InitialisationParametre = ReadandTrimString();                                          // On appelle la fonction ReadandTrimString
     if (InitialisationParametre == "O")                                                            // Si la valeur est O
