@@ -1,3 +1,12 @@
+#/*include <Adafruit_BusIO_Register.h>
+#include <Adafruit_I2CDevice.h>
+#include <Adafruit_I2CRegister.h>
+#include <Adafruit_SPIDevice.h>
+
+#include <RTClib.h>
+
+
+RTC_DS1307 rtc;*/
 // Importation de la bibliothèque permettant de gerer la LED
 #include <ChainableLED.h>
 // Importation de la bibliothèque permettant d'utiliser le capteur d'humidite et de temperature
@@ -6,10 +15,12 @@
 #include "SPI.h"
 #include "SD.h"
 #include <EEPROM.h> // Pour la sauvegarde des paramètres
-
+//#include <TinyGPS++.h>
+//#include <SoftwareSerial.h>
 String valeurEnterString; // variable pour stocker la valeur entree par l’utilisateur
 int valeurEnterInt; 
 int ligne = 0;
+static const uint32_t GPSBaud = 9600;
 // Declaration du type et du pin utilises pour les capteurs d'humidite et de temperature
 #define DHTTYPE DHT11
 #define DHTPIN 8
@@ -34,21 +45,67 @@ int precMode;
 
 // Definition du delai entre deux mesure (1000 = 1 seconde)
 
-int LOG_INTERVAL = EEPROM.get(0, LOG_INTERVAL);
+int LOG_INTERVAL = EEPROM.get(0, LOG_INTERVAL) * 1000;
+
+int logInterval = EEPROM.get(0, logInterval); // On stocke la valeur de logInterval dans l'EEPROM
+
+int file_max_size = EEPROM.get(2, file_max_size); // On stocke la valeur de file_max_size dans l'EEPROM
+
+int timeout = EEPROM.get(4, timeout); // On stocke la valeur de timeout dans l'EEPROM
+
+int lumin = EEPROM.get(6, lumin); // On stocke la valeur de lumin dans l'EEPROM
+
+int lumin_min = EEPROM.get(8, lumin_min); // On stocke la valeur de lumin_min dans l'EEPROM
+
+int lumin_max = EEPROM.get(10, lumin_max); // On stocke la valeur de lumin_max dans l'EEPROM
+
+int temp_air = EEPROM.get(12, temp_air); // On stocke la valeur de temp_air dans l'EEPROM
+
+int min_temp_air = EEPROM.get(14, min_temp_air); // On stocke la valeur de min_temp_air dans l'EEPROM
+
+int max_temp_air = EEPROM.get(16, max_temp_air); // On stocke la valeur de max_temp_air dans l'EEPROM
+
+int hygr = EEPROM.get(18, hygr); // On stocke la valeur de hygr dans l'EEPROM
+
+int hygr_mint = EEPROM.get(20, hygr_mint); // On stocke la valeur de hygr_mint dans l'EEPROM
+
+int hygr_maxt = EEPROM.get(22, hygr_maxt); // On stocke la valeur de hygr_maxt dans l'EEPROM
+
+int pressure = EEPROM.get(24, pressure); // On stocke la valeur de pressure dans l'EEPROM
+
+int pressure_min = EEPROM.get(26, pressure_min); // On stocke la valeur de pressure_min dans l'EEPROM
+
+int pressure_max = EEPROM.get(28, pressure_max); // On stocke la valeur de pressure_max dans l'EEPROM
+
+int heure = EEPROM.get(30, heure); // On stocke la valeur de heure dans l'EEPROM
+
+int minute = EEPROM.get(32, minute); // On stocke la valeur de minute dans l'EEPROM
+
+int seconde = EEPROM.get(34, seconde); // On stocke la valeur de seconde dans l'EEPROM
+
+int jour = EEPROM.get(36, jour); // On stocke la valeur de jour dans l'EEPROM
+
+int mois = EEPROM.get(38, mois); // On stocke la valeur de mois dans l'EEPROM
+
+int annee = EEPROM.get(40, annee); // On stocke la valeur de annee dans l'EEPROM
 
 // Variable stockant le temps ecoule depuis le debut du programme à l'aide de millis()
 long duree, delai;
 
 // Variables contenant les valeurs obtenues des capteurs
-float lumiere, temperature, humidite, pression;
-
+int lumiere, temperature, humidite, pression;
 // Enumeration des modes principaux
 enum mode {Standard = 0, Eco, Maintenance, Config, Debut};
 //
 mode Mode;
-
+/*
 // 
-File monFichier;
+//#define RX 2 // Affectation des broches pour la liaison série logicielle
+//#define TX 3 // de l'Arduino/
+//SoftwareSerial GPS(RX, TX); // Création de l'objet GPS pour la liaison série
+                            // entre l'Arduino et le module GPS
+byte recu; // Variable pour le stockage des données recues du module
+File monFichier;*/
 
 
 // Intitialisation du programme
@@ -77,6 +134,18 @@ void setup()
   if(Mode == Debut){
     Mode = Standard;
   }
+  //GPS.begin(9600);    // initialisation de la liaison série du GPS pour reception données
+  //rtc.begin();
+  // Attente de la connection serie avec l'Arduino
+  while (!Serial);
+  // Lance le communication I2C avec le module RTC et 
+  // attend que la connection soit operationelle
+/*  while (! rtc.begin()) {
+    Serial.println("Attente du module RTC...");
+    delay(500);
+  }/*
+  rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+  Serial.println("Horloge du module RTC mise a jour");*/
 }
 
 
@@ -183,6 +252,8 @@ void modeStandard(){
   humidite = mesureHumidite();
   temperature = mesureTemperature();
   pression = mesurePression();
+  //mesureGPS();
+  //renvoieDate();
   erreur(lumiere, humidite, temperature, pression);
   sauvMesures(lumiere, humidite, temperature, pression);
 }
@@ -210,7 +281,7 @@ void modeMaintenance(){
 
 }
 
-void affichage(float lumiere, float humidite, float temperature, float pression){
+void affichage(int lumiere, int humidite, int temperature, int pression){
   Serial.print(F("Niveau luminosite : "));
   Serial.print(lumiere);
   Serial.println(" lux");
@@ -226,9 +297,9 @@ void affichage(float lumiere, float humidite, float temperature, float pression)
 }
 
 
-float mesureLumiere()
+int mesureLumiere()
 {
-  float lumiere = analogRead(pinLux);
+  int lumiere = analogRead(pinLux);
   return lumiere;
 }
 
@@ -247,31 +318,32 @@ float mesureTemperature(){
 }
 
 float mesurePression(){
-  float pression = 8.3144621 * (273.15 + temperature) * masseVolumique(temperature) / 0.029;
+  float pression = 8.3144621 * (273.15 + temperature) * masseVolumique(temperature) / 0.029
+  ;
   return pression;
 }
 
-float masseVolumique(float temperature){
-   if(temperature < 7.5){
+float masseVolumique(int temperature){
+   if(temperature < 7){
      return 1.292;
    }
-    else if(7.5 <= temperature < 17.5){
+    else if(7 <= temperature < 17){
      return 1.225 ;
    }
-    else if(17.5 <= temperature < 22.5){
+    else if(17 <= temperature < 22){
      return 1.204 ;
    }
-    else if(22.5 <= temperature){
+    else if(22 <= temperature){
      return 1.292 ;
    }
  }
 
-void erreur(float lumiere, float humidite, float temperature, float pression){
+void erreur(int lumiere, int humidite, int temperature, int pression){
   // horloge 0
   // GPS 1
   // capteur inaccessible 2
   //donnees incoherentes 3
-  if(lumiere < 0 || lumiere > 1000 || humidite < 0 || humidite > 100 || temperature < -50 || temperature > 50 || pression < 100000 || pression > 110000){
+  if(lumiere < lumin_min || lumiere > lumin_max /*|| humidite < hygr_mint || humidite > hygr_maxt || temperature < min_temp_air || temperature > max_temp_air || pression < pressure_min || pression > pressure_max*/){
     clignotement(3);
   }
   // carte sd pleine 4
@@ -325,11 +397,35 @@ void clignotement(int type){
   }
 }
 
+/*String renvoieDate ()
+{
+    DateTime now = rtc.now();
+    char heure[10];
+    int annee= now.year();
+    String Sanneevar = String(annee);
+    String Sannee = Sanneevar.substring(2);
+    int mois= now.month();
+    String Smois = String(mois);
+    int jour= now.second();
+    String Sday = String(jour);
+    String NomFichiers= Sannee+Smois+Sday;
+    return NomFichiers;
+}
+*/
+/*void mesureGPS()
+// Boucle de lecture des données
+  {
+   if (GPS.available() > 0 )  {
+    recu = GPS.read();  // Lecture de la trame envoyée par le module GPS
+    Serial.write(recu); // Affichage dans le moniteur série
+    }
+}*/
 void sauvMesures(float mes1, float mes2,float mes3, float mes4)
 {
   //Initialiser une variable qui compte le nombre de fichiers dans un dossier
   int nbFichiers = 0;
   int FILE_MAX_SIZE = 4096;
+/*  DateTime now = rtc.now();*/
 
   if (!SD.exists("sys3w")) {
     Serial.println (F("Creation dossier"));
@@ -347,11 +443,11 @@ void sauvMesures(float mes1, float mes2,float mes3, float mes4)
 
   //Determiner le chemin pour arriver à notre dossier et modifier son nom
   char datafile[33];
-  int jour = 15; // moment.day();
-  int mois = 10; // moment.month();
-  int annee = 22; // moment.year()
+  int jour =1;
+  int mois = 10;
+  int annee = 22;
   
-  sprintf(datafile,"sys3w/%d%d%d_%d.LOG",jour,mois,annee,nbFichiers);  //  %d pour un int
+  sprintf(datafile,"sys3w/%d%d%d_%d.LOG",annee,mois,jour,nbFichiers);  //  %d pour un int
   //datafile = "sys3w_releve_mesures" + "/" + jour + mois + annee + "_" + nbFichiers + "." + "LOG" ;
 
   Serial.print(F("Ouverture "));
@@ -380,7 +476,7 @@ void sauvMesures(float mes1, float mes2,float mes3, float mes4)
           nbFichiers=0;
           move=false;
         }
-        sprintf(datafile2,"sys3w/%d%d%d_%d.LOG",jour,mois,annee,nbFichiers);  //  %d pour un int
+        sprintf(datafile2,"sys3w/%s_%d.LOG",annee,mois,jour,nbFichiers);  //  %d pour un int
         //datafile2 = "sys3w" + "/" + jour + mois + annee + "_" + nbFichiers ;
         Serial.println(datafile2);
         
@@ -416,6 +512,7 @@ void sauvMesures(float mes1, float mes2,float mes3, float mes4)
     
     fichier.close();
     Serial.println (F("Releve des capteurs ecrits sur la carte SD"));
+    Serial.print("Mesure n*");
     Serial.println(ligne);
     ligne++;    
     
