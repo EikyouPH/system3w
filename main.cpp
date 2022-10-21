@@ -1,4 +1,4 @@
-#/*include <Adafruit_BusIO_Register.h>
+/*include <Adafruit_BusIO_Register.h>
 #include <Adafruit_I2CDevice.h>
 #include <Adafruit_I2CRegister.h>
 #include <Adafruit_SPIDevice.h>
@@ -20,7 +20,7 @@ RTC_DS1307 rtc;*/
 String valeurEnterString; // variable pour stocker la valeur entree par l’utilisateur
 int valeurEnterInt; 
 int ligne = 0;
-static const uint32_t GPSBaud = 9600;
+// static const uint32_t GPSBaud = 9600;
 // Declaration du type et du pin utilises pour les capteurs d'humidite et de temperature
 #define DHTTYPE DHT11
 #define DHTPIN 8
@@ -264,6 +264,14 @@ void modeEco(){
     Serial.println("Eco");
     attendre(10);
     leds.setColorRGB(0, 0, 0, 255);
+    lumiere = mesureLumiere();
+    humidite = mesureHumidite();
+    temperature = mesureTemperature();
+    pression = mesurePression();
+    //mesureGPS();
+    //renvoieDate();
+    erreur(lumiere, humidite, temperature, pression);
+    sauvMesures(lumiere, humidite, temperature, pression);
   }
 }
 
