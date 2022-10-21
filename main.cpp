@@ -66,7 +66,7 @@ void setup()
   // interruption possible sur le bouton rouge pour passer en mode config
   Mode = Config;
   attachInterrupt(digitalPinToInterrupt(boutonRouge), modeConfig, CHANGE);
-  delay(10000);
+  attendre(10);
   Mode = Standard;
 }
 
