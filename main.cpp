@@ -618,13 +618,16 @@ void Archivage() {
   // Ouvre le premier dossier
   File repfile = SD.open("/sys3w/");
 
-  //Parcours le dossier
+  //Parcours le dossier 
   File entry = repfile.openNextFile();
   
   int a=0;
   
-  String en = String(entry);
+  /*
+  String en = String(entry);                               // Pas très utile, renvoie juste la valeur de entry
   Serial.println(en);
+  */
+
   Serial.println(F("Parcours dossiers rep"));
 
   // Tant qu'il y a un fichier dans le dossier
@@ -633,6 +636,7 @@ void Archivage() {
     
     // Si le dossier est un dossier
     if (entry.isDirectory()) {
+      // incrémente la variable a
       a++;
       Serial.println(F("rep"));     
     } 
