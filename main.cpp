@@ -1,26 +1,13 @@
-/*include <Adafruit_BusIO_Register.h>
-#include <Adafruit_I2CDevice.h>
-#include <Adafruit_I2CRegister.h>
-#include <Adafruit_SPIDevice.h>
-
-#include <RTClib.h>
-
-
-RTC_DS1307 rtc;*/
 // Importation de la bibliothèque permettant de gerer la LED
 #include <ChainableLED.h>
-// Importation de la bibliothèque permettant d'utiliser le capteur d'humidite et de temperature
+// Importation de la bibliothèque permettant d'utiliser le capteur d'humidité et de température
 #include "DHT.h"
 // Importation des bibliothèques permettant d'utiliser la carte SD
 #include "SPI.h"
 #include "SD.h"
-#include <EEPROM.h> // Pour la sauvegarde des paramètres
-//#include <TinyGPS++.h>
-//#include <SoftwareSerial.h>
-String valeurEnterString; // variable pour stocker la valeur entree par l’utilisateur
-int valeurEnterInt; 
-int ligne = 0;
-// static const uint32_t GPSBaud = 9600;
+// Importation de la bibliothèque permettant la sauvegarde des paramètres via l'EEPROM
+#include <EEPROM.h> 
+
 // Declaration du type et du pin utilises pour les capteurs d'humidite et de temperature
 #define DHTTYPE DHT11
 #define DHTPIN 8
@@ -28,13 +15,13 @@ DHT dht(DHTPIN, DHTTYPE);
 
 // Pin pour le capteur de luminosite
 const int pinLux = A1;
-// Pins pour les boutons
-const int boutonRouge = 2;
-const int boutonVert = 3;
 // Pin pour la carte SD
 const int pinCS = 4;
 // Pins pour la LED (pin6, pin7, nombre de LED)
 ChainableLED leds(6, 7, 1);
+// Pins pour les boutons
+const int boutonRouge = 2;
+const int boutonVert = 3;
 
 // Booleens pour controler la pression ou non du bouton, true = non presse
 bool bRouge = true;
@@ -43,69 +30,49 @@ bool bVert = true;
 // Variable stockant le mode precedent pour le mode maintenance
 int precMode;
 
-// Definition du delai entre deux mesure (1000 = 1 seconde)
-
-int LOG_INTERVAL = EEPROM.get(0, LOG_INTERVAL) * 1000;
-
-int logInterval = EEPROM.get(0, logInterval); // On stocke la valeur de logInterval dans l'EEPROM
-
-int file_max_size = EEPROM.get(2, file_max_size); // On stocke la valeur de file_max_size dans l'EEPROM
-
-int timeout = EEPROM.get(4, timeout); // On stocke la valeur de timeout dans l'EEPROM
-
-int lumin = EEPROM.get(6, lumin); // On stocke la valeur de lumin dans l'EEPROM
-
-int lumin_min = EEPROM.get(8, lumin_min); // On stocke la valeur de lumin_min dans l'EEPROM
-
-int lumin_max = EEPROM.get(10, lumin_max); // On stocke la valeur de lumin_max dans l'EEPROM
-
-int temp_air = EEPROM.get(12, temp_air); // On stocke la valeur de temp_air dans l'EEPROM
-
-int min_temp_air = EEPROM.get(14, min_temp_air); // On stocke la valeur de min_temp_air dans l'EEPROM
-
-int max_temp_air = EEPROM.get(16, max_temp_air); // On stocke la valeur de max_temp_air dans l'EEPROM
-
-int hygr = EEPROM.get(18, hygr); // On stocke la valeur de hygr dans l'EEPROM
-
-int hygr_mint = EEPROM.get(20, hygr_mint); // On stocke la valeur de hygr_mint dans l'EEPROM
-
-int hygr_maxt = EEPROM.get(22, hygr_maxt); // On stocke la valeur de hygr_maxt dans l'EEPROM
-
-int pressure = EEPROM.get(24, pressure); // On stocke la valeur de pressure dans l'EEPROM
-
-int pressure_min = EEPROM.get(26, pressure_min); // On stocke la valeur de pressure_min dans l'EEPROM
-
-int pressure_max = EEPROM.get(28, pressure_max); // On stocke la valeur de pressure_max dans l'EEPROM
-
-int heure = EEPROM.get(30, heure); // On stocke la valeur de heure dans l'EEPROM
-
-int minute = EEPROM.get(32, minute); // On stocke la valeur de minute dans l'EEPROM
-
-int seconde = EEPROM.get(34, seconde); // On stocke la valeur de seconde dans l'EEPROM
-
-int jour = EEPROM.get(36, jour); // On stocke la valeur de jour dans l'EEPROM
-
-int mois = EEPROM.get(38, mois); // On stocke la valeur de mois dans l'EEPROM
-
-int annee = EEPROM.get(40, annee); // On stocke la valeur de annee dans l'EEPROM
-
 // Variable stockant le temps ecoule depuis le debut du programme à l'aide de millis()
 long duree, delai;
 
 // Variables contenant les valeurs obtenues des capteurs
 int lumiere, temperature, humidite, pression;
+
+// Variable pour stocker les valeurs entrées par l’utilisateur dans le mode config
+int valeurEnterInt; 
+String valeurEnterString;
+
+// Variable stockant le numéro de la mesure en cours
+int ligne = 0;
+
+// Récupération des différentes paramètrs par défaut et paramètres modifiés depuis l'EEPROM
+int LOG_INTERVAL = EEPROM.get(0, LOG_INTERVAL) * 1000;
+int logInterval = EEPROM.get(0, logInterval);
+int file_max_size = EEPROM.get(2, file_max_size);
+int timeout = EEPROM.get(4, timeout);
+int lumin = EEPROM.get(6, lumin);
+int lumin_min = EEPROM.get(8, lumin_min);
+int lumin_max = EEPROM.get(10, lumin_max);
+int temp_air = EEPROM.get(12, temp_air);
+int min_temp_air = EEPROM.get(14, min_temp_air);
+int max_temp_air = EEPROM.get(16, max_temp_air);
+int hygr = EEPROM.get(18, hygr);
+int hygr_mint = EEPROM.get(20, hygr_mint);
+int hygr_maxt = EEPROM.get(22, hygr_maxt);
+int pressure = EEPROM.get(24, pressure);
+int pressure_min = EEPROM.get(26, pressure_min);
+int pressure_max = EEPROM.get(28, pressure_max);
+int heure = EEPROM.get(30, heure);
+int minute = EEPROM.get(32, minute);
+int seconde = EEPROM.get(34, seconde);
+int jour = EEPROM.get(36, jour);
+int mois = EEPROM.get(38, mois);
+int annee = EEPROM.get(40, annee);
+
 // Enumeration des modes principaux
 enum mode {Standard = 0, Eco, Maintenance, Config, Debut};
+
 //
 mode Mode;
-/*
-// 
-//#define RX 2 // Affectation des broches pour la liaison série logicielle
-//#define TX 3 // de l'Arduino/
-//SoftwareSerial GPS(RX, TX); // Création de l'objet GPS pour la liaison série
-                            // entre l'Arduino et le module GPS
-byte recu; // Variable pour le stockage des données recues du module
-File monFichier;*/
+
 
 
 // Intitialisation du programme
@@ -128,39 +95,25 @@ void setup()
   attachInterrupt(digitalPinToInterrupt(boutonRouge), appuiRouge, CHANGE);
   attachInterrupt(digitalPinToInterrupt(boutonVert), appuiVert, CHANGE);
 
-  //interruption possible sur le bouton rouge pour passer en mode config
+  // Interruption possible sur le bouton rouge pour passer en mode config pendant 5 secondes
   attendre(5000);
   // Si pas d'interruption pour passer au mode config, passage au mode standard
   if(Mode == Debut){
     Mode = Standard;
   }
-  //GPS.begin(9600);    // initialisation de la liaison série du GPS pour reception données
-  //rtc.begin();
-  // Attente de la connection serie avec l'Arduino
-  while (!Serial);
-  // Lance le communication I2C avec le module RTC et 
-  // attend que la connection soit operationelle
-/*  while (! rtc.begin()) {
-    Serial.println("Attente du module RTC...");
-    delay(500);
-  }/*
-  rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
-  Serial.println("Horloge du module RTC mise a jour");*/
 }
+
 
 
 // Fonction d'interruption en cas de changement de position du bouton rouge
 void appuiRouge(){
   // Lecture de la position du bouton rouge
   bRouge = digitalRead(boutonRouge);
-  // Si le bouton est appuye (on vient de le presser), on stocke le temps ecoule depuis le debut du programme
+  // Si le bouton est appuyé (on vient de le presser), on stocke le temps écoulé depuis le debut du programme
   if(!bRouge){
     duree = millis();
   }
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-  // Si le bouton n'est pas appuye (on vient de le lâcher), on teste s'il a ete appuye pendant au moins 5 secondes
+  // Si le bouton n'est pas appuyé (on vient de le lâcher), on teste s'il a été appuyé pendant au moins 5 secondes
   else if(bRouge){
     if(millis()-duree > 5000){
       // Si l'on est au debut du programme, on passe Mode à Config
@@ -190,14 +143,14 @@ void appuiRouge(){
 void appuiVert(){
   // Lecture de la position du bouton vert
   bVert = digitalRead(boutonVert);
-  // Si le bouton est appuye (on vient de le presser), on stocke le temps ecoule depuis le debut du programme
+  // Si le bouton est appuyé (on vient de le presser), on stocke le temps écoulé depuis le début du programme
   if(!bVert){
     duree = millis();
   }
-  // Si le bouton n'est pas appuye (on vient de le lâcher), on teste s'il a ete appuye pendant au moins 5 secondes
+  // Si le bouton n'est pas appuyé (on vient de le lâcher), on teste s'il a été appuyé pendant au moins 5 secondes
   else{
     if(millis()-duree > 5000){
-      // Si on est en mode Standard, on passe ne mode Eco
+      // Si on est en mode Standard, on passe en mode Eco
       if(Mode == Standard){
         Mode = Eco;
       }
@@ -208,7 +161,6 @@ void appuiVert(){
     }
   }
 }
-
 
 
 
@@ -228,67 +180,93 @@ void Modes(){
       modeMaintenance();
       break;
     // Mode Config
-    /*case 3:
+    case 3:
       modeConfig();
-    break;*/
+    break;
   }
 }
 
+
+
+// Fonction permettant de remplacer la fonction delay : 
+// son fonctionnement est identique mais elle ne "gèle" pas le programme, elle entre dans un while{} permettant les interruptions
 void attendre(int timer){
   delai = millis();
   while(millis()-delai < timer){}
 }
 
+
+
+// Boucle infinie relançant la focntion Modes() qui redirige vers les fonction voulues
 void loop(){
   Modes();
 }
 
+
+
+// Fonction pour le mode standard
 void modeStandard(){
+  // Attente de l'interval prédéfini entre deux mesures
   attendre(LOG_INTERVAL);
   Serial.println("Mode standard");
   attendre(10);
+  // LED en vert
   leds.setColorRGB(0, 0, 255, 0);
+  // Mesure des capteurs
   lumiere = mesureLumiere();
   humidite = mesureHumidite();
   temperature = mesureTemperature();
   pression = mesurePression();
-  //mesureGPS();
-  //renvoieDate();
+  // Vérification des erreurs
   erreur(lumiere, humidite, temperature, pression);
+  // Sauvegarde des mesures sur la carte SD
   sauvMesures(lumiere, humidite, temperature, pression);
 }
 
-void modeEco(){
-  if(millis()-delai >= LOG_INTERVAL * 2){
-    delai = millis();
-    Serial.println("Eco");
-    attendre(10);
-    leds.setColorRGB(0, 0, 0, 255);
-    lumiere = mesureLumiere();
-    humidite = mesureHumidite();
-    temperature = mesureTemperature();
-    pression = mesurePression();
-    //mesureGPS();
-    //renvoieDate();
-    erreur(lumiere, humidite, temperature, pression);
-    sauvMesures(lumiere, humidite, temperature, pression);
-  }
-}
 
-void modeMaintenance(){
-  Serial.println("Maintenance");
+
+// Fonction pour le mode économique
+void modeEco(){
+  // Attente de l'interval prédéfini entre deux mesures (doublé par rapport au mode standard)
+  attendre(LOG_INTERVAL * 2);
+  Serial.println("Eco");
   attendre(10);
-  leds.setColorRGB(0, 255, 127, 0);
+  // LED en bleu
+  leds.setColorRGB(0, 0, 0, 255);
+  // Mesure des capteurs
   lumiere = mesureLumiere();
   humidite = mesureHumidite();
   temperature = mesureTemperature();
   pression = mesurePression();
+  // Vérification des erreurs
   erreur(lumiere, humidite, temperature, pression);
-  affichage(lumiere, humidite, temperature, pression);
-  attendre(100);
-
+  // Sauvegarde des mesures sur la carte SD
+  sauvMesures(lumiere, humidite, temperature, pression);
 }
 
+
+
+// Fonction pour le mode maintenance
+void modeMaintenance(){
+  Serial.println("Maintenance");
+  attendre(10);
+  // LED en orange
+  leds.setColorRGB(0, 255, 127, 0);
+  // Mesure des capteurs
+  lumiere = mesureLumiere();
+  humidite = mesureHumidite();
+  temperature = mesureTemperature();
+  pression = mesurePression();
+  // Vérification des erreurs
+  erreur(lumiere, humidite, temperature, pression);
+  // Affichage des données sur le moniteur série
+  affichage(lumiere, humidite, temperature, pression);
+  attendre(100);
+}
+
+
+
+// Fonction d'affichage des différentes mesures sur le monniteur série pour le mode maintenance
 void affichage(int lumiere, int humidite, int temperature, int pression){
   Serial.print(F("Niveau luminosite : "));
   Serial.print(lumiere);
@@ -305,12 +283,16 @@ void affichage(int lumiere, int humidite, int temperature, int pression){
 }
 
 
+
+// Fonction revoyant la luminosité sous forme de int
 int mesureLumiere()
 {
   int lumiere = analogRead(pinLux);
   return lumiere;
 }
 
+
+// Fonction revoyant le pourcentage d'humidité sous forme de float
 float mesureHumidite(){
   float temp_hum_val[2] = {0};
   dht.readTempAndHumidity(temp_hum_val);
@@ -318,6 +300,8 @@ float mesureHumidite(){
   return humidite;
 }
 
+
+// Fonction revoyant la température en °C sous forme de float
 float mesureTemperature(){
   float temp_hum_val[2] = {0};
   dht.readTempAndHumidity(temp_hum_val);
@@ -325,12 +309,16 @@ float mesureTemperature(){
   return temperature;
 }
 
+
+// Fonction revoyant la pression en pascal sous forme de float à l'aide d'un calcul basé sur la température
+// Pression = ConstanteGazParfaits * Température(Kelvin) * MasseVolumiqueAir / MasseMolaireAir
 float mesurePression(){
-  float pression = 8.3144621 * (273.15 + temperature) * masseVolumique(temperature) / 0.029
-  ;
+  float pression = 8.3144621 * (273.15 + temperature) * masseVolumique(temperature) / 0.029;
   return pression;
 }
 
+
+// Renvoie la masse volumique de l'air en fonction de la température mesurée
 float masseVolumique(int temperature){
    if(temperature < 7){
      return 1.292;
@@ -346,6 +334,9 @@ float masseVolumique(int temperature){
    }
  }
 
+
+
+// Fonction de détection d'erreurs
 void erreur(int lumiere, int humidite, int temperature, int pression){
   // horloge 0
   // GPS 1
@@ -361,41 +352,51 @@ void erreur(int lumiere, int humidite, int temperature, int pression){
   }
 }
 
+
+
+// Gestion du clignotement de la LED en fonction de l'erreur détectée
 void clignotement(int type){
+  // Boucle infinie
   while(true){
     switch(type)
     {
-      case 0: // horloge
+      // Horloge
+      case 0:
         leds.setColorRGB(0, 255, 0, 0);
         attendre(1000);
         leds.setColorRGB(0, 0, 0, 255);
         attendre(1000);
         break;
-      case 1: // GPS
+      // GPS
+      case 1:
               leds.setColorRGB(0, 255, 0, 0);
         attendre(1000);
         leds.setColorRGB(0, 255, 255, 0);
         attendre(1000);
         break;
-      case 2: // acces capteur
+      // Accès capteur
+      case 2:
         leds.setColorRGB(0, 255, 0, 0);
         attendre(1000);
         leds.setColorRGB(0, 0, 255, 0);
         attendre(1000);
         break;
-      case 3: // donnee incoherente
+      // Donnée incohérente
+      case 3:
         leds.setColorRGB(0, 255, 0, 0);
         attendre(1000);
         leds.setColorRGB(0, 0, 255, 0);
         attendre(2000);
         break;
-      case 4: // SD pleine
+      // Carte SD pleine
+      case 4:
         leds.setColorRGB(0, 255, 0, 0);
         attendre(1000);
         leds.setColorRGB(0, 255, 255, 255);
         attendre(1000);
         break;
-      case 5: // SD inaccessible
+      // Carte SD inaccessible
+      case 5:
         leds.setColorRGB(0, 255, 0, 0);
         attendre(1000);
         leds.setColorRGB(0, 255, 255, 255);
@@ -405,6 +406,7 @@ void clignotement(int type){
   }
 }
 
+// Ebauche d'une focntion renvoyant la date du jour
 /*String renvoieDate ()
 {
     DateTime now = rtc.now();
@@ -420,54 +422,30 @@ void clignotement(int type){
     return NomFichiers;
 }
 */
-/*void mesureGPS()
-// Boucle de lecture des données
-  {
-   if (GPS.available() > 0 )  {
-    recu = GPS.read();  // Lecture de la trame envoyée par le module GPS
-    Serial.write(recu); // Affichage dans le moniteur série
-    }
-}*/
 
 
-// Fonction pour sauvegarder les mesures dans la carte SD
 
+// Fonction permettant la sauvegarde les mesures sur la carte SD
 void sauvMesures(float mes1, float mes2,float mes3, float mes4)
 {
   //Initialiser une variable qui compte le nombre de fichiers dans un dossier
   int nbFichiers = 0;
   int FILE_MAX_SIZE = 4096;
-/*  DateTime now = rtc.now();*/
-
-// Si le dossier à créer n'existe pas, on le crée
-// Test de la création du dossier
-
+// Si le dossier à créer n'existe pas, on le crée. Sinon indication d'erreur
   if (!SD.exists("sys3w")) {
     Serial.println (F("Creation dossier"));
    if(!SD.mkdir("sys3w")){
       Serial.println(F("Erreur creation dossier"));
-  }   
+   }   
   } 
-  
-  
   Serial.println (F("Dossier cree "));
-
-  //ouvrir un fichier dans repertoire "sys3w_releve_mesures"
-
-  //Determiner le chemin pour arriver à notre dossier et modifier son nom
-  char datafile[33];
-  int jour =1;
-  int mois = 10;
-  int annee = 22;
-  
-  sprintf(datafile,"sys3w/%d%d%d_%d.LOG",annee,mois,jour,nbFichiers);  //  %d pour un int
+  // Determiner le chemin pour arriver à notre dossier et modifier son nom -> datafile
   // Le tableau datafile contient le chemin complet et le nom du fichier à créer
-
+  char datafile[33];
+  sprintf(datafile,"sys3w/%d%d%d_%d.LOG",annee,mois,jour,nbFichiers);  //  %d pour un int
   Serial.print(F("Ouverture "));
   Serial.println(datafile);
-
   // La variable fichier va ouvrir notre fichier en écriture
-
   File fichier = SD.open(datafile, FILE_WRITE);
   //Si le fichier s'ouvre
   if(fichier)
@@ -479,75 +457,56 @@ void sauvMesures(float mes1, float mes2,float mes3, float mes4)
       Serial.println (F("Fichier plein"));
       char datafile2[33];
       bool move=true;
-
       // Fermer le fichier
       fichier.close();
-
       // Tant que le fichier datafile2 existe
       do
       {
         Serial.println(nbFichiers);
         // On incrémente le nombre de fichiers
         nbFichiers++;
-
         // Si le nombre de fichier dans le dossier est de 10 (compte de 0 à 9)
         if(nbFichiers==9){
-
           Serial.println (F("Dossier plein"));
-
           // On crée un nouveau dossier (archivage)
           Archivage();
-
           // Le nombre de fichiers est donc réinitialisé
           nbFichiers=0;
           move=false;
         }
-
         // Mettre dans datafile2 le chemin complet et le nom du fichier à créer
-        sprintf(datafile2,"sys3w/%d%d%d_%d.LOG",annee,mois,jour,nbFichiers);  //  %d pour un int
-        
-
+        sprintf(datafile2, "sys3w/%d%d%d_%d.LOG", annee, mois, jour, nbFichiers);  //  %d pour un int
         Serial.println(datafile2);
-        
       }while(SD.exists(datafile2));
-      
-      
       if(move)
       {
         Serial.println(F("move"));
-        //Copie et renomme le fichier
+        // Copie et renomme le fichier
         SDrename(datafile,datafile2);
       }
-
-      //ouvrir à nouveau le fichier (maintenant vide)
+      // Ouvre à nouveau le fichier (maintenant vide)
       fichier = SD.open(datafile, FILE_WRITE);
-
       // Test de l'ouverture du fichier
       if(!fichier){
         Serial.println (F("erreur d'ouverture fichier"));
       }
       Serial.println(datafile);
     }
-    // ecrire les données des mesures des capteurs dans le fichier
+    // Ecrire les données des mesures des capteurs dans le fichier
     fichier.print(lumiere); 
     fichier.print(",");
-    
     fichier.print(humidite);
     fichier.print(",");
-    
     fichier.print(temperature);
     fichier.print(",");
-    
     fichier.print(pression);
     fichier.println(".");
-    
     // Une fois que la session de données est écrite sur le fichier, on ferme le fichier
     fichier.close();
     Serial.println (F("Releve des capteurs ecrits sur la carte SD"));
     Serial.print("Mesure n*");
     Serial.println(ligne);
-    ligne++;    
-    
+    ligne++;
   }
   else
   {
@@ -555,34 +514,30 @@ void sauvMesures(float mes1, float mes2,float mes3, float mes4)
   }
 }
 
+
+
 // Fonction pour copier un fichier dans un autre et renommer le nouveau fichier en fonction des autres fichiers existants
 void SDrename(char* source,char* destination){
-  
   // Déclaration des variables pour la fonction rename, qui sont des pointeurs vers les adresses des caractères du nom du fichier à 'copier'
   File ficsource;
   File ficdestination;
   Serial.println(F("SDrename"));
-  
   // Ouverture du fichier source
   ficsource = SD.open(source, FILE_READ);
   Serial.println(source);
-  
-  // Test si le fichier source s'ouvre bien
+  // Teste si le fichier source s'ouvre bien
   if(!ficsource)
   {
     Serial.println (F("erreur ouverture fichier source"));
   }
-  
   // Si le fichier source s'ouvre bien, ouvrir le fichier destination
   ficdestination = SD.open(destination, FILE_WRITE);
   Serial.println(destination);
-  
   // Test si le fichier destination s'ouvre bien
   if(!ficdestination)
   {
     Serial.println (F("erreur ouverture fichier destination"));
   }
-
 
   /*
   // Alternative (qui lit des plus grosses quantités de données pour que la copie se fasse plus rapidement )
@@ -592,16 +547,12 @@ void SDrename(char* source,char* destination){
 
   // Déclarer la variable qui va contenir les données lues dans le fichier source
   long data;
-  
   // Tant que le fichier source n'est pas vide, lire les données dans le fichier source et les écrire dans le fichier destination
   while(data = ficsource.read() >= 0){ // ou (data= ficsource.read(buf,sizeof(buf))) >= 0
     Serial.println();
-    ficdestination.write(data); // ou avec buf,
-
+    ficdestination.write(data); // ou avec buf
   }
-  
   Serial.println(F("data copiee"));
-  
   // Quand la copie est terminée, fermer les deux fichiers (source et destination)
   ficsource.close();
   ficdestination.close();
@@ -609,26 +560,21 @@ void SDrename(char* source,char* destination){
 }
 
 
-//fonction pour archiver les fichiers déjà existants, dès que le dossier est plein, en créé un nouveau et mets les fichiers pleins dedans
 
+// Fonction permettant d'archiver les fichiers déjà existants :
+// dès que le dossier est plein, en créé un nouveau et met les fichiers pleins dedans
 void Archivage() {
-
   // Ouvre le premier dossier
   File repfile = SD.open("/sys3w/");
-
   //Parcours le dossier
   File entry = repfile.openNextFile();
-  
-  int a=0;
-  
+  int a = 0;
   String en = String(entry);
   Serial.println(en);
   Serial.println(F("Parcours dossiers rep"));
-
   // Tant qu'il y a un fichier dans le dossier
   while (entry) {
     Serial.println(entry.name());
-    
     // Si le dossier est un dossier
     if (entry.isDirectory()) {
       a++;
@@ -636,69 +582,52 @@ void Archivage() {
     } 
     entry = repfile.openNextFile();
   }
-
-  //Ferme le fichier
+  // Ferme le fichier
   repfile.close();
-  
-  //Création du dossier d'archivage
+  // Création du dossier d'archivage
   char nomDoss[17];
   sprintf(nomDoss,"sys3w/arch_%d", a);
   // Le nouveau dossier aura le nom "arch_a" avec a le nombre de dossier déjà existant
   Serial.println(nomDoss);
-  
   // Test de la création du nouveau dossier
   Serial.println(F("Creation nouveau dossier")); 
   if(!SD.mkdir(nomDoss)){
       Serial.println(F("Erreur creation dossier"));
   }
   Serial.println(F("doss cree"));
-
   //Parcours le dossier pour déplacer les fichiers
   File repfile2 = SD.open("/sys3w/");
-
   entry = repfile2.openNextFile();
-  
   String rep = String(repfile2);
   Serial.println(rep);
-  //mettre dans ce nouveau doss
-
+  // Mettre dans ce nouveau dossier
   en = String(entry);
   Serial.println(en);
-  
   Serial.println(F("Parcours fichiers rep"));
-  *
   // Tant qu'il y a un fichier dans le dossier
   while (entry) {
     Serial.println(entry.name());
-    
     // Si le dossier est un dossier
     if (entry.isDirectory()) {
     Serial.println(F("rep"));
     } else { 
-      
-      //Création du nom du fichier
+      // Création du nom du fichier
       Serial.println(F("fic"));
       char nomFic[50];
       sprintf(nomFic,"sys3w/arch_%d/%s", a, entry.name());
-      
-      // Utilise la fonction SDrename pour déplacer les fichiers
+      // Utilise la fonction SDrename() pour déplacer les fichiers
       SDrename(entry.name(),nomFic);
       Serial.println(nomFic);
-      
     } 
-
-
     entry = repfile2.openNextFile();
   }
-    repfile2.close();
+  repfile2.close();
   Serial.println(F("fin Parcours fichiers rep"));
-  
 }
 
-///////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////
 
+
+// 
 void modeConfig()
 {
     Serial.println(F("Mode config")); // Affichage d’un message de bienvenue
