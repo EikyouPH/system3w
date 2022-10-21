@@ -111,7 +111,7 @@ void setup()
 void Modes(Mode)
 {
   // Mode Standard
-  if  (Mode == Standard)
+  if (Mode == Standard)
   {
     modeStandard();
   }
@@ -121,12 +121,12 @@ void Modes(Mode)
     modeEco();
   }
   // Mode Maintenance
-  else if  (Mode == Maintenance)
+  else if (Mode == Maintenance)
   {
     modeMaintenance();
   }
   // Mode Config
-  else if  (Mode == Config)
+  else if (Mode == Config)
   {
     modeConfig();
   }
@@ -279,14 +279,14 @@ void erreur(float lumiere, float humidite, float temperature, float pression)
   // carte sd inaccessible 5
   // passage au mode précédent
 }
-    if (!entry.isDirectory())
-    {
-      sprintf(nomFic, "sys3w_relevé_mesures/archives_%d/%s", a, entry.name());
-      SDrename(entry.name(), nomFic);
-    }
-    entry = repfile.openNextFile();
-  }
-  repfile.close();
+if (!entry.isDirectory())
+{
+  sprintf(nomFic, "sys3w_relevé_mesures/archives_%d/%s", a, entry.name());
+  SDrename(entry.name(), nomFic);
+}
+entry = repfile.openNextFile();
+}
+repfile.close();
 }
 
 void clignotement(int type)
